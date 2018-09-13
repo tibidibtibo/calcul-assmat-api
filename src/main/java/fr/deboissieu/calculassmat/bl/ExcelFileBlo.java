@@ -8,5 +8,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 
 public interface ExcelFileBlo {
 
-	Workbook readFile(String fileName) throws EncryptedDocumentException, InvalidFormatException, IOException;
+	Workbook openFile(String fileName) throws EncryptedDocumentException, InvalidFormatException, IOException;
+
 }

@@ -19,15 +19,15 @@ public class ExcelFileBloImpl implements ExcelFileBlo {
 	private static final Logger logger = LogManager.getLogger(ExcelFileBloImpl.class);
 
 	@Override
-	public Workbook readFile(String fileName) throws EncryptedDocumentException, InvalidFormatException, IOException {
+	public Workbook openFile(String fileName) throws EncryptedDocumentException, InvalidFormatException, IOException {
 
-		final String SAMPLE_XLSX_FILE_PATH = "Suivi garde Louise et Joséphine.xlsx";
+		File file = new File(getClass().getClassLoader().getResource(fileName).getFile());
 
 		// Creating a Workbook from an Excel file (.xls or .xlsx)
-		Workbook workbook = WorkbookFactory.create(new File(SAMPLE_XLSX_FILE_PATH));
+		Workbook workbook = WorkbookFactory.create(file);
 
 		// Retrieving the number of sheets in the Workbook
-		logger.info("Workbook has {} Sheets" + workbook.getNumberOfSheets());
+		logger.info("Workbook has {} Sheets", workbook.getNumberOfSheets());
 
 		return workbook;
 	}
