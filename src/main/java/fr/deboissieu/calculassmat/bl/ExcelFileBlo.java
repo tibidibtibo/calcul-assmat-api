@@ -13,5 +13,5 @@ public interface ExcelFileBlo {
 
 	Workbook openFile(String fileName) throws EncryptedDocumentException, InvalidFormatException, IOException;
 
-	Collection<SaisieJournaliere> extractDataFromWorkbook(Workbook workbook);
+	Collection<SaisieJournaliere> extractDataFromWorkbook(Workbook workbook, int mois);
 }

@@ -12,10 +12,6 @@ public class SaisieJournaliere {
 
 	@Getter
 	@Setter
-	private Date horodatage;
-
-	@Getter
-	@Setter
 	private Date dateSaisie;
 
 	@Getter

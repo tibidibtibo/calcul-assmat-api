@@ -3,6 +3,7 @@ package fr.deboissieu.calculassmat.bl.impl;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -17,6 +18,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.stereotype.Component;
 
 import fr.deboissieu.calculassmat.bl.ExcelFileBlo;
+import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
 import fr.deboissieu.calculassmat.commons.excelfile.ExcelFileRowMapper;
 import fr.deboissieu.calculassmat.model.SaisieJournaliere;
 
@@ -40,7 +42,7 @@ public class ExcelFileBloImpl implements ExcelFileBlo {
 	}
 
 	@Override
-	public Collection<SaisieJournaliere> extractDataFromWorkbook(Workbook workbook) {
+	public Collection<SaisieJournaliere> extractDataFromWorkbook(Workbook workbook, int mois) {
 		Sheet feuille1 = workbook.getSheetAt(0);
 
 		Collection<SaisieJournaliere> data = new HashSet<>();
@@ -52,9 +54,12 @@ public class ExcelFileBloImpl implements ExcelFileBlo {
 
 			Row row = rowIterator.next();
 			if (counter > ExcelFileRowMapper.HEADER_ROW) {
-				SaisieJournaliere saisieJournaliere = ExcelFileRowMapper.toSaisieJournaliere(row);
-				if (saisieJournaliere != null) {
-					data.add(saisieJournaliere);
+				Date dateSaisie = ExcelFileRowMapper.extraireDateSaisie(row);
+				if (DateUtils.getMonthNumber(dateSaisie).equals(mois)) {
+					SaisieJournaliere saisieJournaliere = ExcelFileRowMapper.toSaisieJournaliere(row, dateSaisie);
+					if (saisieJournaliere != null) {
+						data.add(saisieJournaliere);
+					}
 				}
 			}
 			counter++;

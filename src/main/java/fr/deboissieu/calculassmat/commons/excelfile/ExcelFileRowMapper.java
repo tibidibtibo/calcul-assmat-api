@@ -53,10 +53,9 @@ public class ExcelFileRowMapper {
 		return row != null ? row.getCell(colEnum.getColNum()) : null;
 	}
 
-	public static SaisieJournaliere toSaisieJournaliere(Row row) {
+	public static SaisieJournaliere toSaisieJournaliere(Row row, Date dateSaisie) {
 		SaisieJournaliere saisieJournaliere = new SaisieJournaliere();
-		saisieJournaliere.setHorodatage(cellToDate(getCell(row, ExcelFileColEnum.HORODATAGE)));
-		saisieJournaliere.setDateSaisie(cellToDate(getCell(row, ExcelFileColEnum.DATE_SAISIE)));
+		saisieJournaliere.setDateSaisie(dateSaisie);
 		saisieJournaliere.setQui(cellToStringSet(getCell(row, ExcelFileColEnum.QUI), LIST_SEPARATOR));
 		saisieJournaliere.setAction(cellToString(getCell(row, ExcelFileColEnum.ACTION)));
 		saisieJournaliere.setHeureAction(cellToHour(getCell(row, ExcelFileColEnum.HEURE_ACTION)));
@@ -64,6 +63,12 @@ public class ExcelFileRowMapper {
 		saisieJournaliere.setDeplacements(cellToStringSet(getCell(row, ExcelFileColEnum.DEPLACEMENTS), LIST_SEPARATOR));
 		saisieJournaliere.setAutresDeplacementKm(cellToInteger(getCell(row, ExcelFileColEnum.AUTRE_DEPLACEMENTS_KM)));
 		return saisieJournaliere;
+	}
+
+	public static Date extraireDateSaisie(Row row) {
+		Date horodatage = cellToDate(getCell(row, ExcelFileColEnum.HORODATAGE));
+		Date dateSaisie = cellToDate(getCell(row, ExcelFileColEnum.DATE_SAISIE));
+		return dateSaisie != null ? dateSaisie : horodatage;
 	}
 
 }

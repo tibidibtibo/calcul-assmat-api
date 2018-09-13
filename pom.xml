@@ -25,6 +25,7 @@
 		<java.version>1.8</java.version>
 		<apache.poi.version>3.14</apache.poi.version>
 		<aspectj.version>1.9.1</aspectj.version>
+		<apache.commons.collection.version>4.0</apache.commons.collection.version>
 	</properties>
 
 	<dependencies>
@@ -92,7 +93,13 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
-
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-collections4</artifactId>
+		    <version>${apache.commons.collection.version}</version>
+		</dependency>
+		
 	</dependencies>
 
 	<build>
