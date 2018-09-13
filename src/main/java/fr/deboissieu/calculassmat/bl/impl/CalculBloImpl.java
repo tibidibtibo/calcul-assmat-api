@@ -28,8 +28,14 @@ public class CalculBloImpl implements CalculBlo {
 	@Override
 	public SyntheseGarde calculerSyntheseGarde(int mois) {
 		try {
+
 			Workbook workbook = excelFileBlo.openFile("testFiles/fichierTest.xlsx");
+
 			Collection<SaisieJournaliere> synthese = excelFileBlo.extractDataFromWorkbook(workbook);
+
+			for (SaisieJournaliere saisie : synthese) {
+				System.out.println(saisie);
+			}
 		} catch (EncryptedDocumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

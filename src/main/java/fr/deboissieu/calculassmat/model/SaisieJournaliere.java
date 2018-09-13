@@ -1,10 +1,13 @@
 package fr.deboissieu.calculassmat.model;
 
 import java.util.Date;
+import java.util.Set;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
+@ToString
 public class SaisieJournaliere {
 
 	@Getter
@@ -17,7 +20,7 @@ public class SaisieJournaliere {
 
 	@Getter
 	@Setter
-	private String qui;
+	private Set<String> qui;
 
 	@Getter
 	@Setter
@@ -29,11 +32,11 @@ public class SaisieJournaliere {
 
 	@Getter
 	@Setter
-	private String repas;
+	private Set<String> repas;
 
 	@Getter
 	@Setter
-	private String deplacements;
+	private Set<String> deplacements;
 
 	@Getter
 	@Setter

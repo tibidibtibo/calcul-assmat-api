@@ -32,7 +32,6 @@ public class CalculSI {
 	@Produces("application/json")
 	@LogCall
 	public Response calculer(@PathParam("mois") String mois) {
-
 		int numeroMois = validationBlo.validerPathParamMois(mois);
 		return Response.ok(calculBlo.calculerSyntheseGarde(numeroMois)).build();
 	}
