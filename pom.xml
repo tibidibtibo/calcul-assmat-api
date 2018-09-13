@@ -28,6 +28,9 @@
 	</properties>
 
 	<dependencies>
+		
+		<!-- SPRING -->
+		
 		<!-- <dependency> -->
 		<!-- <groupId>org.springframework.boot</groupId> -->
 		<!-- <artifactId>spring-boot-starter-data-mongodb</artifactId> -->
@@ -48,12 +51,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web-services</artifactId>
 		</dependency>
-
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<optional>true</optional>
-		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -64,6 +61,15 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- LOMBOCK -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- APACHE POI -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
@@ -74,10 +80,17 @@
 			<artifactId>poi-ooxml</artifactId>
 			<version>${apache.poi.version}</version>
 		</dependency>
+
+		<!-- ASPECTS -->
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjweaver</artifactId>
-			<version>${aspectj.version}</version>
+		</dependency>
+
+		<!-- COMMONS -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
 		</dependency>
 
 	</dependencies>

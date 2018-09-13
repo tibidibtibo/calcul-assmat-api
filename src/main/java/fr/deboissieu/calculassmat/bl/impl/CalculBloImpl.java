@@ -1,6 +1,7 @@
 package fr.deboissieu.calculassmat.bl.impl;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import javax.annotation.Resource;
 
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import fr.deboissieu.calculassmat.bl.CalculBlo;
 import fr.deboissieu.calculassmat.bl.ExcelFileBlo;
+import fr.deboissieu.calculassmat.model.SaisieJournaliere;
 import fr.deboissieu.calculassmat.model.SyntheseGarde;
 
 @Component
@@ -27,6 +29,7 @@ public class CalculBloImpl implements CalculBlo {
 	public SyntheseGarde calculerSyntheseGarde(int mois) {
 		try {
 			Workbook workbook = excelFileBlo.openFile("testFiles/fichierTest.xlsx");
+			Collection<SaisieJournaliere> synthese = excelFileBlo.extractDataFromWorkbook(workbook);
 		} catch (EncryptedDocumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -37,7 +40,7 @@ public class CalculBloImpl implements CalculBlo {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return null;
+		return new SyntheseGarde("SEPTEMBRE", "2018", 10);
 	}
 
 }
