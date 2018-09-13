@@ -5,6 +5,7 @@ import javax.validation.ValidationException;
 import org.springframework.stereotype.Component;
 
 import fr.deboissieu.calculassmat.bl.ValidationBlo;
+import fr.deboissieu.calculassmat.commons.exceptions.ValidationExceptionsEnum;
 
 @Component
 public class ValidationBloImpl implements ValidationBlo {
@@ -14,7 +15,7 @@ public class ValidationBloImpl implements ValidationBlo {
 		try {
 			return Integer.parseInt(pathParam);
 		} catch (Exception e) {
-			throw new ValidationException("Path Param invalide : " + pathParam + " - Erreur : " + e);
+			throw new ValidationException(ValidationExceptionsEnum.V001.toString(pathParam, e));
 		}
 	}
 
