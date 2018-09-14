@@ -10,6 +10,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 
+import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
 import fr.deboissieu.calculassmat.model.SaisieJournaliere;
 
 public class ExcelFileRowMapper {
@@ -22,8 +23,8 @@ public class ExcelFileRowMapper {
 		return cell != null ? DateUtil.getJavaDate(cell.getNumericCellValue()) : null;
 	}
 
-	public static Date cellToHour(Cell cell) {
-		return cell != null ? DateUtil.getJavaDate(cell.getNumericCellValue()) : null;
+	public static String cellToHour(Cell cell) {
+		return cell != null ? DateUtils.toStringHour(DateUtil.getJavaDate(cell.getNumericCellValue())) : null;
 	}
 
 	public static String cellToString(Cell cell) {

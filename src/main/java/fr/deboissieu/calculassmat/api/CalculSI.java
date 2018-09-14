@@ -33,6 +33,6 @@ public class CalculSI {
 	@LogCall
 	public Response calculer(@PathParam("mois") String mois) {
 		int numeroMois = validationBlo.validerPathParamMois(mois);
-		return Response.ok(calculBlo.calculerSyntheseGarde(numeroMois)).build();
+		return calculBlo.calculerSyntheseGarde(numeroMois);
 	}
 }

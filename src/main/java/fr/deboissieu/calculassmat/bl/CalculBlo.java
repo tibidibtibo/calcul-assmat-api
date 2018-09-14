@@ -1,11 +1,9 @@
 package fr.deboissieu.calculassmat.bl;
 
-import java.util.Collection;
-
-import fr.deboissieu.calculassmat.model.SaisieJournaliere;
+import javax.ws.rs.core.Response;
 
 public interface CalculBlo {
 
-	Collection<SaisieJournaliere> calculerSyntheseGarde(int mois);
+	Response calculerSyntheseGarde(int mois);
 
 }

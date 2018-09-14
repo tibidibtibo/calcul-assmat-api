@@ -24,7 +24,7 @@ public class SaisieJournaliere {
 
 	@Getter
 	@Setter
-	private Date heureAction;
+	private String heureAction;
 
 	@Getter
 	@Setter
