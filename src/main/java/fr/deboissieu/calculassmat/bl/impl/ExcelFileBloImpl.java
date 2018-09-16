@@ -36,7 +36,7 @@ public class ExcelFileBloImpl implements ExcelFileBlo {
 		Workbook workbook = WorkbookFactory.create(file);
 
 		// Retrieving the number of sheets in the Workbook
-		logger.info("Workbook has {} Sheets", workbook.getNumberOfSheets());
+		logger.info("Ouverture du fichier '{}' - {} feuille(s)", file.getPath(), workbook.getNumberOfSheets());
 
 		return workbook;
 	}

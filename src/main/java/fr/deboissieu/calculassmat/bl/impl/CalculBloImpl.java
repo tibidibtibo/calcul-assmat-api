@@ -1,12 +1,14 @@
 package fr.deboissieu.calculassmat.bl.impl;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.annotation.Resource;
 import javax.ws.rs.core.Response;
@@ -23,9 +25,13 @@ import org.springframework.stereotype.Component;
 
 import fr.deboissieu.calculassmat.bl.CalculBlo;
 import fr.deboissieu.calculassmat.bl.ExcelFileBlo;
+import fr.deboissieu.calculassmat.commons.excelfile.PrenomEnum;
 import fr.deboissieu.calculassmat.model.FraisJournaliers;
 import fr.deboissieu.calculassmat.model.HoraireUnitaire;
 import fr.deboissieu.calculassmat.model.HoraireUnitaireAvecFrais;
+import fr.deboissieu.calculassmat.model.HoraireUnitairePersonnel;
+import fr.deboissieu.calculassmat.model.HorairesPersonnelsEtFrais;
+import fr.deboissieu.calculassmat.model.HorairesPersonnelsUnitairesEtFrais;
 import fr.deboissieu.calculassmat.model.HorairesUnitairesEtFraisDissocies;
 import fr.deboissieu.calculassmat.model.SaisieJournaliere;
 
@@ -45,16 +51,19 @@ public class CalculBloImpl implements CalculBlo {
 
 			Collection<SaisieJournaliere> donneesBrutes = excelFileBlo.extractDataFromWorkbook(workbook, mois);
 
-			Map<Date, Collection<HoraireUnitaireAvecFrais>> mapDateHoraires = mapperParDate(donneesBrutes);
+			Map<String, Collection<HoraireUnitaireAvecFrais>> mapDateHoraires = mapperParDate(donneesBrutes);
 
-			Map<Date, HorairesUnitairesEtFraisDissocies> mapHorairesEtFraisDissocies = dissocierFraisJournaliers(
+			Map<String, HorairesUnitairesEtFraisDissocies> mapHorairesEtFraisDissocies = dissocierFraisJournaliers(
 					mapDateHoraires);
-			// TODO TDU : dissocier frais journaliers
-			// TODO TDU : mapper par personne
-			// TODO TDU : assembler horaires
+
+			Map<String, HorairesPersonnelsUnitairesEtFrais> mapHorairesPersoUnitairesEtFrais = mapperParPersonne(
+					mapHorairesEtFraisDissocies);
+
+			Map<String, HorairesPersonnelsEtFrais> mapHorairesPersoEtFrais = assemblerHoraires(
+					mapHorairesPersoUnitairesEtFrais);
 
 			// TODO TDU : calculs
-			return Response.ok(mapHorairesEtFraisDissocies).build();
+			return Response.ok(mapHorairesPersoEtFrais).build();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -62,13 +71,64 @@ public class CalculBloImpl implements CalculBlo {
 		return null;
 	}
 
-	private Map<Date, HorairesUnitairesEtFraisDissocies> dissocierFraisJournaliers(
-			Map<Date, Collection<HoraireUnitaireAvecFrais>> mapDateHoraires) {
+	private Map<String, HorairesPersonnelsEtFrais> assemblerHoraires(
+			Map<String, HorairesPersonnelsUnitairesEtFrais> mapHorairesPersoUnitairesEtFrais) {
 
-		Map<Date, HorairesUnitairesEtFraisDissocies> mapHorairesEtFraisDissocies = new HashMap<>();
+		Map<String, HorairesPersonnelsEtFrais> mapHorairesPersoEtFrais = new HashMap<>();
+
+		if (MapUtils.isNotEmpty(mapHorairesPersoUnitairesEtFrais)) {
+			for (String key : mapHorairesPersoUnitairesEtFrais.keySet()) {
+				// TODO TDU : associer horaires
+			}
+		}
+
+		return mapHorairesPersoEtFrais;
+	}
+
+	private Map<String, HorairesPersonnelsUnitairesEtFrais> mapperParPersonne(
+			Map<String, HorairesUnitairesEtFraisDissocies> mapHorairesEtFraisDissocies) {
+
+		Map<String, HorairesPersonnelsUnitairesEtFrais> mapHorairesPersoEtFrais = new HashMap<>();
+
+		if (MapUtils.isNotEmpty(mapHorairesEtFraisDissocies)) {
+			for (String key : mapHorairesEtFraisDissocies.keySet()) {
+				HorairesPersonnelsUnitairesEtFrais horairesPersonnelsUnitairesEtFrais = new HorairesPersonnelsUnitairesEtFrais();
+				horairesPersonnelsUnitairesEtFrais
+						.setFraisJournaliers(mapHorairesEtFraisDissocies.get(key).getFraisJournaliers());
+				Collection<HoraireUnitairePersonnel> horairesPersonnelsUnitaires = flattenParPersonne(
+						mapHorairesEtFraisDissocies.get(key).getHoraires());
+				horairesPersonnelsUnitairesEtFrais.setHoraires(horairesPersonnelsUnitaires);
+				mapHorairesPersoEtFrais.put(key, horairesPersonnelsUnitairesEtFrais);
+			}
+		}
+		return mapHorairesPersoEtFrais;
+	}
+
+	private Collection<HoraireUnitairePersonnel> flattenParPersonne(Collection<HoraireUnitaire> horaires) {
+		Collection<HoraireUnitairePersonnel> horairesPersonnels = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(horaires)) {
+			for (HoraireUnitaire horaireUnitaire : horaires) {
+				Collection<HoraireUnitairePersonnel> horairesUnitairesPerso = CollectionUtils
+						.collect(horaireUnitaire.getPrenoms(), new Transformer<PrenomEnum, HoraireUnitairePersonnel>() {
+							@Override
+							public HoraireUnitairePersonnel transform(PrenomEnum prenom) {
+								return HoraireUnitairePersonnel.of(horaireUnitaire, prenom);
+							}
+
+						});
+				horairesPersonnels.addAll(horairesUnitairesPerso);
+			}
+		}
+		return horairesPersonnels;
+	}
+
+	private Map<String, HorairesUnitairesEtFraisDissocies> dissocierFraisJournaliers(
+			Map<String, Collection<HoraireUnitaireAvecFrais>> mapDateHoraires) {
+
+		Map<String, HorairesUnitairesEtFraisDissocies> mapHorairesEtFraisDissocies = new HashMap<>();
 
 		if (MapUtils.isNotEmpty(mapDateHoraires)) {
-			for (Date key : mapDateHoraires.keySet()) {
+			for (String key : mapDateHoraires.keySet()) {
 				HorairesUnitairesEtFraisDissocies horairesUnitairesEtFraisDissocies = new HorairesUnitairesEtFraisDissocies();
 				horairesUnitairesEtFraisDissocies
 						.setFraisJournaliers(extrairesFraisJournaliers(mapDateHoraires.get(key)));
@@ -111,13 +171,18 @@ public class CalculBloImpl implements CalculBlo {
 		return horaireAvecFraisNonNull != null ? horaireAvecFraisNonNull.getFraisJournaliers() : null;
 	}
 
-	private Map<Date, Collection<HoraireUnitaireAvecFrais>> mapperParDate(Collection<SaisieJournaliere> donneesBrutes) {
+	private Map<String, Collection<HoraireUnitaireAvecFrais>> mapperParDate(
+			Collection<SaisieJournaliere> donneesBrutes) {
 		if (CollectionUtils.isEmpty(donneesBrutes)) {
 			return null;
 		}
-		Map<Date, Collection<HoraireUnitaireAvecFrais>> mapDateHoraires = new HashMap<>();
+		Map<String, Collection<HoraireUnitaireAvecFrais>> mapDateHoraires = new HashMap<>();
 		for (SaisieJournaliere saisie : donneesBrutes) {
-			Date dateKey = DateUtils.truncate(saisie.getDateSaisie(), Calendar.DATE);
+
+			DateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+			format.setTimeZone(TimeZone.getTimeZone("GMT+2"));
+			String dateKey = format.format(DateUtils.truncate(saisie.getDateSaisie(), Calendar.DATE));
+
 			if (mapDateHoraires.get(dateKey) == null) {
 				HoraireUnitaireAvecFrais horaireUnitaire = HoraireUnitaireAvecFrais.of(saisie);
 				List<HoraireUnitaireAvecFrais> listeHoraires = new ArrayList<>();

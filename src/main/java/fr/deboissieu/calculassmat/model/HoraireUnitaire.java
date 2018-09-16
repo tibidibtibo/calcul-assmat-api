@@ -7,18 +7,11 @@ import fr.deboissieu.calculassmat.commons.excelfile.PrenomEnum;
 import lombok.Getter;
 import lombok.Setter;
 
-public class HoraireUnitaire {
+public class HoraireUnitaire extends ActionHoraire {
+
 	@Getter
 	@Setter
 	private Set<PrenomEnum> prenoms;
-
-	@Getter
-	@Setter
-	private ActionHoraireEnum action;
-
-	@Getter
-	@Setter
-	private String heureAction;
 
 	public static HoraireUnitaire of(SaisieJournaliere saisieJournaliere) {
 		HoraireUnitaire horaireUnitaire = new HoraireUnitaire();
