@@ -25,4 +25,32 @@ public class SyntheseGarde implements Serializable {
 	@Setter
 	private int nbJoursTravailles;
 
+	@Getter
+	@Setter
+	private int nbHeuresNormales;
+
+	@Getter
+	@Setter
+	private int nbHeuresComplementaires;
+
+	@Getter
+	@Setter
+	private float salaireHoraireNetHeureNormale;
+
+	@Getter
+	@Setter
+	private float salaireNetTotal;
+
+	@Getter
+	@Setter
+	private float indemnitesEntretien;
+
+	@Getter
+	@Setter
+	private float indemnitesRepas;
+
+	@Getter
+	@Setter
+	private float indemnitesKm;
+
 }

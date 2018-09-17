@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +18,6 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.collections4.Predicate;
-import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,6 +36,7 @@ import fr.deboissieu.calculassmat.model.HorairesPersonnelsEtFrais;
 import fr.deboissieu.calculassmat.model.HorairesPersonnelsUnitairesEtFrais;
 import fr.deboissieu.calculassmat.model.HorairesUnitairesEtFraisDissocies;
 import fr.deboissieu.calculassmat.model.SaisieJournaliere;
+import fr.deboissieu.calculassmat.model.SyntheseGarde;
 
 @Component
 public class CalculBloImpl implements CalculBlo {
@@ -54,25 +54,41 @@ public class CalculBloImpl implements CalculBlo {
 
 			Collection<SaisieJournaliere> donneesBrutes = excelFileBlo.extractDataFromWorkbook(workbook, mois);
 
-			Map<String, Collection<HoraireUnitaireAvecFrais>> mapDateHoraires = mapperParDate(donneesBrutes);
+			Map<String, HorairesPersonnelsEtFrais> donneesAsemblees = assemblerDonneesSaisies(donneesBrutes);
 
-			Map<String, HorairesUnitairesEtFraisDissocies> mapHorairesEtFraisDissocies = dissocierFraisJournaliers(
-					mapDateHoraires);
+			SyntheseGarde syntheseGarde = calculerFraisMensuels(donneesAsemblees);
 
-			Map<String, HorairesPersonnelsUnitairesEtFrais> mapHorairesPersoUnitairesEtFrais = mapperParPersonne(
-					mapHorairesEtFraisDissocies);
-
-			Map<String, HorairesPersonnelsEtFrais> mapHorairesPersoEtFrais = assemblerHoraires(
-					mapHorairesPersoUnitairesEtFrais);
-
-			// TODO TDU : calculs
-
-			return Response.ok(mapHorairesPersoEtFrais).build();
+			return Response.ok(syntheseGarde).build();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Impossible de traiter le fichier : {}", e);
 		}
 		return null;
+	}
+
+	private SyntheseGarde calculerFraisMensuels(Map<String, HorairesPersonnelsEtFrais> donneesAsemblees) {
+		SyntheseGarde synthese = new SyntheseGarde();
+		synthese.setNbJoursTravailles(calculerJoursTravailles(donneesAsemblees));
+		return synthese;
+	}
+
+	private int calculerJoursTravailles(Map<String, HorairesPersonnelsEtFrais> donneesAsemblees) {
+		return donneesAsemblees.size();
+	}
+
+	private Map<String, HorairesPersonnelsEtFrais> assemblerDonneesSaisies(
+			Collection<SaisieJournaliere> saisieJournaliere) {
+
+		Map<String, Collection<HoraireUnitaireAvecFrais>> mapDateHoraires = mapperParDate(saisieJournaliere);
+
+		Map<String, HorairesUnitairesEtFraisDissocies> mapHorairesEtFraisDissocies = dissocierFraisJournaliers(
+				mapDateHoraires);
+
+		Map<String, HorairesPersonnelsUnitairesEtFrais> mapHorairesPersoUnitairesEtFrais = mapperParPersonne(
+				mapHorairesEtFraisDissocies);
+
+		return assemblerHoraires(mapHorairesPersoUnitairesEtFrais);
+
 	}
 
 	private Map<String, HorairesPersonnelsEtFrais> assemblerHoraires(
@@ -81,7 +97,9 @@ public class CalculBloImpl implements CalculBlo {
 		Map<String, HorairesPersonnelsEtFrais> mapHorairesPersoEtFrais = new HashMap<>();
 
 		if (MapUtils.isNotEmpty(mapHorairesPersoUnitairesEtFrais)) {
-			for (String key : mapHorairesPersoUnitairesEtFrais.keySet()) {
+			for (Map.Entry<String, HorairesPersonnelsUnitairesEtFrais> entry : mapHorairesPersoUnitairesEtFrais
+					.entrySet()) {
+				String key = entry.getKey();
 				HorairesPersonnelsEtFrais horairePerso = new HorairesPersonnelsEtFrais();
 				horairePerso.setFraisJournaliers(mapHorairesPersoUnitairesEtFrais.get(key).getFraisJournaliers());
 				Collection<HeuresPersonnelles> heuresPersonnelles = calculerHeuresPersonelles(
@@ -96,7 +114,7 @@ public class CalculBloImpl implements CalculBlo {
 
 	private Collection<HeuresPersonnelles> calculerHeuresPersonelles(Collection<HoraireUnitairePersonnel> horaires) {
 
-		Map<PrenomEnum, HeuresPersonnelles> mapHorairesPersonnels = new HashMap<>();
+		EnumMap<PrenomEnum, HeuresPersonnelles> mapHorairesPersonnels = new EnumMap<>(PrenomEnum.class);
 
 		for (HoraireUnitairePersonnel horaireUnitaire : horaires) {
 			PrenomEnum key = horaireUnitaire.getPrenom();
@@ -117,7 +135,8 @@ public class CalculBloImpl implements CalculBlo {
 		Map<String, HorairesPersonnelsUnitairesEtFrais> mapHorairesPersoEtFrais = new HashMap<>();
 
 		if (MapUtils.isNotEmpty(mapHorairesEtFraisDissocies)) {
-			for (String key : mapHorairesEtFraisDissocies.keySet()) {
+			for (Map.Entry<String, HorairesUnitairesEtFraisDissocies> entry : mapHorairesEtFraisDissocies.entrySet()) {
+				String key = entry.getKey();
 				HorairesPersonnelsUnitairesEtFrais horairesPersonnelsUnitairesEtFrais = new HorairesPersonnelsUnitairesEtFrais();
 				horairesPersonnelsUnitairesEtFrais
 						.setFraisJournaliers(mapHorairesEtFraisDissocies.get(key).getFraisJournaliers());
@@ -134,14 +153,8 @@ public class CalculBloImpl implements CalculBlo {
 		Collection<HoraireUnitairePersonnel> horairesPersonnels = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(horaires)) {
 			for (HoraireUnitaire horaireUnitaire : horaires) {
-				Collection<HoraireUnitairePersonnel> horairesUnitairesPerso = CollectionUtils
-						.collect(horaireUnitaire.getPrenoms(), new Transformer<PrenomEnum, HoraireUnitairePersonnel>() {
-							@Override
-							public HoraireUnitairePersonnel transform(PrenomEnum prenom) {
-								return HoraireUnitairePersonnel.of(horaireUnitaire, prenom);
-							}
-
-						});
+				Collection<HoraireUnitairePersonnel> horairesUnitairesPerso = CollectionUtils.collect(
+						horaireUnitaire.getPrenoms(), prenom -> HoraireUnitairePersonnel.of(horaireUnitaire, prenom));
 				horairesPersonnels.addAll(horairesUnitairesPerso);
 			}
 		}
@@ -153,8 +166,9 @@ public class CalculBloImpl implements CalculBlo {
 
 		Map<String, HorairesUnitairesEtFraisDissocies> mapHorairesEtFraisDissocies = new HashMap<>();
 
-		if (MapUtils.isNotEmpty(mapDateHoraires)) {
-			for (String key : mapDateHoraires.keySet()) {
+		if (mapDateHoraires != null && MapUtils.isNotEmpty(mapDateHoraires)) {
+			for (Map.Entry<String, Collection<HoraireUnitaireAvecFrais>> entry : mapDateHoraires.entrySet()) {
+				String key = entry.getKey();
 				HorairesUnitairesEtFraisDissocies horairesUnitairesEtFraisDissocies = new HorairesUnitairesEtFraisDissocies();
 				horairesUnitairesEtFraisDissocies
 						.setFraisJournaliers(extrairesFraisJournaliers(mapDateHoraires.get(key)));
@@ -168,31 +182,17 @@ public class CalculBloImpl implements CalculBlo {
 
 	private Collection<HoraireUnitaire> extrairesHorairesUnitaires(
 			Collection<HoraireUnitaireAvecFrais> horairesUnitairesEtFrais) {
-		return CollectionUtils.collect(horairesUnitairesEtFrais,
-				new Transformer<HoraireUnitaireAvecFrais, HoraireUnitaire>() {
+		return CollectionUtils.collect(horairesUnitairesEtFrais, HoraireUnitaireAvecFrais::getHoraireUnitaire);
 
-					@Override
-					public HoraireUnitaire transform(HoraireUnitaireAvecFrais horaireAvecFrais) {
-						return horaireAvecFrais.getHoraireUnitaire();
-					}
-				});
 	}
 
 	private FraisJournaliers extrairesFraisJournaliers(Collection<HoraireUnitaireAvecFrais> horairesUnitairesEtFrais) {
 
 		HoraireUnitaireAvecFrais horaireAvecFraisNonNull = IterableUtils.find(horairesUnitairesEtFrais,
-				new Predicate<HoraireUnitaireAvecFrais>() {
-
-					@Override
-					public boolean evaluate(HoraireUnitaireAvecFrais horaireAvecFrais) {
-						return horaireAvecFrais != null && horaireAvecFrais.getFraisJournaliers() != null
-								&& (horaireAvecFrais.getFraisJournaliers().getAutresDeplacementKm() != null
-										|| CollectionUtils
-												.isNotEmpty(horaireAvecFrais.getFraisJournaliers().getDeplacements())
-										|| CollectionUtils
-												.isNotEmpty(horaireAvecFrais.getFraisJournaliers().getRepas()));
-					}
-				});
+				horaireAvecFrais -> horaireAvecFrais != null && horaireAvecFrais.getFraisJournaliers() != null
+						&& (horaireAvecFrais.getFraisJournaliers().getAutresDeplacementKm() != null
+								|| CollectionUtils.isNotEmpty(horaireAvecFrais.getFraisJournaliers().getDeplacements())
+								|| CollectionUtils.isNotEmpty(horaireAvecFrais.getFraisJournaliers().getRepas())));
 
 		return horaireAvecFraisNonNull != null ? horaireAvecFraisNonNull.getFraisJournaliers() : null;
 	}
@@ -233,7 +233,7 @@ public class CalculBloImpl implements CalculBlo {
 			return excelFileBlo.streamWorkbook(workbook, mois);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Impossible de traiter le fichier : {}", e);
 		}
 		return null;
 	}
