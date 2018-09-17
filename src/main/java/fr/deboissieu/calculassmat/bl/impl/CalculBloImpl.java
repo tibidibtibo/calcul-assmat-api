@@ -199,6 +199,7 @@ public class CalculBloImpl implements CalculBlo {
 
 	private Map<String, Collection<HoraireUnitaireAvecFrais>> mapperParDate(
 			Collection<SaisieJournaliere> donneesBrutes) {
+
 		if (CollectionUtils.isEmpty(donneesBrutes)) {
 			return null;
 		}
@@ -223,19 +224,13 @@ public class CalculBloImpl implements CalculBlo {
 	}
 
 	@Override
-	public Response streamCalculSynthese(int mois) {
+	public Stream<SaisieJournaliere> streamCalculSynthese(int mois) {
 
 		try {
 
 			Workbook workbook = excelFileBlo.openFile("testFiles/fichierTest.xlsx");
 
-			Stream<SaisieJournaliere> dataStream = excelFileBlo.streamWorkbook(workbook, mois);
-
-			// dataStream.map(
-			//
-			// );
-
-			return Response.ok(dataStream).build();
+			return excelFileBlo.streamWorkbook(workbook, mois);
 
 		} catch (Exception e) {
 			e.printStackTrace();
