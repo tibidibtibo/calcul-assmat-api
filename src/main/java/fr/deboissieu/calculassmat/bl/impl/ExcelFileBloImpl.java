@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -65,6 +66,11 @@ public class ExcelFileBloImpl implements ExcelFileBlo {
 			counter++;
 		}
 		return data;
+	}
+
+	@Override
+	public Stream<SaisieJournaliere> streamWorkbook(Workbook workbook, int mois) {
+		return extractDataFromWorkbook(workbook, mois).stream();
 	}
 
 }

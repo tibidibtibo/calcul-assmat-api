@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 import javax.ws.rs.core.Response;
@@ -219,6 +220,27 @@ public class CalculBloImpl implements CalculBlo {
 			}
 		}
 		return mapDateHoraires;
+	}
+
+	@Override
+	public Response streamCalculSynthese(int mois) {
+
+		try {
+
+			Workbook workbook = excelFileBlo.openFile("testFiles/fichierTest.xlsx");
+
+			Stream<SaisieJournaliere> dataStream = excelFileBlo.streamWorkbook(workbook, mois);
+
+			// dataStream.map(
+			//
+			// );
+
+			return Response.ok(dataStream).build();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

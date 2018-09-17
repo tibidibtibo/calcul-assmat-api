@@ -6,4 +6,5 @@ public interface CalculBlo {
 
 	Response calculerSyntheseGarde(int mois);
 
+	Response streamCalculSynthese(int mois);
 }
