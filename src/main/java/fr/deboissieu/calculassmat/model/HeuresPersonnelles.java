@@ -13,4 +13,15 @@ public class HeuresPersonnelles {
 	@Getter
 	@Setter
 	private Heures heures;
+
+	public static HeuresPersonnelles of(PrenomEnum prenom, HoraireUnitairePersonnel horaireUnitaire) {
+		HeuresPersonnelles heuresPersonnelles = new HeuresPersonnelles();
+		heuresPersonnelles.setPrenom(prenom);
+		heuresPersonnelles.setHeures(Heures.of(horaireUnitaire));
+		return heuresPersonnelles;
+	}
+
+	public void addHoraire(HoraireUnitairePersonnel horaireUnitaire) {
+		this.heures.addHeure(horaireUnitaire);
+	}
 }
