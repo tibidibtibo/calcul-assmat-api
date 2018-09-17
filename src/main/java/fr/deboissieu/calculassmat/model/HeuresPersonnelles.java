@@ -12,16 +12,34 @@ public class HeuresPersonnelles {
 
 	@Getter
 	@Setter
-	private Heures heures;
+	private String heureArrivee;
+
+	@Getter
+	@Setter
+	private String heureDepart;
 
 	public static HeuresPersonnelles of(PrenomEnum prenom, HoraireUnitairePersonnel horaireUnitaire) {
 		HeuresPersonnelles heuresPersonnelles = new HeuresPersonnelles();
 		heuresPersonnelles.setPrenom(prenom);
-		heuresPersonnelles.setHeures(Heures.of(horaireUnitaire));
+		switch (horaireUnitaire.getAction()) {
+		case ARRIVEE:
+			heuresPersonnelles.setHeureArrivee(horaireUnitaire.getHeureAction());
+			break;
+		case DEPART:
+			heuresPersonnelles.setHeureDepart(horaireUnitaire.getHeureAction());
+			break;
+		}
 		return heuresPersonnelles;
 	}
 
 	public void addHoraire(HoraireUnitairePersonnel horaireUnitaire) {
-		this.heures.addHeure(horaireUnitaire);
+		switch (horaireUnitaire.getAction()) {
+		case ARRIVEE:
+			this.heureArrivee = horaireUnitaire.getHeureAction();
+			break;
+		case DEPART:
+			this.heureDepart = horaireUnitaire.getHeureAction();
+			break;
+		}
 	}
 }
