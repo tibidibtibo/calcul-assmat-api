@@ -35,6 +35,7 @@ import fr.deboissieu.calculassmat.model.HoraireUnitairePersonnel;
 import fr.deboissieu.calculassmat.model.HorairesPersonnelsEtFrais;
 import fr.deboissieu.calculassmat.model.HorairesPersonnelsUnitairesEtFrais;
 import fr.deboissieu.calculassmat.model.HorairesUnitairesEtFraisDissocies;
+import fr.deboissieu.calculassmat.model.NombreHeures;
 import fr.deboissieu.calculassmat.model.NombreJoursTravailles;
 import fr.deboissieu.calculassmat.model.SaisieJournaliere;
 import fr.deboissieu.calculassmat.model.SyntheseGarde;
@@ -46,6 +47,12 @@ public class CalculBloImpl implements CalculBlo {
 
 	@Resource
 	private ExcelFileBlo excelFileBlo;
+
+	// @Resource(name = "enfantlouise")
+	// private ParametrageEnfant paramLouise;
+	//
+	// @Resource(name = "enfantJosephine")
+	// private ParametrageEnfant paramJosephine;
 
 	@Override
 	public Response calculerSyntheseGarde(int mois) {
@@ -59,7 +66,7 @@ public class CalculBloImpl implements CalculBlo {
 
 			SyntheseGarde syntheseGarde = calculerFraisMensuels(donneesAsemblees);
 
-			return Response.ok(syntheseGarde).build();
+			return Response.ok(donneesAsemblees).build();
 
 		} catch (Exception e) {
 			logger.error("Impossible de traiter le fichier : {}", e);
@@ -67,26 +74,47 @@ public class CalculBloImpl implements CalculBlo {
 		return null;
 	}
 
-	private SyntheseGarde calculerFraisMensuels(Map<String, HorairesPersonnelsEtFrais> donneesAsemblees) {
+	private SyntheseGarde calculerFraisMensuels(Map<String, HorairesPersonnelsEtFrais> donneesAssemblees) {
 		SyntheseGarde synthese = new SyntheseGarde();
-		NombreJoursTravailles nbJoursTravailles = calculerJoursTravailles(donneesAsemblees);
+
+		NombreJoursTravailles nbJoursTravailles = calculerJoursTravailles(donneesAssemblees);
+
+		NombreHeures nbHeures = calculerNbHeures(donneesAssemblees);
+
 		synthese.setNbJoursTravailles(nbJoursTravailles.getNbJoursTotal());
+
 		return synthese;
 	}
 
-	private NombreJoursTravailles calculerJoursTravailles(Map<String, HorairesPersonnelsEtFrais> donneesAsemblees) {
+	private NombreHeures calculerNbHeures(Map<String, HorairesPersonnelsEtFrais> donneesAssemblees) {
+		NombreHeures nbHeures = new NombreHeures();
+		if (donneesAssemblees != null && MapUtils.isNotEmpty(donneesAssemblees)) {
+			for (Map.Entry<String, HorairesPersonnelsEtFrais> entry : donneesAssemblees.entrySet()) {
+				if (CollectionUtils.isNotEmpty(entry.getValue().getHeuresPersonnelles())) {
+					for (HeuresPersonnelles heures : entry.getValue().getHeuresPersonnelles()) {
+						Double heuresGarde = fr.deboissieu.calculassmat.commons.dateUtils.DateUtils
+								.diff(heures.getHeureArrivee(), heures.getHeureDepart());
+
+					}
+				}
+			}
+		}
+		return nbHeures;
+	}
+
+	private NombreJoursTravailles calculerJoursTravailles(Map<String, HorairesPersonnelsEtFrais> donneesAssemblees) {
 		NombreJoursTravailles nbJourTravailles = new NombreJoursTravailles();
-		nbJourTravailles.setNbJoursTotal(donneesAsemblees.size());
-		nbJourTravailles.setNbJoursParPersonne(calculerJoursTravaillesParPersonne(donneesAsemblees));
+		nbJourTravailles.setNbJoursTotal(donneesAssemblees.size());
+		nbJourTravailles.setNbJoursParPersonne(calculerJoursTravaillesParPersonne(donneesAssemblees));
 		return nbJourTravailles;
 	}
 
 	private EnumMap<PrenomEnum, Integer> calculerJoursTravaillesParPersonne(
-			Map<String, HorairesPersonnelsEtFrais> donneesAsemblees) {
+			Map<String, HorairesPersonnelsEtFrais> donneesAssemblees) {
 		EnumMap<PrenomEnum, Integer> mapJoursParPersonne = new EnumMap<>(PrenomEnum.class);
 
-		if (donneesAsemblees != null && MapUtils.isNotEmpty(donneesAsemblees)) {
-			for (Map.Entry<String, HorairesPersonnelsEtFrais> entry : donneesAsemblees.entrySet()) {
+		if (donneesAssemblees != null && MapUtils.isNotEmpty(donneesAssemblees)) {
+			for (Map.Entry<String, HorairesPersonnelsEtFrais> entry : donneesAssemblees.entrySet()) {
 				for (PrenomEnum prenom : PrenomEnum.values()) {
 					HeuresPersonnelles horaire = IterableUtils.find(entry.getValue().getHeuresPersonnelles(),
 							heures -> prenom.equals(heures.getPrenom()));
