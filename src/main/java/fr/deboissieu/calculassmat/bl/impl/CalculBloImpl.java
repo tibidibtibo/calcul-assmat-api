@@ -35,6 +35,7 @@ import fr.deboissieu.calculassmat.model.HoraireUnitairePersonnel;
 import fr.deboissieu.calculassmat.model.HorairesPersonnelsEtFrais;
 import fr.deboissieu.calculassmat.model.HorairesPersonnelsUnitairesEtFrais;
 import fr.deboissieu.calculassmat.model.HorairesUnitairesEtFraisDissocies;
+import fr.deboissieu.calculassmat.model.NombreJoursTravailles;
 import fr.deboissieu.calculassmat.model.SaisieJournaliere;
 import fr.deboissieu.calculassmat.model.SyntheseGarde;
 
@@ -68,12 +69,44 @@ public class CalculBloImpl implements CalculBlo {
 
 	private SyntheseGarde calculerFraisMensuels(Map<String, HorairesPersonnelsEtFrais> donneesAsemblees) {
 		SyntheseGarde synthese = new SyntheseGarde();
-		synthese.setNbJoursTravailles(calculerJoursTravailles(donneesAsemblees));
+		NombreJoursTravailles nbJoursTravailles = calculerJoursTravailles(donneesAsemblees);
+		synthese.setNbJoursTravailles(nbJoursTravailles.getNbJoursTotal());
 		return synthese;
 	}
 
-	private int calculerJoursTravailles(Map<String, HorairesPersonnelsEtFrais> donneesAsemblees) {
-		return donneesAsemblees.size();
+	private NombreJoursTravailles calculerJoursTravailles(Map<String, HorairesPersonnelsEtFrais> donneesAsemblees) {
+		NombreJoursTravailles nbJourTravailles = new NombreJoursTravailles();
+		nbJourTravailles.setNbJoursTotal(donneesAsemblees.size());
+		nbJourTravailles.setNbJoursParPersonne(calculerJoursTravaillesParPersonne(donneesAsemblees));
+		return nbJourTravailles;
+	}
+
+	private EnumMap<PrenomEnum, Integer> calculerJoursTravaillesParPersonne(
+			Map<String, HorairesPersonnelsEtFrais> donneesAsemblees) {
+		EnumMap<PrenomEnum, Integer> mapJoursParPersonne = new EnumMap<>(PrenomEnum.class);
+
+		if (donneesAsemblees != null && MapUtils.isNotEmpty(donneesAsemblees)) {
+			for (Map.Entry<String, HorairesPersonnelsEtFrais> entry : donneesAsemblees.entrySet()) {
+				for (PrenomEnum prenom : PrenomEnum.values()) {
+					HeuresPersonnelles horaire = IterableUtils.find(entry.getValue().getHeuresPersonnelles(),
+							heures -> prenom.equals(heures.getPrenom()));
+					completerMapJours(mapJoursParPersonne, prenom, horaire);
+
+				}
+			}
+		}
+		return mapJoursParPersonne;
+	}
+
+	private void completerMapJours(EnumMap<PrenomEnum, Integer> mapJoursParPersonne, PrenomEnum prenom,
+			HeuresPersonnelles horaire) {
+		if (horaire != null) {
+			if (mapJoursParPersonne.get(prenom) != null) {
+				mapJoursParPersonne.put(prenom, mapJoursParPersonne.get(prenom) + 1);
+			} else {
+				mapJoursParPersonne.put(prenom, 1);
+			}
+		}
 	}
 
 	private Map<String, HorairesPersonnelsEtFrais> assemblerDonneesSaisies(
@@ -101,9 +134,9 @@ public class CalculBloImpl implements CalculBlo {
 					.entrySet()) {
 				String key = entry.getKey();
 				HorairesPersonnelsEtFrais horairePerso = new HorairesPersonnelsEtFrais();
-				horairePerso.setFraisJournaliers(mapHorairesPersoUnitairesEtFrais.get(key).getFraisJournaliers());
+				horairePerso.setFraisJournaliers(entry.getValue().getFraisJournaliers());
 				Collection<HeuresPersonnelles> heuresPersonnelles = calculerHeuresPersonelles(
-						mapHorairesPersoUnitairesEtFrais.get(key).getHoraires());
+						entry.getValue().getHoraires());
 				horairePerso.setHeuresPersonnelles(heuresPersonnelles);
 				mapHorairesPersoEtFrais.put(key, horairePerso);
 			}
