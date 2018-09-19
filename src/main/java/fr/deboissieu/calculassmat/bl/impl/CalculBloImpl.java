@@ -1,9 +1,6 @@
 package fr.deboissieu.calculassmat.bl.impl;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -18,7 +15,6 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -27,6 +23,7 @@ import org.springframework.stereotype.Component;
 import fr.deboissieu.calculassmat.bl.CalculBlo;
 import fr.deboissieu.calculassmat.bl.ExcelFileBlo;
 import fr.deboissieu.calculassmat.commons.excelfile.PrenomEnum;
+import fr.deboissieu.calculassmat.dl.data.MockData;
 import fr.deboissieu.calculassmat.model.FraisJournaliers;
 import fr.deboissieu.calculassmat.model.HeuresPersonnelles;
 import fr.deboissieu.calculassmat.model.HoraireUnitaire;
@@ -37,6 +34,7 @@ import fr.deboissieu.calculassmat.model.HorairesPersonnelsUnitairesEtFrais;
 import fr.deboissieu.calculassmat.model.HorairesUnitairesEtFraisDissocies;
 import fr.deboissieu.calculassmat.model.NombreHeures;
 import fr.deboissieu.calculassmat.model.NombreJoursTravailles;
+import fr.deboissieu.calculassmat.model.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.SaisieJournaliere;
 import fr.deboissieu.calculassmat.model.SyntheseGarde;
 
@@ -47,12 +45,6 @@ public class CalculBloImpl implements CalculBlo {
 
 	@Resource
 	private ExcelFileBlo excelFileBlo;
-
-	// @Resource(name = "enfantlouise")
-	// private ParametrageEnfant paramLouise;
-	//
-	// @Resource(name = "enfantJosephine")
-	// private ParametrageEnfant paramJosephine;
 
 	@Override
 	public Response calculerSyntheseGarde(int mois) {
@@ -77,24 +69,32 @@ public class CalculBloImpl implements CalculBlo {
 	private SyntheseGarde calculerFraisMensuels(Map<String, HorairesPersonnelsEtFrais> donneesAssemblees) {
 		SyntheseGarde synthese = new SyntheseGarde();
 
+		EnumMap<PrenomEnum, ParametrageEnfant> parametresEnfant = MockData.getParametrageEnfant();
+
 		NombreJoursTravailles nbJoursTravailles = calculerJoursTravailles(donneesAssemblees);
 
-		NombreHeures nbHeures = calculerNbHeures(donneesAssemblees);
+		NombreHeures nbHeures = calculerNbHeures(donneesAssemblees, parametresEnfant);
 
 		synthese.setNbJoursTravailles(nbJoursTravailles.getNbJoursTotal());
 
 		return synthese;
 	}
 
-	private NombreHeures calculerNbHeures(Map<String, HorairesPersonnelsEtFrais> donneesAssemblees) {
+	private NombreHeures calculerNbHeures(Map<String, HorairesPersonnelsEtFrais> donneesAssemblees,
+			EnumMap<PrenomEnum, ParametrageEnfant> parametresEnfant) {
 		NombreHeures nbHeures = new NombreHeures();
 		if (donneesAssemblees != null && MapUtils.isNotEmpty(donneesAssemblees)) {
 			for (Map.Entry<String, HorairesPersonnelsEtFrais> entry : donneesAssemblees.entrySet()) {
 				if (CollectionUtils.isNotEmpty(entry.getValue().getHeuresPersonnelles())) {
 					for (HeuresPersonnelles heures : entry.getValue().getHeuresPersonnelles()) {
+
 						Double heuresGarde = fr.deboissieu.calculassmat.commons.dateUtils.DateUtils
 								.diff(heures.getHeureArrivee(), heures.getHeureDepart());
 
+						ParametrageEnfant paramEnfant = parametresEnfant.get(heures.getPrenom());
+
+						int jourSemaine = fr.deboissieu.calculassmat.commons.dateUtils.DateUtils
+								.getDayOfWeek(entry.getKey());
 					}
 				}
 			}
@@ -267,9 +267,9 @@ public class CalculBloImpl implements CalculBlo {
 		Map<String, Collection<HoraireUnitaireAvecFrais>> mapDateHoraires = new HashMap<>();
 		for (SaisieJournaliere saisie : donneesBrutes) {
 
-			DateFormat format = new SimpleDateFormat("dd-MM-yyyy");
-			format.setTimeZone(TimeZone.getTimeZone("GMT+2"));
-			String dateKey = format.format(DateUtils.truncate(saisie.getDateSaisie(), Calendar.DATE));
+			String dateKey = fr.deboissieu.calculassmat.commons.dateUtils.DateUtils.formatDate(saisie,
+					fr.deboissieu.calculassmat.commons.dateUtils.DateUtils.DATE_FORMAT_PATTERN,
+					TimeZone.getTimeZone(fr.deboissieu.calculassmat.commons.dateUtils.DateUtils.FUSEAU_HORAIRE));
 
 			if (mapDateHoraires.get(dateKey) == null) {
 				HoraireUnitaireAvecFrais horaireUnitaire = HoraireUnitaireAvecFrais.of(saisie);
