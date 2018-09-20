@@ -98,7 +98,11 @@
 		    <artifactId>commons-collections4</artifactId>
 		    <version>${apache.commons.collection.version}</version>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-core</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
