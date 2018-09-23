@@ -1,0 +1,54 @@
+{
+	"employes": [
+		{
+			"nom": "Sylvie Moreau",
+			"salaireBrutHoraire": 3.20,
+			"salaireNetHoraire": 2.90,
+			"indemnitesKm": 0.84,
+			"indemnitesEntretien": 2.65,
+			"fraisDejeuner": 1,
+			"fraisGouter": 0.5,
+			"tauxCongesPayes": 0.1
+		}
+	],
+	"enfants": [
+		{
+			"nom": "Louise",
+			"typeGarde": "PERISCOLAIRE",
+			"salaireNetMensualise": 27.48,
+			"arEcoleKm": 3.6,
+			"horairesEcole": [
+				{"jour": 1, "horairesEcole": {"AM": "09:00", "DM": "12:00", "AA": "13:30", "DA": "16:45"}},
+				{"jour": 2, "horairesEcole": {"AM": "09:00", "DM": "12:00", "AA": "13:30", "DA": "16:45"}},
+				{"jour": 3, "horairesEcole": {}},
+				{"jour": 4, "horairesEcole": {"AM": "09:00", "DM": "12:00", "AA": "13:30", "DA": "16:45"}},
+				{"jour": 5, "horairesEcole": {"AM": "09:00", "DM": "12:00", "AA": "13:30", "DA": "16:45"}},
+				{"jour": 6, "horairesEcole": {}},
+				{"jour": 7, "horairesEcole": {}}
+			],
+			"heuresNormales": [
+				{"jour": 1, "heuresNormales": 1.083}, 
+				{"jour": 2, "heuresNormales": 1.083}, 
+				{"jour": 3, "heuresNormales": 0}, 
+				{"jour": 4, "heuresNormales": 1.083}, 
+				{"jour": 5, "heuresNormales": 0}, 
+				{"jour": 6, "heuresNormales": 0}, 
+				{"jour": 7, "heuresNormales": 0}
+			]
+		},
+		{
+			"nom": "Joséphine",
+			"typeGarde": "TEMPS_PLEIN",
+			"salaireNetMensualise": 302.38,
+			"heuresNormales": [
+				{"jour": 1, "heuresNormales": 9.25}, 
+				{"jour": 2, "heuresNormales": 9.25}, 
+				{"jour": 3, "heuresNormales": 0}, 
+				{"jour": 4, "heuresNormales": 9.25}, 
+				{"jour": 5, "heuresNormales": 8}, 
+				{"jour": 6, "heuresNormales": 0}, 
+				{"jour": 7, "heuresNormales": 0}
+			]
+		}
+	]
+}
