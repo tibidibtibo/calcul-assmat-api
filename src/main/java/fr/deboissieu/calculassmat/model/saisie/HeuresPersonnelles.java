@@ -1,6 +1,5 @@
-package fr.deboissieu.calculassmat.model;
+package fr.deboissieu.calculassmat.model.saisie;
 
-import fr.deboissieu.calculassmat.commons.excelfile.PrenomEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,7 +7,7 @@ public class HeuresPersonnelles {
 
 	@Getter
 	@Setter
-	private PrenomEnum prenom;
+	private String prenom;
 
 	@Getter
 	@Setter
@@ -18,7 +17,7 @@ public class HeuresPersonnelles {
 	@Setter
 	private String heureDepart;
 
-	public static HeuresPersonnelles of(PrenomEnum prenom, HoraireUnitairePersonnel horaireUnitaire) {
+	public static HeuresPersonnelles of(String prenom, HoraireUnitairePersonnel horaireUnitaire) {
 		HeuresPersonnelles heuresPersonnelles = new HeuresPersonnelles();
 		heuresPersonnelles.setPrenom(prenom);
 		switch (horaireUnitaire.getAction()) {

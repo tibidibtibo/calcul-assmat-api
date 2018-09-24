@@ -14,8 +14,8 @@ public class HeuresNormale {
 	@Expose
 	private Integer jour;
 
-	@SerializedName("heuresNormales")
+	@SerializedName("heures")
 	@Expose
-	private Double heuresNormales;
+	private Double heures;
 
 }

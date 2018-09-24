@@ -11,7 +11,7 @@ import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 
 import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
-import fr.deboissieu.calculassmat.model.SaisieJournaliere;
+import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
 
 public class ExcelFileRowMapper {
 

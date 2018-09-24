@@ -4,7 +4,7 @@ import java.util.stream.Stream;
 
 import javax.ws.rs.core.Response;
 
-import fr.deboissieu.calculassmat.model.SaisieJournaliere;
+import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
 
 public interface CalculBlo {
 

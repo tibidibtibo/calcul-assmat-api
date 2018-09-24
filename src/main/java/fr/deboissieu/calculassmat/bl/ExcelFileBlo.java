@@ -8,7 +8,7 @@ import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 
-import fr.deboissieu.calculassmat.model.SaisieJournaliere;
+import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
 
 public interface ExcelFileBlo {
 

@@ -3,8 +3,8 @@ package fr.deboissieu.calculassmat.bl;
 import java.util.Collection;
 import java.util.Map;
 
-import fr.deboissieu.calculassmat.model.HorairesPersonnelsEtFrais;
-import fr.deboissieu.calculassmat.model.SaisieJournaliere;
+import fr.deboissieu.calculassmat.model.saisie.HorairesPersonnelsEtFrais;
+import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
 
 public interface AssemblageSaisieBlo {
 

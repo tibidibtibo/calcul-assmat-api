@@ -1,6 +1,5 @@
-package fr.deboissieu.calculassmat.model;
+package fr.deboissieu.calculassmat.model.saisie;
 
-import fr.deboissieu.calculassmat.commons.excelfile.PrenomEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,9 +7,9 @@ public class HoraireUnitairePersonnel extends ActionHoraire {
 
 	@Getter
 	@Setter
-	private PrenomEnum prenom;
+	private String prenom;
 
-	public static HoraireUnitairePersonnel of(HoraireUnitaire horaireUnitaire, PrenomEnum prenom) {
+	public static HoraireUnitairePersonnel of(HoraireUnitaire horaireUnitaire, String prenom) {
 		HoraireUnitairePersonnel horaireUnitairePerso = new HoraireUnitairePersonnel();
 		horaireUnitairePerso.setAction(horaireUnitaire.getAction());
 		horaireUnitairePerso.setHeureAction(horaireUnitaire.getHeureAction());

@@ -16,9 +16,9 @@ import fr.deboissieu.calculassmat.bl.AssemblageSaisieBlo;
 import fr.deboissieu.calculassmat.bl.CalculBlo;
 import fr.deboissieu.calculassmat.bl.ExcelFileBlo;
 import fr.deboissieu.calculassmat.bl.SyntheseBlo;
-import fr.deboissieu.calculassmat.model.HorairesPersonnelsEtFrais;
-import fr.deboissieu.calculassmat.model.SaisieJournaliere;
-import fr.deboissieu.calculassmat.model.SyntheseGarde;
+import fr.deboissieu.calculassmat.model.saisie.HorairesPersonnelsEtFrais;
+import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
+import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
 @Component
 public class CalculBloImpl implements CalculBlo {

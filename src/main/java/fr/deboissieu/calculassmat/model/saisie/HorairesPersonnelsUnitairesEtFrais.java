@@ -1,18 +1,16 @@
-package fr.deboissieu.calculassmat.model;
+package fr.deboissieu.calculassmat.model.saisie;
 
 import java.util.Collection;
 
 import lombok.Getter;
 import lombok.Setter;
 
-public class HorairesUnitairesEtFraisDissocies {
-
+public class HorairesPersonnelsUnitairesEtFrais {
 	@Getter
 	@Setter
-	private Collection<HoraireUnitaire> horaires;
+	private Collection<HoraireUnitairePersonnel> horaires;
 
 	@Getter
 	@Setter
 	private FraisJournaliers fraisJournaliers;
-
 }

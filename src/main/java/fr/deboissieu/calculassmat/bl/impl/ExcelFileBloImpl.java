@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 import fr.deboissieu.calculassmat.bl.ExcelFileBlo;
 import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
 import fr.deboissieu.calculassmat.commons.excelfile.ExcelFileRowMapper;
-import fr.deboissieu.calculassmat.model.SaisieJournaliere;
+import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
 
 @Component
 public class ExcelFileBloImpl implements ExcelFileBlo {

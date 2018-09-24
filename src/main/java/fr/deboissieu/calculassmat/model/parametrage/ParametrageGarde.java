@@ -14,10 +14,10 @@ public class ParametrageGarde {
 
 	@SerializedName("employes")
 	@Expose
-	private List<Employe> employes = null;
+	private List<ParametrageEmploye> employes = null;
 
 	@SerializedName("enfants")
 	@Expose
-	private List<Enfant> enfants = null;
+	private List<ParametrageEnfant> enfants = null;
 
 }

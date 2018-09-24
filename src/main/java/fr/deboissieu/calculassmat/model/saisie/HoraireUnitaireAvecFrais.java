@@ -1,4 +1,4 @@
-package fr.deboissieu.calculassmat.model;
+package fr.deboissieu.calculassmat.model.saisie;
 
 import lombok.Getter;
 import lombok.Setter;

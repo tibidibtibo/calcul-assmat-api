@@ -1,7 +1,7 @@
 package fr.deboissieu.calculassmat.bl.impl;
 
 import java.time.LocalTime;
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -13,16 +13,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import fr.deboissieu.calculassmat.bl.ParametrageBlo;
 import fr.deboissieu.calculassmat.bl.SyntheseBlo;
 import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
-import fr.deboissieu.calculassmat.commons.excelfile.PrenomEnum;
-import fr.deboissieu.calculassmat.dl.ParametrageRepository;
-import fr.deboissieu.calculassmat.model.HeuresPersonnelles;
-import fr.deboissieu.calculassmat.model.HorairesPersonnelsEtFrais;
-import fr.deboissieu.calculassmat.model.NombreHeures;
-import fr.deboissieu.calculassmat.model.NombreJoursTravailles;
-import fr.deboissieu.calculassmat.model.ParametrageEnfant;
-import fr.deboissieu.calculassmat.model.SyntheseGarde;
+import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
+import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant.TypeGardeEnum;
+import fr.deboissieu.calculassmat.model.parametrage.ParametrageGarde;
+import fr.deboissieu.calculassmat.model.saisie.HeuresPersonnelles;
+import fr.deboissieu.calculassmat.model.saisie.HorairesPersonnelsEtFrais;
+import fr.deboissieu.calculassmat.model.synthese.NombreHeures;
+import fr.deboissieu.calculassmat.model.synthese.NombreJoursTravailles;
+import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
 @Component
 public class SyntheseBloImpl implements SyntheseBlo {
@@ -30,17 +31,17 @@ public class SyntheseBloImpl implements SyntheseBlo {
 	private static final Logger logger = LogManager.getLogger(SyntheseBloImpl.class);
 
 	@Resource
-	ParametrageRepository parametrageRepository;
+	ParametrageBlo parametrageBlo;
 
 	@Override
 	public SyntheseGarde calculerFraisMensuels(Map<String, HorairesPersonnelsEtFrais> mapHorairesParDate) {
 		SyntheseGarde synthese = new SyntheseGarde();
 
-		EnumMap<PrenomEnum, ParametrageEnfant> parametresEnfant = parametrageRepository.getParametrageEnfant();
+		ParametrageGarde paramGarde = parametrageBlo.getParametrageGarde();
 
-		NombreJoursTravailles nbJoursTravailles = calculerJoursTravailles(mapHorairesParDate);
+		NombreJoursTravailles nbJoursTravailles = calculerJoursTravailles(mapHorairesParDate, paramGarde);
 
-		NombreHeures nbHeures = calculerNbHeures(mapHorairesParDate, parametresEnfant);
+		NombreHeures nbHeures = calculerNbHeures(mapHorairesParDate, paramGarde);
 
 		synthese.setNbJoursTravailles(nbJoursTravailles.getNbJoursTotal());
 
@@ -48,7 +49,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 	}
 
 	private NombreHeures calculerNbHeures(Map<String, HorairesPersonnelsEtFrais> donneesAssemblees,
-			EnumMap<PrenomEnum, ParametrageEnfant> parametresEnfant) {
+			ParametrageGarde paramGarde) {
 
 		NombreHeures nbHeures = new NombreHeures();
 
@@ -60,7 +61,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 
 					for (HeuresPersonnelles heures : entry.getValue().getHeuresPersonnelles()) {
 
-						ParametrageEnfant paramEnfant = parametresEnfant.get(heures.getPrenom());
+						ParametrageEnfant paramEnfant = parametrageBlo.getParamEnfant(paramGarde, heures.getPrenom());
 
 						LocalTime heureArrivee = DateUtils.toLocalTime(heures.getHeureArrivee());
 						LocalTime heureDepart = DateUtils.toLocalTime(heures.getHeureDepart());
@@ -68,16 +69,16 @@ public class SyntheseBloImpl implements SyntheseBlo {
 						int jourSemaine = fr.deboissieu.calculassmat.commons.dateUtils.DateUtils
 								.getDayOfWeek(entry.getKey());
 
-						switch (paramEnfant.getTypeGarde()) {
+						switch (TypeGardeEnum.valueOf(paramEnfant.getTypeGarde())) {
 						case PERISCOLAIRE:
 							// paramEnfant.ge
 							break;
 
-						case PLEIN_TEMPS:
+						case TEMPS_PLEIN:
 							if (heureArrivee != null && heureDepart != null) {
 								Float heuresGarde = fr.deboissieu.calculassmat.commons.dateUtils.DateUtils
 										.diff(heureArrivee, heureDepart);
-								Float heuresNormales = paramEnfant.getHeuresNormales(jourSemaine);
+								Double heuresNormales = paramEnfant.getHeuresNormales(jourSemaine);
 								// nbHeures.addHeuresNormales(amount); // TODO TDU : continuer
 							} else {
 								logger.error("Impossible de calculer les horaires de {} le {}.", heures.getPrenom(),
@@ -93,20 +94,21 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		return nbHeures;
 	}
 
-	private NombreJoursTravailles calculerJoursTravailles(Map<String, HorairesPersonnelsEtFrais> donneesAssemblees) {
+	private NombreJoursTravailles calculerJoursTravailles(Map<String, HorairesPersonnelsEtFrais> donneesAssemblees,
+			ParametrageGarde paramGarde) {
 		NombreJoursTravailles nbJourTravailles = new NombreJoursTravailles();
 		nbJourTravailles.setNbJoursTotal(donneesAssemblees.size());
-		nbJourTravailles.setNbJoursParPersonne(calculerJoursTravaillesParPersonne(donneesAssemblees));
+		nbJourTravailles.setNbJoursParPersonne(calculerJoursTravaillesParPersonne(donneesAssemblees, paramGarde));
 		return nbJourTravailles;
 	}
 
-	private EnumMap<PrenomEnum, Integer> calculerJoursTravaillesParPersonne(
-			Map<String, HorairesPersonnelsEtFrais> donneesAssemblees) {
-		EnumMap<PrenomEnum, Integer> mapJoursParPersonne = new EnumMap<>(PrenomEnum.class);
+	private Map<String, Integer> calculerJoursTravaillesParPersonne(
+			Map<String, HorairesPersonnelsEtFrais> donneesAssemblees, ParametrageGarde paramGarde) {
+		Map<String, Integer> mapJoursParPersonne = new HashMap<>();
 
 		if (donneesAssemblees != null && MapUtils.isNotEmpty(donneesAssemblees)) {
 			for (Map.Entry<String, HorairesPersonnelsEtFrais> entry : donneesAssemblees.entrySet()) {
-				for (PrenomEnum prenom : PrenomEnum.values()) {
+				for (String prenom : parametrageBlo.getListeNomsEnfants(paramGarde)) {
 					HeuresPersonnelles horaire = IterableUtils.find(entry.getValue().getHeuresPersonnelles(),
 							heures -> prenom.equals(heures.getPrenom()));
 					completerMapJours(mapJoursParPersonne, prenom, horaire);
@@ -117,7 +119,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		return mapJoursParPersonne;
 	}
 
-	private void completerMapJours(EnumMap<PrenomEnum, Integer> mapJoursParPersonne, PrenomEnum prenom,
+	private void completerMapJours(Map<String, Integer> mapJoursParPersonne, String prenom,
 			HeuresPersonnelles horaire) {
 		if (horaire != null) {
 			if (mapJoursParPersonne.get(prenom) != null) {

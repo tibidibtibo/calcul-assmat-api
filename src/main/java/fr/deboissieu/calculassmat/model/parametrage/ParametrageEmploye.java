@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Employe {
+public class ParametrageEmploye {
 
 	@SerializedName("nom")
 	@Expose

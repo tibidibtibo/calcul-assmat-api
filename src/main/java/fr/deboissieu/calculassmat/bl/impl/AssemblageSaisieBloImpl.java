@@ -2,7 +2,6 @@ package fr.deboissieu.calculassmat.bl.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,16 +13,15 @@ import org.apache.commons.collections4.MapUtils;
 import org.springframework.stereotype.Component;
 
 import fr.deboissieu.calculassmat.bl.AssemblageSaisieBlo;
-import fr.deboissieu.calculassmat.commons.excelfile.PrenomEnum;
-import fr.deboissieu.calculassmat.model.FraisJournaliers;
-import fr.deboissieu.calculassmat.model.HeuresPersonnelles;
-import fr.deboissieu.calculassmat.model.HoraireUnitaire;
-import fr.deboissieu.calculassmat.model.HoraireUnitaireAvecFrais;
-import fr.deboissieu.calculassmat.model.HoraireUnitairePersonnel;
-import fr.deboissieu.calculassmat.model.HorairesPersonnelsEtFrais;
-import fr.deboissieu.calculassmat.model.HorairesPersonnelsUnitairesEtFrais;
-import fr.deboissieu.calculassmat.model.HorairesUnitairesEtFraisDissocies;
-import fr.deboissieu.calculassmat.model.SaisieJournaliere;
+import fr.deboissieu.calculassmat.model.saisie.FraisJournaliers;
+import fr.deboissieu.calculassmat.model.saisie.HeuresPersonnelles;
+import fr.deboissieu.calculassmat.model.saisie.HoraireUnitaire;
+import fr.deboissieu.calculassmat.model.saisie.HoraireUnitaireAvecFrais;
+import fr.deboissieu.calculassmat.model.saisie.HoraireUnitairePersonnel;
+import fr.deboissieu.calculassmat.model.saisie.HorairesPersonnelsEtFrais;
+import fr.deboissieu.calculassmat.model.saisie.HorairesPersonnelsUnitairesEtFrais;
+import fr.deboissieu.calculassmat.model.saisie.HorairesUnitairesEtFraisDissocies;
+import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
 
 @Component
 public class AssemblageSaisieBloImpl implements AssemblageSaisieBlo {
@@ -127,10 +125,10 @@ public class AssemblageSaisieBloImpl implements AssemblageSaisieBlo {
 
 	private Collection<HeuresPersonnelles> calculerHeuresPersonelles(Collection<HoraireUnitairePersonnel> horaires) {
 
-		EnumMap<PrenomEnum, HeuresPersonnelles> mapHorairesPersonnels = new EnumMap<>(PrenomEnum.class);
+		Map<String, HeuresPersonnelles> mapHorairesPersonnels = new HashMap<>();
 
 		for (HoraireUnitairePersonnel horaireUnitaire : horaires) {
-			PrenomEnum key = horaireUnitaire.getPrenom();
+			String key = horaireUnitaire.getPrenom();
 			if (mapHorairesPersonnels.get(key) == null) {
 				HeuresPersonnelles heuresPersonnelles = HeuresPersonnelles.of(key, horaireUnitaire);
 				mapHorairesPersonnels.put(key, heuresPersonnelles);
