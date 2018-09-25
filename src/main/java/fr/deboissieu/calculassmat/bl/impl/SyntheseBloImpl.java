@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import fr.deboissieu.calculassmat.bl.ParametrageBlo;
 import fr.deboissieu.calculassmat.bl.SyntheseBlo;
 import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
+import fr.deboissieu.calculassmat.model.parametrage.HorairesEcole;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant.TypeGardeEnum;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageGarde;
@@ -34,8 +35,10 @@ public class SyntheseBloImpl implements SyntheseBlo {
 	ParametrageBlo parametrageBlo;
 
 	@Override
-	public SyntheseGarde calculerFraisMensuels(Map<String, HorairesPersonnelsEtFrais> mapHorairesParDate) {
-		SyntheseGarde synthese = new SyntheseGarde();
+	public SyntheseGarde calculerFraisMensuels(Map<String, HorairesPersonnelsEtFrais> mapHorairesParDate, int mois,
+			int annee) {
+
+		SyntheseGarde synthese = new SyntheseGarde(mois, annee);
 
 		ParametrageGarde paramGarde = parametrageBlo.getParametrageGarde();
 
@@ -44,6 +47,9 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		NombreHeures nbHeures = calculerNbHeures(mapHorairesParDate, paramGarde);
 
 		synthese.setNbJoursTravailles(nbJoursTravailles.getNbJoursTotal());
+		synthese.setNbHeuresNormalesReelles(nbHeures.getHeuresNormalesReelles());
+		synthese.setNbHeuresNormalesContrat(nbHeures.getHeuresNormalesContrat());
+		synthese.setNbHeuresComplementaires(nbHeures.getHeuresComplementaires());
 
 		return synthese;
 	}
@@ -66,20 +72,50 @@ public class SyntheseBloImpl implements SyntheseBlo {
 						LocalTime heureArrivee = DateUtils.toLocalTime(heures.getHeureArrivee());
 						LocalTime heureDepart = DateUtils.toLocalTime(heures.getHeureDepart());
 
+						// Récupération heures normales du jour
 						int jourSemaine = fr.deboissieu.calculassmat.commons.dateUtils.DateUtils
 								.getDayOfWeek(entry.getKey());
+						Double heuresNormalesRef = paramEnfant.getHeuresNormales(jourSemaine);
 
 						switch (TypeGardeEnum.valueOf(paramEnfant.getTypeGarde())) {
 						case PERISCOLAIRE:
-							// paramEnfant.ge
+
+							HorairesEcole horairesJournaliers = paramEnfant.getHorairesEcole(jourSemaine);
+							Double tempsJour = 0d;
+							if (heureArrivee != null) {
+								tempsJour += DateUtils.diff(heureArrivee,
+										horairesJournaliers.getHorairesJournaliersEcole().getArriveeMatin());
+							}
+							if (heureDepart != null) {
+								tempsJour += DateUtils
+										.diff(horairesJournaliers.getHorairesJournaliersEcole().getDepartAprem(),
+												heureDepart);
+							}
+							// TODO TDU : temps midi ?
+
+							nbHeures.addHeuresNormalesReelles(tempsJour);
+							nbHeures.addHeuresNormalesContrat(heuresNormalesRef);
+
+							Double differencePeriscolaire = tempsJour - heuresNormalesRef;
+							if (differencePeriscolaire > 0) {
+								nbHeures.addHeuresComplementaires(differencePeriscolaire);
+							}
+
 							break;
 
 						case TEMPS_PLEIN:
 							if (heureArrivee != null && heureDepart != null) {
-								Float heuresGarde = fr.deboissieu.calculassmat.commons.dateUtils.DateUtils
-										.diff(heureArrivee, heureDepart);
-								Double heuresNormales = paramEnfant.getHeuresNormales(jourSemaine);
-								// nbHeures.addHeuresNormales(amount); // TODO TDU : continuer
+
+								Double heuresGarde = DateUtils.diff(heureArrivee, heureDepart);
+
+								nbHeures.addHeuresNormalesReelles(heuresGarde);
+								nbHeures.addHeuresNormalesContrat(heuresNormalesRef);
+
+								Double difference = heuresGarde - heuresNormalesRef;
+								if (difference > 0) {
+									nbHeures.addHeuresComplementaires(difference);
+								}
+
 							} else {
 								logger.error("Impossible de calculer les horaires de {} le {}.", heures.getPrenom(),
 										entry.getKey());

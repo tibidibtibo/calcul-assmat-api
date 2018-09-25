@@ -7,20 +7,27 @@ import lombok.Setter;
 @Setter
 public class NombreHeures {
 
-	private float heuresNormales;
+	private Double heuresNormalesReelles;
 
-	private float heuresComplementaires;
+	private Double heuresNormalesContrat;
 
-	public void addHeuresNormales(float amount) {
-		this.heuresNormales += amount;
+	private Double heuresComplementaires;
+
+	public void addHeuresNormalesContrat(Double amount) {
+		this.heuresNormalesContrat += amount;
 	}
 
-	public void addHeuresComplementaires(float amount) {
+	public void addHeuresNormalesReelles(Double amount) {
+		this.heuresNormalesReelles += amount;
+	}
+
+	public void addHeuresComplementaires(Double amount) {
 		this.heuresComplementaires += amount;
 	}
 
 	public NombreHeures() {
-		this.heuresNormales = 0f;
-		this.heuresComplementaires = 0f;
+		this.heuresNormalesReelles = 0d;
+		this.heuresNormalesContrat = 0d;
+		this.heuresComplementaires = 0d;
 	}
 }

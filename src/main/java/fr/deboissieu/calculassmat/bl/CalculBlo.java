@@ -8,7 +8,7 @@ import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
 
 public interface CalculBlo {
 
-	Response calculerSyntheseGarde(int mois);
+	Response calculerSyntheseGarde(int mois, int numeroAnnee);
 
 	Stream<SaisieJournaliere> streamCalculSynthese(int mois);
 }

@@ -60,12 +60,21 @@ public class ParametrageEnfant {
 	}
 
 	public Double getHeuresNormales(final Integer jourSemaine) {
-		HeuresNormale heuresNormales = this.heuresNormales
+		HeuresNormale heuresTrouvees = this.heuresNormales
 				.stream()
 				.filter(entry -> jourSemaine.equals(entry.getJour()))
 				.findFirst()
 				.orElse(null);
-		return (heuresNormales != null) ? heuresNormales.getHeures() : null;
+		return (heuresTrouvees != null) ? heuresTrouvees.getHeures() : null;
+	}
+
+	public HorairesEcole getHorairesEcole(final Integer jourSemaine) {
+		HorairesEcole horaireTrouve = this.horairesEcole
+				.stream()
+				.filter(entry -> jourSemaine.equals(entry.getJour()))
+				.findFirst()
+				.orElse(null);
+		return horaireTrouve != null ? horaireTrouve : null;
 	}
 
 }

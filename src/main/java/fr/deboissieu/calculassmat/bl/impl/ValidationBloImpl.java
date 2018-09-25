@@ -11,7 +11,7 @@ import fr.deboissieu.calculassmat.commons.exceptions.ValidationExceptionsEnum;
 public class ValidationBloImpl implements ValidationBlo {
 
 	@Override
-	public int validerPathParamMois(String pathParam) {
+	public int validerPathParamCalculMoisAnnee(String pathParam) {
 		try {
 			return Integer.parseInt(pathParam);
 		} catch (Exception e) {

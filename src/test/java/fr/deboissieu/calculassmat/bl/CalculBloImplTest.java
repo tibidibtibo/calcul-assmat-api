@@ -1,6 +1,6 @@
 package fr.deboissieu.calculassmat.bl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 
@@ -59,7 +59,7 @@ public class CalculBloImplTest {
 		Mockito.doReturn(null).when(excelFileBloMock).extractDataFromWorkbook(Mockito.any(Workbook.class),
 				Mockito.anyInt());
 
-		Response response = calculBlo.calculerSyntheseGarde(9);
+		Response response = calculBlo.calculerSyntheseGarde(9, 2018);
 
 		assertNotNull(response);
 	}

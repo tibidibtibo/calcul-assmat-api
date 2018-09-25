@@ -35,7 +35,7 @@ public class CalculBloImpl implements CalculBlo {
 	private SyntheseBlo syntheseBlo;
 
 	@Override
-	public Response calculerSyntheseGarde(int mois) {
+	public Response calculerSyntheseGarde(int mois, int annee) {
 		try {
 
 			Workbook workbook = excelFileBlo.openFile("testFiles/fichierTest.xlsx");
@@ -45,9 +45,9 @@ public class CalculBloImpl implements CalculBlo {
 			Map<String, HorairesPersonnelsEtFrais> donneesAsemblees = assemblageSaisieBlo
 					.assemblerDonneesSaisies(donneesBrutes);
 
-			SyntheseGarde syntheseGarde = syntheseBlo.calculerFraisMensuels(donneesAsemblees);
+			SyntheseGarde syntheseGarde = syntheseBlo.calculerFraisMensuels(donneesAsemblees, mois, annee);
 
-			return Response.ok(donneesAsemblees).build();
+			return Response.ok(syntheseGarde).build();
 
 		} catch (Exception e) {
 			logger.error("Impossible de traiter le fichier : {}", e);

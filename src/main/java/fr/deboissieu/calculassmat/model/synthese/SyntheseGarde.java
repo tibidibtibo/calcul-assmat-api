@@ -4,10 +4,8 @@ import java.io.Serializable;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@NoArgsConstructor
 @AllArgsConstructor
 public class SyntheseGarde implements Serializable {
 
@@ -27,30 +25,39 @@ public class SyntheseGarde implements Serializable {
 
 	@Getter
 	@Setter
-	private int nbHeuresNormales;
+	private Double nbHeuresNormalesContrat;
 
 	@Getter
 	@Setter
-	private int nbHeuresComplementaires;
+	private Double nbHeuresNormalesReelles;
 
 	@Getter
 	@Setter
-	private float salaireHoraireNetHeureNormale;
+	private Double nbHeuresComplementaires;
 
 	@Getter
 	@Setter
-	private float salaireNetTotal;
+	private Double salaireHoraireNetHeureNormale;
 
 	@Getter
 	@Setter
-	private float indemnitesEntretien;
+	private Double salaireNetTotal;
 
 	@Getter
 	@Setter
-	private float indemnitesRepas;
+	private Double indemnitesEntretien;
 
 	@Getter
 	@Setter
-	private float indemnitesKm;
+	private Double indemnitesRepas;
+
+	@Getter
+	@Setter
+	private Double indemnitesKm;
+
+	public SyntheseGarde(int mois, int annee) {
+		this.mois = Integer.toString(mois);
+		this.annee = Integer.toString(annee);
+	}
 
 }

@@ -8,12 +8,14 @@ import javax.annotation.Resource;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
+import org.springframework.stereotype.Component;
 
 import fr.deboissieu.calculassmat.bl.ParametrageBlo;
 import fr.deboissieu.calculassmat.dl.ParametrageRepository;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageGarde;
 
+@Component
 public class ParametrageBloImpl implements ParametrageBlo {
 
 	@Resource
@@ -27,7 +29,7 @@ public class ParametrageBloImpl implements ParametrageBlo {
 	@Override
 	public Collection<String> getListeNomsEnfants(ParametrageGarde paramGarde) {
 
-		if (CollectionUtils.isNotEmpty(paramGarde.getEnfants())) {
+		if (CollectionUtils.isEmpty(paramGarde.getEnfants())) {
 			return Collections.emptyList();
 		}
 
@@ -40,7 +42,7 @@ public class ParametrageBloImpl implements ParametrageBlo {
 
 	@Override
 	public ParametrageEnfant getParamEnfant(ParametrageGarde paramGarde, final String nom) {
-		if (CollectionUtils.isNotEmpty(paramGarde.getEnfants())) {
+		if (CollectionUtils.isEmpty(paramGarde.getEnfants())) {
 			return null;
 		}
 		return IterableUtils.find(paramGarde.getEnfants(), enfant -> nom.equals(enfant.getNom()));

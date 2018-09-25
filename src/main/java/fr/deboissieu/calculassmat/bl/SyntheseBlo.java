@@ -9,9 +9,11 @@ public interface SyntheseBlo {
 
 	/**
 	 * 
+	 * @param annee
+	 * @param mois
 	 * @param donneesAsemblees
 	 * @return
 	 */
-	SyntheseGarde calculerFraisMensuels(Map<String, HorairesPersonnelsEtFrais> mapHorairesParDate);
+	SyntheseGarde calculerFraisMensuels(Map<String, HorairesPersonnelsEtFrais> mapHorairesParDate, int mois, int annee);
 
 }

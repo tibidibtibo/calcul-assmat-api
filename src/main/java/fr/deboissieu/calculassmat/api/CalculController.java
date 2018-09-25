@@ -17,9 +17,9 @@ import fr.deboissieu.calculassmat.configuration.LogCall;
 
 @Component
 @Path("/calcul")
-public class CalculSI {
+public class CalculController {
 
-	private static final Logger logger = LogManager.getLogger(CalculSI.class);
+	private static final Logger logger = LogManager.getLogger(CalculController.class);
 
 	@Resource
 	private CalculBlo calculBlo;
@@ -28,11 +28,12 @@ public class CalculSI {
 	private ValidationBlo validationBlo;
 
 	@GET
-	@Path("/{mois}")
+	@Path("/{annee}/{mois}")
 	@Produces("application/json")
 	@LogCall
-	public Response calculer(@PathParam("mois") String mois) {
-		int numeroMois = validationBlo.validerPathParamMois(mois);
-		return calculBlo.calculerSyntheseGarde(numeroMois);
+	public Response calculer(@PathParam("annee") String annee, @PathParam("mois") String mois) {
+		int numeroMois = validationBlo.validerPathParamCalculMoisAnnee(mois);
+		int numeroAnnee = validationBlo.validerPathParamCalculMoisAnnee(annee);
+		return calculBlo.calculerSyntheseGarde(numeroMois, numeroAnnee);
 	}
 }
