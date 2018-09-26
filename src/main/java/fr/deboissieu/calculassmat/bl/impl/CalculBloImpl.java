@@ -38,7 +38,7 @@ public class CalculBloImpl implements CalculBlo {
 	public Response calculerSyntheseGarde(int mois, int annee) {
 		try {
 
-			Workbook workbook = excelFileBlo.openFile("testFiles/fichierTest.xlsx");
+			Workbook workbook = excelFileBlo.openFile("testFiles/2018-09_suivi_garde.xlsx");
 
 			Collection<SaisieJournaliere> donneesBrutes = excelFileBlo.extractDataFromWorkbook(workbook, mois);
 

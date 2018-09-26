@@ -1,30 +1,25 @@
 package fr.deboissieu.calculassmat.model.saisie;
 
-import java.util.Set;
-
-import fr.deboissieu.calculassmat.commons.excelfile.DeplacementsEnum;
-import fr.deboissieu.calculassmat.commons.excelfile.RepasEnum;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
+@Setter
 public class FraisJournaliers {
 
-	@Getter
-	@Setter
-	private Set<RepasEnum> repas;
+	private Integer nbDejeuners;
 
-	@Getter
-	@Setter
-	private Set<DeplacementsEnum> deplacements;
+	private Integer nbGouters;
 
-	@Getter
-	@Setter
+	private Integer arEcole;
+
 	private Integer autresDeplacementKm;
 
 	public static FraisJournaliers of(SaisieJournaliere saisie) {
 		FraisJournaliers fraisJournaliers = new FraisJournaliers();
-		fraisJournaliers.setRepas(RepasEnum.fromRepas(saisie.getRepas()));
-		fraisJournaliers.setDeplacements(DeplacementsEnum.fromDeplacement(saisie.getDeplacements()));
+		fraisJournaliers.setNbDejeuners(saisie.getNbDejeuners());
+		fraisJournaliers.setNbGouters(saisie.getNbGouters());
+		fraisJournaliers.setArEcole(saisie.getArEcole());
 		fraisJournaliers.setAutresDeplacementKm(saisie.getAutresDeplacementKm());
 		return fraisJournaliers;
 	}

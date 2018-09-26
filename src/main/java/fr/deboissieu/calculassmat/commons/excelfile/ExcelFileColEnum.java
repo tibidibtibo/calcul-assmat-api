@@ -4,8 +4,9 @@ import lombok.Getter;
 
 public enum ExcelFileColEnum {
 
-	HORODATAGE(0), DATE_SAISIE(1), QUI(2), ACTION(3), HEURE_ACTION(4), REPAS(5), DEPLACEMENTS(6), AUTRE_DEPLACEMENTS_KM(
-			7);
+	HORODATAGE(0), DATE_SAISIE(1), QUI(2), ACTION(3), HEURE_ACTION(4), DEJEUNER(5), GOUTER(6), DEPLACEMENTS_ECOLE(
+			7), AUTRE_DEPLACEMENTS_KM(
+					8);
 
 	@Getter
 	private int colNum;

@@ -91,8 +91,9 @@ public class AssemblageSaisieBloImpl implements AssemblageSaisieBlo {
 		HoraireUnitaireAvecFrais horaireAvecFraisNonNull = IterableUtils.find(horairesUnitairesEtFrais,
 				horaireAvecFrais -> horaireAvecFrais != null && horaireAvecFrais.getFraisJournaliers() != null
 						&& (horaireAvecFrais.getFraisJournaliers().getAutresDeplacementKm() != null
-								|| CollectionUtils.isNotEmpty(horaireAvecFrais.getFraisJournaliers().getDeplacements())
-								|| CollectionUtils.isNotEmpty(horaireAvecFrais.getFraisJournaliers().getRepas())));
+								|| horaireAvecFrais.getFraisJournaliers().getNbDejeuners() != null
+								|| horaireAvecFrais.getFraisJournaliers().getNbGouters() != null
+								|| horaireAvecFrais.getFraisJournaliers().getArEcole() != null));
 
 		return horaireAvecFraisNonNull != null ? horaireAvecFraisNonNull.getFraisJournaliers() : null;
 	}

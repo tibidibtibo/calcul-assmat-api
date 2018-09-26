@@ -60,8 +60,9 @@ public class ExcelFileRowMapper {
 		saisieJournaliere.setQui(cellToStringSet(getCell(row, ExcelFileColEnum.QUI), LIST_SEPARATOR));
 		saisieJournaliere.setAction(cellToString(getCell(row, ExcelFileColEnum.ACTION)));
 		saisieJournaliere.setHeureAction(cellToHour(getCell(row, ExcelFileColEnum.HEURE_ACTION)));
-		saisieJournaliere.setRepas(cellToStringSet(getCell(row, ExcelFileColEnum.REPAS), LIST_SEPARATOR));
-		saisieJournaliere.setDeplacements(cellToStringSet(getCell(row, ExcelFileColEnum.DEPLACEMENTS), LIST_SEPARATOR));
+		saisieJournaliere.setNbDejeuners(cellToInteger(getCell(row, ExcelFileColEnum.DEJEUNER)));
+		saisieJournaliere.setNbGouters(cellToInteger(getCell(row, ExcelFileColEnum.GOUTER)));
+		saisieJournaliere.setArEcole(cellToInteger(getCell(row, ExcelFileColEnum.DEPLACEMENTS_ECOLE)));
 		saisieJournaliere.setAutresDeplacementKm(cellToInteger(getCell(row, ExcelFileColEnum.AUTRE_DEPLACEMENTS_KM)));
 		return saisieJournaliere;
 	}

@@ -1,6 +1,7 @@
 package fr.deboissieu.calculassmat.bl.impl;
 
 import java.time.LocalTime;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import fr.deboissieu.calculassmat.bl.ParametrageBlo;
 import fr.deboissieu.calculassmat.bl.SyntheseBlo;
 import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
 import fr.deboissieu.calculassmat.model.parametrage.HorairesEcole;
+import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant.TypeGardeEnum;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageGarde;
@@ -46,12 +48,106 @@ public class SyntheseBloImpl implements SyntheseBlo {
 
 		NombreHeures nbHeures = calculerNbHeures(mapHorairesParDate, paramGarde);
 
-		synthese.setNbJoursTravailles(nbJoursTravailles.getNbJoursTotal());
-		synthese.setNbHeuresNormalesReelles(nbHeures.getHeuresNormalesReelles());
-		synthese.setNbHeuresNormalesContrat(nbHeures.getHeuresNormalesContrat());
-		synthese.setNbHeuresComplementaires(nbHeures.getHeuresComplementaires());
+		// FIXME : temporaire
+		Double arEcole = paramGarde.getEnfant("Louise").getArEcoleKm();
+
+		for (ParametrageEmploye employe : paramGarde.getEmployes()) {
+
+			synthese.setNbJoursTravailles(nbJoursTravailles.getNbJoursTotal());
+			synthese.setNbHeuresNormalesReelles(nbHeures.getHeuresNormalesReelles());
+			synthese.setNbHeuresNormalesContrat(nbHeures.getHeuresNormalesContrat());
+			synthese.setNbHeuresComplementaires(nbHeures.getHeuresComplementaires());
+			synthese.setSalaireHoraireNetHeureNormale(employe.getSalaireNetHoraire());
+
+			Double salaireNetSansConges = calculerSalaireNetSansConges(paramGarde.getEnfants(), employe, nbHeures);
+			synthese.setSalaireNetTotalSansConges(salaireNetSansConges);
+
+			Double congesPayes = salaireNetSansConges * employe.getTauxCongesPayes();
+			synthese.setCongesPayes(congesPayes);
+			synthese.setSalaireNetTotal(salaireNetSansConges + congesPayes);
+
+			synthese.setIndemnitesEntretien(calculerIndemnitesEntretien(mapHorairesParDate, employe));
+
+			synthese.setIndemnitesRepas(calculerIndemnitesRepas(mapHorairesParDate, employe));
+
+			synthese.setIndemnitesKm(calculerIndemnitesKm(mapHorairesParDate, employe, arEcole));
+		}
 
 		return synthese;
+	}
+
+	private Double calculerIndemnitesKm(Map<String, HorairesPersonnelsEtFrais> mapHorairesParDate,
+			ParametrageEmploye employe, Double arEcole) {
+		Double fraisKm = 0d;
+
+		// FIXME : pb de km ecole-nounou - comme pour les repas, distinguer les frais
+		// par enfant
+		for (HorairesPersonnelsEtFrais horaires : mapHorairesParDate.values()) {
+			if (horaires != null && horaires.getFraisJournaliers() != null) {
+				if (horaires.getFraisJournaliers().getArEcole() != null) {
+					fraisKm += horaires.getFraisJournaliers().getArEcole() * employe.getIndemnitesKm() * arEcole;
+				}
+				if (horaires.getFraisJournaliers().getAutresDeplacementKm() != null) {
+					fraisKm += horaires.getFraisJournaliers().getAutresDeplacementKm() * employe.getIndemnitesKm();
+				}
+			}
+		}
+
+		return fraisKm;
+	}
+
+	private Double calculerIndemnitesRepas(Map<String, HorairesPersonnelsEtFrais> mapHorairesParDate,
+			ParametrageEmploye employe) {
+
+		Double fraisRepas = 0d;
+
+		for (HorairesPersonnelsEtFrais horaires : mapHorairesParDate.values()) {
+			if (horaires != null && horaires.getFraisJournaliers() != null) {
+				if (horaires.getFraisJournaliers().getNbDejeuners() != null) {
+					fraisRepas += horaires.getFraisJournaliers().getNbDejeuners() * employe.getFraisDejeuner();
+				}
+				if (horaires.getFraisJournaliers().getNbGouters() != null) {
+					fraisRepas += horaires.getFraisJournaliers().getNbGouters() * employe.getFraisGouter();
+				}
+
+			}
+		}
+
+		return fraisRepas;
+	}
+
+	private Double calculerIndemnitesEntretien(Map<String, HorairesPersonnelsEtFrais> mapHorairesParDate,
+			ParametrageEmploye employe) {
+
+		Integer nbJours = 0;
+
+		for (HorairesPersonnelsEtFrais horaires : mapHorairesParDate.values()) {
+			for (HeuresPersonnelles heure : horaires.getHeuresPersonnelles()) {
+				nbJours += 1;
+			}
+		}
+
+		return nbJours * employe.getIndemnitesEntretien();
+	}
+
+	private Double calculerSalaireNetSansConges(Collection<ParametrageEnfant> enfants, ParametrageEmploye employe,
+			NombreHeures nbHeures) {
+
+		Double salaireNet = 0d;
+
+		// Salaire mensualisé
+		for (ParametrageEnfant paramEnfant : enfants) {
+			salaireNet += paramEnfant.getSalaireNetMensualise();
+		}
+
+		// Heures complémentaires
+		salaireNet += nbHeures.getHeuresComplementaires() * employe.getSalaireNetHoraire();
+
+		// Congés payés
+		Double congesPayes = salaireNet * employe.getTauxCongesPayes();
+
+		return salaireNet + congesPayes;
+
 	}
 
 	private NombreHeures calculerNbHeures(Map<String, HorairesPersonnelsEtFrais> donneesAssemblees,

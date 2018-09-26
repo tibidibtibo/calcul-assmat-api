@@ -8,34 +8,24 @@ import lombok.Setter;
 import lombok.ToString;
 
 @ToString
+@Getter
+@Setter
 public class SaisieJournaliere {
 
-	@Getter
-	@Setter
 	private Date dateSaisie;
 
-	@Getter
-	@Setter
 	private Set<String> qui;
 
-	@Getter
-	@Setter
 	private String action;
 
-	@Getter
-	@Setter
 	private String heureAction;
 
-	@Getter
-	@Setter
-	private Set<String> repas;
+	private Integer nbDejeuners;
 
-	@Getter
-	@Setter
-	private Set<String> deplacements;
+	private Integer nbGouters;
 
-	@Getter
-	@Setter
+	private Integer arEcole;
+
 	private Integer autresDeplacementKm;
 
 }
