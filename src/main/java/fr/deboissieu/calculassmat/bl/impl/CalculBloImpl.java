@@ -58,15 +58,15 @@ public class CalculBloImpl implements CalculBlo {
 	@Override
 	public Stream<SaisieJournaliere> streamCalculSynthese(int mois) {
 
-		try {
-
-			Workbook workbook = excelFileBlo.openFile("testFiles/fichierTest.xlsx");
-
-			return excelFileBlo.streamWorkbook(workbook, mois);
-
-		} catch (Exception e) {
-			logger.error("Impossible de traiter le fichier : {}", e);
-		}
+		// try {
+		//
+		// Workbook workbook = excelFileBlo.openFile("testFiles/fichierTest.xlsx");
+		//
+		// return excelFileBlo.streamWorkbook(workbook, mois);
+		//
+		// } catch (Exception e) {
+		// logger.error("Impossible de traiter le fichier : {}", e);
+		// }
 		return null;
 	}
 

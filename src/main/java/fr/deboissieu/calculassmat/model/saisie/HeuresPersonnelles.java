@@ -3,23 +3,26 @@ package fr.deboissieu.calculassmat.model.saisie;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
+@Setter
 public class HeuresPersonnelles {
 
-	@Getter
-	@Setter
 	private String prenom;
 
-	@Getter
-	@Setter
 	private String heureArrivee;
 
-	@Getter
-	@Setter
 	private String heureDepart;
+
+	private Integer nbDejeuners;
+
+	private Integer nbGouters;
+
+	private Integer nbArEcole;
 
 	public static HeuresPersonnelles of(String prenom, HoraireUnitairePersonnel horaireUnitaire) {
 		HeuresPersonnelles heuresPersonnelles = new HeuresPersonnelles();
 		heuresPersonnelles.setPrenom(prenom);
+		// heuresPersonnelles.setNbArEcole(horaireUnitaire.ge);
 		switch (horaireUnitaire.getAction()) {
 		case ARRIVEE:
 			heuresPersonnelles.setHeureArrivee(horaireUnitaire.getHeureAction());

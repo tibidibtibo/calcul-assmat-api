@@ -20,12 +20,16 @@ public class SaisieJournaliere {
 
 	private String heureAction;
 
-	private Integer nbDejeuners;
+	private Integer nbDejeunersLouise;
 
-	private Integer nbGouters;
+	private Integer nbDejeunersJosephine;
 
-	private Integer arEcole;
+	private Integer nbGoutersLouise;
 
-	private Integer autresDeplacementKm;
+	private Integer nbGoutersJosephine;
+
+	private Integer nbArEcoleLouise;
+
+	private Double autresDeplacementKm;
 
 }

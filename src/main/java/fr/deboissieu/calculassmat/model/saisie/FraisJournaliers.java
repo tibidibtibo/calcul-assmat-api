@@ -7,19 +7,10 @@ import lombok.Setter;
 @Setter
 public class FraisJournaliers {
 
-	private Integer nbDejeuners;
-
-	private Integer nbGouters;
-
-	private Integer arEcole;
-
-	private Integer autresDeplacementKm;
+	private Double autresDeplacementKm;
 
 	public static FraisJournaliers of(SaisieJournaliere saisie) {
 		FraisJournaliers fraisJournaliers = new FraisJournaliers();
-		fraisJournaliers.setNbDejeuners(saisie.getNbDejeuners());
-		fraisJournaliers.setNbGouters(saisie.getNbGouters());
-		fraisJournaliers.setArEcole(saisie.getArEcole());
 		fraisJournaliers.setAutresDeplacementKm(saisie.getAutresDeplacementKm());
 		return fraisJournaliers;
 	}

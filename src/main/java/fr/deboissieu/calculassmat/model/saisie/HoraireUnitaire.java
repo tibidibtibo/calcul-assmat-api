@@ -6,12 +6,20 @@ import fr.deboissieu.calculassmat.commons.excelfile.ActionHoraireEnum;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
+@Setter
 public class HoraireUnitaire extends ActionHoraire {
 
-	@Getter
-	@Setter
 	private Set<String> prenoms;
 
+
+	private Integer nbDejeuners;
+
+
+	private Integer nbGouters;
+
+	private Integer nbArEcole;
+	
 	public static HoraireUnitaire of(SaisieJournaliere saisieJournaliere) {
 		HoraireUnitaire horaireUnitaire = new HoraireUnitaire();
 		horaireUnitaire.setPrenoms(saisieJournaliere.getQui());

@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.stereotype.Component;
 
@@ -88,14 +87,22 @@ public class AssemblageSaisieBloImpl implements AssemblageSaisieBlo {
 
 	private FraisJournaliers extrairesFraisJournaliers(Collection<HoraireUnitaireAvecFrais> horairesUnitairesEtFrais) {
 
-		HoraireUnitaireAvecFrais horaireAvecFraisNonNull = IterableUtils.find(horairesUnitairesEtFrais,
-				horaireAvecFrais -> horaireAvecFrais != null && horaireAvecFrais.getFraisJournaliers() != null
-						&& (horaireAvecFrais.getFraisJournaliers().getAutresDeplacementKm() != null
-								|| horaireAvecFrais.getFraisJournaliers().getNbDejeuners() != null
-								|| horaireAvecFrais.getFraisJournaliers().getNbGouters() != null
-								|| horaireAvecFrais.getFraisJournaliers().getArEcole() != null));
+		FraisJournaliers fraisJournaliers = new FraisJournaliers();
+		Double deplacementsKm = 0d;
 
-		return horaireAvecFraisNonNull != null ? horaireAvecFraisNonNull.getFraisJournaliers() : null;
+		for (HoraireUnitaireAvecFrais horaire : horairesUnitairesEtFrais) {
+			if (horaire.getFraisJournaliers() != null
+					&& horaire.getFraisJournaliers().getAutresDeplacementKm() != null) {
+				deplacementsKm += horaire.getFraisJournaliers().getAutresDeplacementKm();
+			}
+		}
+
+		if (deplacementsKm.equals(0d)) {
+			return null;
+		}
+
+		fraisJournaliers.setAutresDeplacementKm(deplacementsKm);
+		return fraisJournaliers;
 	}
 
 	private Map<String, Collection<HoraireUnitaireAvecFrais>> mapperParDate(

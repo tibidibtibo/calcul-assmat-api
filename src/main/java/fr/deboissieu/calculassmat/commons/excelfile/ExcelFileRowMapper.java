@@ -39,6 +39,13 @@ public class ExcelFileRowMapper {
 		return null;
 	}
 
+	public static Double cellToDouble(Cell cell) {
+		if (cell != null) {
+			return cell.getNumericCellValue();
+		}
+		return null;
+	}
+
 	private static Set<String> cellToStringSet(Cell cell, String separator) {
 		if (cell != null) {
 			String stringCell = cellToString(cell);
@@ -60,10 +67,12 @@ public class ExcelFileRowMapper {
 		saisieJournaliere.setQui(cellToStringSet(getCell(row, ExcelFileColEnum.QUI), LIST_SEPARATOR));
 		saisieJournaliere.setAction(cellToString(getCell(row, ExcelFileColEnum.ACTION)));
 		saisieJournaliere.setHeureAction(cellToHour(getCell(row, ExcelFileColEnum.HEURE_ACTION)));
-		saisieJournaliere.setNbDejeuners(cellToInteger(getCell(row, ExcelFileColEnum.DEJEUNER)));
-		saisieJournaliere.setNbGouters(cellToInteger(getCell(row, ExcelFileColEnum.GOUTER)));
-		saisieJournaliere.setArEcole(cellToInteger(getCell(row, ExcelFileColEnum.DEPLACEMENTS_ECOLE)));
-		saisieJournaliere.setAutresDeplacementKm(cellToInteger(getCell(row, ExcelFileColEnum.AUTRE_DEPLACEMENTS_KM)));
+		saisieJournaliere.setNbDejeunersLouise(cellToInteger(getCell(row, ExcelFileColEnum.DEJEUNER_LOUISE)));
+		saisieJournaliere.setNbDejeunersJosephine(cellToInteger(getCell(row, ExcelFileColEnum.DEJEUNER_JOSEPHINE)));
+		saisieJournaliere.setNbGoutersLouise(cellToInteger(getCell(row, ExcelFileColEnum.GOUTER_LOUISE)));
+		saisieJournaliere.setNbGoutersJosephine(cellToInteger(getCell(row, ExcelFileColEnum.GOUTER_JOSEPHINE)));
+		saisieJournaliere.setNbArEcoleLouise(cellToInteger(getCell(row, ExcelFileColEnum.DEPLACEMENTS_ECOLE_LOUISE)));
+		saisieJournaliere.setAutresDeplacementKm(cellToDouble(getCell(row, ExcelFileColEnum.AUTRE_DEPLACEMENTS_KM)));
 		return saisieJournaliere;
 	}
 
