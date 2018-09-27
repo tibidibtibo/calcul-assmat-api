@@ -12,14 +12,14 @@ public class HoraireUnitaire extends ActionHoraire {
 
 	private Set<String> prenoms;
 
+	private Integer nbDejeunersJosephine;
 
-	private Integer nbDejeuners;
+	private Integer nbGoutersLouise;
 
+	private Integer nbGoutersJosephine;
 
-	private Integer nbGouters;
+	private Integer nbArEcoleLouise;
 
-	private Integer nbArEcole;
-	
 	public static HoraireUnitaire of(SaisieJournaliere saisieJournaliere) {
 		HoraireUnitaire horaireUnitaire = new HoraireUnitaire();
 		horaireUnitaire.setPrenoms(saisieJournaliere.getQui());
