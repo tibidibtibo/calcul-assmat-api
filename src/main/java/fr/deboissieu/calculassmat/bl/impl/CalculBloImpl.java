@@ -1,7 +1,6 @@
 package fr.deboissieu.calculassmat.bl.impl;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import javax.annotation.Resource;
@@ -12,11 +11,9 @@ import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Component;
 
-import fr.deboissieu.calculassmat.bl.AssemblageSaisieBlo;
 import fr.deboissieu.calculassmat.bl.CalculBlo;
 import fr.deboissieu.calculassmat.bl.ExcelFileBlo;
 import fr.deboissieu.calculassmat.bl.SyntheseBlo;
-import fr.deboissieu.calculassmat.model.saisie.HorairesPersonnelsEtFrais;
 import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
 import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
@@ -29,23 +26,17 @@ public class CalculBloImpl implements CalculBlo {
 	private ExcelFileBlo excelFileBlo;
 
 	@Resource
-	private AssemblageSaisieBlo assemblageSaisieBlo;
-
-	@Resource
 	private SyntheseBlo syntheseBlo;
 
 	@Override
 	public Response calculerSyntheseGarde(int mois, int annee) {
 		try {
 
-			Workbook workbook = excelFileBlo.openFile("testFiles/2018-09_suivi.xlsx");
+			Workbook workbook = excelFileBlo.openFile("testFiles/suivi_garde_test.xlsx");
 
-			Collection<SaisieJournaliere> donneesBrutes = excelFileBlo.extractDataFromWorkbook(workbook, mois);
+			Collection<SaisieJournaliere> donneesSaisies = excelFileBlo.extractDataFromWorkbook(workbook, mois);
 
-			Map<String, HorairesPersonnelsEtFrais> donneesAsemblees = assemblageSaisieBlo
-					.assemblerDonneesSaisies(donneesBrutes);
-
-			SyntheseGarde syntheseGarde = syntheseBlo.calculerFraisMensuels(donneesAsemblees, mois, annee);
+			SyntheseGarde syntheseGarde = syntheseBlo.calculerFraisMensuels(donneesSaisies, mois, annee);
 
 			return Response.ok(syntheseGarde).build();
 

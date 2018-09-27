@@ -3,12 +3,13 @@ package fr.deboissieu.calculassmat.bl.impl;
 import java.time.LocalTime;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,10 +23,8 @@ import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant.TypeGardeEnum;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageGarde;
-import fr.deboissieu.calculassmat.model.saisie.HeuresPersonnelles;
-import fr.deboissieu.calculassmat.model.saisie.HorairesPersonnelsEtFrais;
+import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
 import fr.deboissieu.calculassmat.model.synthese.NombreHeures;
-import fr.deboissieu.calculassmat.model.synthese.NombreJoursTravailles;
 import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
 @Component
@@ -37,23 +36,18 @@ public class SyntheseBloImpl implements SyntheseBlo {
 	ParametrageBlo parametrageBlo;
 
 	@Override
-	public SyntheseGarde calculerFraisMensuels(Map<String, HorairesPersonnelsEtFrais> mapHorairesParDate, int mois,
+	public SyntheseGarde calculerFraisMensuels(Collection<SaisieJournaliere> donneesSaisies, int mois,
 			int annee) {
 
 		SyntheseGarde synthese = new SyntheseGarde(mois, annee);
 
 		ParametrageGarde paramGarde = parametrageBlo.getParametrageGarde();
 
-		NombreJoursTravailles nbJoursTravailles = calculerJoursTravailles(mapHorairesParDate, paramGarde);
-
-		NombreHeures nbHeures = calculerNbHeures(mapHorairesParDate, paramGarde);
-
-		// FIXME : temporaire
-		Double arEcole = paramGarde.getEnfant("Louise").getArEcoleKm();
+		NombreHeures nbHeures = calculerNbHeures(donneesSaisies, paramGarde);
 
 		for (ParametrageEmploye employe : paramGarde.getEmployes()) {
 
-			synthese.setNbJoursTravailles(nbJoursTravailles.getNbJoursTotal());
+			synthese.setNbJoursTravailles(calculerJoursTravailles(donneesSaisies, paramGarde));
 			synthese.setNbHeuresNormalesReelles(nbHeures.getHeuresNormalesReelles());
 			synthese.setNbHeuresNormalesContrat(nbHeures.getHeuresNormalesContrat());
 			synthese.setNbHeuresComplementaires(nbHeures.getHeuresComplementaires());
@@ -66,66 +60,70 @@ public class SyntheseBloImpl implements SyntheseBlo {
 			synthese.setCongesPayes(congesPayes);
 			synthese.setSalaireNetTotal(salaireNetSansConges + congesPayes);
 
-			synthese.setIndemnitesEntretien(calculerIndemnitesEntretien(mapHorairesParDate, employe));
+			synthese.setIndemnitesEntretien(calculerIndemnitesEntretien(donneesSaisies, employe));
 
-			synthese.setIndemnitesRepas(calculerIndemnitesRepas(mapHorairesParDate, employe));
+			synthese.setIndemnitesRepas(calculerIndemnitesRepas(donneesSaisies, employe));
 
-			synthese.setIndemnitesKm(calculerIndemnitesKm(mapHorairesParDate, employe, arEcole));
+			synthese.setIndemnitesKm(calculerIndemnitesKm(donneesSaisies, employe, paramGarde.getEnfants()));
 		}
 
 		return synthese;
 	}
 
-	private Double calculerIndemnitesKm(Map<String, HorairesPersonnelsEtFrais> mapHorairesParDate,
-			ParametrageEmploye employe, Double arEcole) {
+	private Double calculerIndemnitesKm(Collection<SaisieJournaliere> donneesSaisies,
+			ParametrageEmploye employe, List<ParametrageEnfant> paramEnfants) {
 		Double fraisKm = 0d;
 
 		// FIXME : pb de km ecole-nounou - comme pour les repas, distinguer les frais
 		// par enfant
-		for (HorairesPersonnelsEtFrais horaires : mapHorairesParDate.values()) {
-			if (horaires != null && horaires.getFraisJournaliers() != null) {
-				if (horaires.getFraisJournaliers().getArEcole() != null) {
-					fraisKm += horaires.getFraisJournaliers().getArEcole() * employe.getIndemnitesKm() * arEcole;
-				}
-				if (horaires.getFraisJournaliers().getAutresDeplacementKm() != null) {
-					fraisKm += horaires.getFraisJournaliers().getAutresDeplacementKm() * employe.getIndemnitesKm();
-				}
-			}
-		}
+		// for (HorairesPersonnelsEtFrais horaires : mapHorairesParDate.values()) {
+		// if (horaires != null && horaires.getFraisJournaliers() != null) {
+		// if (horaires.getFraisJournaliers().getArEcole() != null) {
+		// fraisKm += horaires.getFraisJournaliers().getArEcole() *
+		// employe.getIndemnitesKm() * arEcole;
+		// }
+		// if (horaires.getFraisJournaliers().getAutresDeplacementKm() != null) {
+		// fraisKm += horaires.getFraisJournaliers().getAutresDeplacementKm() *
+		// employe.getIndemnitesKm();
+		// }
+		// }
+		// }
 
 		return fraisKm;
 	}
 
-	private Double calculerIndemnitesRepas(Map<String, HorairesPersonnelsEtFrais> mapHorairesParDate,
+	private Double calculerIndemnitesRepas(Collection<SaisieJournaliere> donneesSaisies,
 			ParametrageEmploye employe) {
 
 		Double fraisRepas = 0d;
 
-		for (HorairesPersonnelsEtFrais horaires : mapHorairesParDate.values()) {
-			if (horaires != null && horaires.getFraisJournaliers() != null) {
-				if (horaires.getFraisJournaliers().getNbDejeuners() != null) {
-					fraisRepas += horaires.getFraisJournaliers().getNbDejeuners() * employe.getFraisDejeuner();
-				}
-				if (horaires.getFraisJournaliers().getNbGouters() != null) {
-					fraisRepas += horaires.getFraisJournaliers().getNbGouters() * employe.getFraisGouter();
-				}
-
-			}
-		}
+		// for (HorairesPersonnelsEtFrais horaires : mapHorairesParDate.values()) {
+		// if (horaires != null && horaires.getFraisJournaliers() != null) {
+		// if (horaires.getFraisJournaliers().getNbDejeuners() != null) {
+		// fraisRepas += horaires.getFraisJournaliers().getNbDejeuners() *
+		// employe.getFraisDejeuner();
+		// }
+		// if (horaires.getFraisJournaliers().getNbGouters() != null) {
+		// fraisRepas += horaires.getFraisJournaliers().getNbGouters() *
+		// employe.getFraisGouter();
+		// }
+		//
+		// }
+		// }
 
 		return fraisRepas;
 	}
 
-	private Double calculerIndemnitesEntretien(Map<String, HorairesPersonnelsEtFrais> mapHorairesParDate,
+	private Double calculerIndemnitesEntretien(Collection<SaisieJournaliere> donneesSaisies,
 			ParametrageEmploye employe) {
 
 		Integer nbJours = 0;
 
-		for (HorairesPersonnelsEtFrais horaires : mapHorairesParDate.values()) {
-			for (HeuresPersonnelles heure : horaires.getHeuresPersonnelles()) {
-				nbJours += 1;
-			}
-		}
+		// for (HorairesPersonnelsEtFrais horaires : mapHorairesParDate.values()) {
+		// for (HeuresPersonnelles heure : horaires.getHeuresPersonnelles()) {
+		// nbJours += 1;
+		// }
+		// }
 
 		return nbJours * employe.getIndemnitesEntretien();
 	}
@@ -150,116 +148,87 @@ public class SyntheseBloImpl implements SyntheseBlo {
 
 	}
 
-	private NombreHeures calculerNbHeures(Map<String, HorairesPersonnelsEtFrais> donneesAssemblees,
+	private NombreHeures calculerNbHeures(Collection<SaisieJournaliere> donneesSaisies,
 			ParametrageGarde paramGarde) {
 
 		NombreHeures nbHeures = new NombreHeures();
 
-		if (donneesAssemblees != null && MapUtils.isNotEmpty(donneesAssemblees)) {
+		if (CollectionUtils.isNotEmpty(donneesSaisies)) {
 
-			for (Map.Entry<String, HorairesPersonnelsEtFrais> entry : donneesAssemblees.entrySet()) {
+			for (SaisieJournaliere saisie : donneesSaisies) {
 
-				if (CollectionUtils.isNotEmpty(entry.getValue().getHeuresPersonnelles())) {
+				ParametrageEnfant paramEnfant = parametrageBlo.getParamEnfant(paramGarde, saisie.getPrenom());
 
-					for (HeuresPersonnelles heures : entry.getValue().getHeuresPersonnelles()) {
+				LocalTime heureArrivee = DateUtils.toLocalTime(saisie.getHeureArrivee());
+				LocalTime heureDepart = DateUtils.toLocalTime(saisie.getHeureDepart());
 
-						ParametrageEnfant paramEnfant = parametrageBlo.getParamEnfant(paramGarde, heures.getPrenom());
+				// Récupération heures normales du jour
+				int jourSemaine = fr.deboissieu.calculassmat.commons.dateUtils.DateUtils
+						.getDayOfWeek(saisie.getDateSaisie());
+				Double heuresNormalesRef = paramEnfant.getHeuresNormales(jourSemaine);
 
-						LocalTime heureArrivee = DateUtils.toLocalTime(heures.getHeureArrivee());
-						LocalTime heureDepart = DateUtils.toLocalTime(heures.getHeureDepart());
+				switch (TypeGardeEnum.valueOf(paramEnfant.getTypeGarde())) {
+				case PERISCOLAIRE:
 
-						// Récupération heures normales du jour
-						int jourSemaine = fr.deboissieu.calculassmat.commons.dateUtils.DateUtils
-								.getDayOfWeek(entry.getKey());
-						Double heuresNormalesRef = paramEnfant.getHeuresNormales(jourSemaine);
+					HorairesEcole horairesJournaliers = paramEnfant.getHorairesEcole(jourSemaine);
+					Double tempsJour = 0d;
+					if (heureArrivee != null) {
+						tempsJour += DateUtils.diff(heureArrivee,
+								horairesJournaliers.getHorairesJournaliersEcole().getArriveeMatin());
+					}
+					if (heureDepart != null) {
+						tempsJour += DateUtils
+								.diff(horairesJournaliers.getHorairesJournaliersEcole().getDepartAprem(),
+										heureDepart);
+					}
+					// FIXME TDU : temps midi ?
 
-						switch (TypeGardeEnum.valueOf(paramEnfant.getTypeGarde())) {
-						case PERISCOLAIRE:
+					nbHeures.addHeuresNormalesReelles(tempsJour);
+					nbHeures.addHeuresNormalesContrat(heuresNormalesRef);
 
-							HorairesEcole horairesJournaliers = paramEnfant.getHorairesEcole(jourSemaine);
-							Double tempsJour = 0d;
-							if (heureArrivee != null) {
-								tempsJour += DateUtils.diff(heureArrivee,
-										horairesJournaliers.getHorairesJournaliersEcole().getArriveeMatin());
-							}
-							if (heureDepart != null) {
-								tempsJour += DateUtils
-										.diff(horairesJournaliers.getHorairesJournaliersEcole().getDepartAprem(),
-												heureDepart);
-							}
-							// TODO TDU : temps midi ?
+					Double differencePeriscolaire = tempsJour - heuresNormalesRef;
+					if (differencePeriscolaire > 0) {
+						nbHeures.addHeuresComplementaires(differencePeriscolaire);
+					}
 
-							nbHeures.addHeuresNormalesReelles(tempsJour);
-							nbHeures.addHeuresNormalesContrat(heuresNormalesRef);
+					break;
 
-							Double differencePeriscolaire = tempsJour - heuresNormalesRef;
-							if (differencePeriscolaire > 0) {
-								nbHeures.addHeuresComplementaires(differencePeriscolaire);
-							}
+				case TEMPS_PLEIN:
+					if (heureArrivee != null && heureDepart != null) {
 
-							break;
+						Double heuresGarde = DateUtils.diff(heureArrivee, heureDepart);
 
-						case TEMPS_PLEIN:
-							if (heureArrivee != null && heureDepart != null) {
+						nbHeures.addHeuresNormalesReelles(heuresGarde);
+						nbHeures.addHeuresNormalesContrat(heuresNormalesRef);
 
-								Double heuresGarde = DateUtils.diff(heureArrivee, heureDepart);
-
-								nbHeures.addHeuresNormalesReelles(heuresGarde);
-								nbHeures.addHeuresNormalesContrat(heuresNormalesRef);
-
-								Double difference = heuresGarde - heuresNormalesRef;
-								if (difference > 0) {
-									nbHeures.addHeuresComplementaires(difference);
-								}
-
-							} else {
-								logger.error("Impossible de calculer les horaires de {} le {}.", heures.getPrenom(),
-										entry.getKey());
-							}
-							break;
+						Double difference = heuresGarde - heuresNormalesRef;
+						if (difference > 0) {
+							nbHeures.addHeuresComplementaires(difference);
 						}
 
+					} else {
+						logger.error("Impossible de calculer les horaires de {} le {}.", saisie.getPrenom(),
+								saisie.getDateSaisie());
 					}
+					break;
 				}
+
 			}
 		}
 		return nbHeures;
 	}
 
-	private NombreJoursTravailles calculerJoursTravailles(Map<String, HorairesPersonnelsEtFrais> donneesAssemblees,
+	private Integer calculerJoursTravailles(Collection<SaisieJournaliere> donneesSaisies,
 			ParametrageGarde paramGarde) {
-		NombreJoursTravailles nbJourTravailles = new NombreJoursTravailles();
-		nbJourTravailles.setNbJoursTotal(donneesAssemblees.size());
-		nbJourTravailles.setNbJoursParPersonne(calculerJoursTravaillesParPersonne(donneesAssemblees, paramGarde));
-		return nbJourTravailles;
-	}
-
-	private Map<String, Integer> calculerJoursTravaillesParPersonne(
-			Map<String, HorairesPersonnelsEtFrais> donneesAssemblees, ParametrageGarde paramGarde) {
-		Map<String, Integer> mapJoursParPersonne = new HashMap<>();
-
-		if (donneesAssemblees != null && MapUtils.isNotEmpty(donneesAssemblees)) {
-			for (Map.Entry<String, HorairesPersonnelsEtFrais> entry : donneesAssemblees.entrySet()) {
-				for (String prenom : parametrageBlo.getListeNomsEnfants(paramGarde)) {
-					HeuresPersonnelles horaire = IterableUtils.find(entry.getValue().getHeuresPersonnelles(),
-							heures -> prenom.equals(heures.getPrenom()));
-					completerMapJours(mapJoursParPersonne, prenom, horaire);
-
-				}
-			}
+		Map<String, SaisieJournaliere> mapJoursTravailles = new HashMap<>();
+		for (SaisieJournaliere saisie : donneesSaisies) {
+			String key = DateUtils.formatDate(saisie.getDateSaisie(), "dd-MM-yyyy", TimeZone.getDefault());
+			mapJoursTravailles.put(key, saisie);
 		}
-		return mapJoursParPersonne;
-	}
-
-	private void completerMapJours(Map<String, Integer> mapJoursParPersonne, String prenom,
-			HeuresPersonnelles horaire) {
-		if (horaire != null) {
-			if (mapJoursParPersonne.get(prenom) != null) {
-				mapJoursParPersonne.put(prenom, mapJoursParPersonne.get(prenom) + 1);
-			} else {
-				mapJoursParPersonne.put(prenom, 1);
-			}
+		if (MapUtils.isNotEmpty(mapJoursTravailles)) {
+			return mapJoursTravailles.values().size();
 		}
+		return null;
 	}
 
 }

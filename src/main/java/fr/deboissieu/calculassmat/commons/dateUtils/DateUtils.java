@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -16,8 +17,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
 
 public class DateUtils {
 
@@ -38,11 +37,11 @@ public class DateUtils {
 		return DateFormatUtils.format(date, TIME_FORMAT_PATTERN);
 	}
 
-	public static String formatDate(SaisieJournaliere saisie, String pattern, TimeZone fuseau) {
+	public static String formatDate(Date date, String pattern, TimeZone fuseau) {
 		DateFormat format = new SimpleDateFormat(pattern);
 		format.setTimeZone(fuseau);
 		String dateKey = format
-				.format(org.apache.commons.lang3.time.DateUtils.truncate(saisie.getDateSaisie(), Calendar.DATE));
+				.format(org.apache.commons.lang3.time.DateUtils.truncate(date, Calendar.DATE));
 		return dateKey;
 	}
 
@@ -65,9 +64,9 @@ public class DateUtils {
 		return diff.doubleValue() / 60;
 	}
 
-	public static Integer getDayOfWeek(String dateString) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN);
-		LocalDate localDate = LocalDate.parse(dateString, formatter);
+	public static Integer getDayOfWeek(Date date) {
+		Instant instant = date.toInstant();
+		LocalDate localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate();
 		DayOfWeek dayOfWeek = localDate.getDayOfWeek();
 		return dayOfWeek.getValue();
 	}

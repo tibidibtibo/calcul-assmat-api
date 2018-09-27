@@ -1,8 +1,8 @@
 package fr.deboissieu.calculassmat.bl;
 
-import java.util.Map;
+import java.util.Collection;
 
-import fr.deboissieu.calculassmat.model.saisie.HorairesPersonnelsEtFrais;
+import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
 import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
 public interface SyntheseBlo {
@@ -14,6 +14,6 @@ public interface SyntheseBlo {
 	 * @param donneesAsemblees
 	 * @return
 	 */
-	SyntheseGarde calculerFraisMensuels(Map<String, HorairesPersonnelsEtFrais> mapHorairesParDate, int mois, int annee);
+	SyntheseGarde calculerFraisMensuels(Collection<SaisieJournaliere> donneesSaisies, int mois, int annee);
 
 }
