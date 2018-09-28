@@ -21,7 +21,7 @@ public class SyntheseGarde implements Serializable {
 
 	private Double nbHeuresNormalesContrat;
 
-	private Double nbHeuresNormalesReelles;
+	private Double nbHeuresReelles;
 
 	private Double nbHeuresComplementaires;
 

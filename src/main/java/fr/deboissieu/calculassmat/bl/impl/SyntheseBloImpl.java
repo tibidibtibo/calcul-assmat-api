@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import fr.deboissieu.calculassmat.bl.ParametrageBlo;
 import fr.deboissieu.calculassmat.bl.SyntheseBlo;
 import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
+import fr.deboissieu.calculassmat.commons.mathsutils.MathsUtils;
 import fr.deboissieu.calculassmat.model.parametrage.HorairesEcole;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
@@ -49,7 +50,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		ParametrageEmploye employe = IterableUtils.get(paramGarde.getEmployes(), 0);
 
 		synthese.setNbJoursTravailles(calculerJoursTravailles(donneesSaisies, paramGarde));
-		synthese.setNbHeuresNormalesReelles(nbHeures.getHeuresNormalesReelles());
+		synthese.setNbHeuresReelles(nbHeures.getHeuresNormalesReelles());
 		synthese.setNbHeuresNormalesContrat(nbHeures.getHeuresNormalesContrat());
 		synthese.setNbHeuresComplementaires(nbHeures.getHeuresComplementaires());
 		synthese.setSalaireHoraireNetHeureNormale(employe.getSalaireNetHoraire());
@@ -57,9 +58,9 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		Double salaireNetSansConges = calculerSalaireNetSansConges(paramGarde.getEnfants(), employe, nbHeures);
 		synthese.setSalaireNetTotalSansConges(salaireNetSansConges);
 
-		Double congesPayes = salaireNetSansConges * employe.getTauxCongesPayes();
+		Double congesPayes = MathsUtils.roundTo2Digits(salaireNetSansConges * employe.getTauxCongesPayes());
 		synthese.setCongesPayes(congesPayes);
-		synthese.setSalaireNetTotal(salaireNetSansConges + congesPayes);
+		synthese.setSalaireNetTotal(MathsUtils.roundTo2Digits(salaireNetSansConges + congesPayes));
 
 		synthese.setIndemnitesEntretien(calculerIndemnitesEntretien(donneesSaisies, employe));
 
@@ -77,15 +78,17 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		if (CollectionUtils.isNotEmpty(donneesSaisies)) {
 
 			for (SaisieJournaliere saisie : donneesSaisies) {
-				if (paramGarde.getEnfant(saisie.getPrenom()) != null) {
-					Double kmEcole = paramGarde.getEnfant(saisie.getPrenom()).getArEcoleKm();
-					fraisKm += saisie.getNbArEcole() * kmEcole * employe.getIndemnitesKm();
+				ParametrageEnfant paramEnfant = paramGarde.getEnfant(saisie.getPrenom());
+				if (paramEnfant != null && paramEnfant.getArEcoleKm() != null && saisie.getNbArEcole() != null) {
+					fraisKm += saisie.getNbArEcole() * paramEnfant.getArEcoleKm() * employe.getIndemnitesKm();
 				}
-				fraisKm += saisie.getAutresDeplacementKm() * employe.getIndemnitesKm();
+				if (saisie.getAutresDeplacementKm() != null) {
+					fraisKm += saisie.getAutresDeplacementKm() * employe.getIndemnitesKm();
+				}
 			}
 		}
 
-		return fraisKm;
+		return MathsUtils.roundTo2Digits(fraisKm);
 	}
 
 	private Double calculerIndemnitesRepas(Collection<SaisieJournaliere> donneesSaisies,
@@ -96,12 +99,16 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		if (CollectionUtils.isNotEmpty(donneesSaisies)) {
 
 			for (SaisieJournaliere saisie : donneesSaisies) {
-				fraisRepas += saisie.getNbDejeuners() * employe.getFraisDejeuner();
-				fraisRepas += saisie.getNbGouters() * employe.getFraisGouter();
+				if (saisie.getNbDejeuners() != null) {
+					fraisRepas += saisie.getNbDejeuners() * employe.getFraisDejeuner();
+				}
+				if (saisie.getNbGouters() != null) {
+					fraisRepas += saisie.getNbGouters() * employe.getFraisGouter();
+				}
 			}
 		}
 
-		return fraisRepas;
+		return MathsUtils.roundTo2Digits(fraisRepas);
 	}
 
 	private Double calculerIndemnitesEntretien(Collection<SaisieJournaliere> donneesSaisies,
@@ -113,7 +120,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 			nbJours = donneesSaisies.size();
 		}
 
-		return nbJours * employe.getIndemnitesEntretien();
+		return MathsUtils.roundTo2Digits(nbJours * employe.getIndemnitesEntretien());
 	}
 
 	private Double calculerSalaireNetSansConges(Collection<ParametrageEnfant> enfants, ParametrageEmploye employe,
@@ -132,7 +139,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		// Congés payés
 		Double congesPayes = salaireNet * employe.getTauxCongesPayes();
 
-		return salaireNet + congesPayes;
+		return MathsUtils.roundTo2Digits(salaireNet + congesPayes);
 
 	}
 
@@ -203,6 +210,9 @@ public class SyntheseBloImpl implements SyntheseBlo {
 
 			}
 		}
+
+		nbHeures.roundValues();
+
 		return nbHeures;
 	}
 
