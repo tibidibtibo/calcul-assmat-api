@@ -3,13 +3,13 @@ package fr.deboissieu.calculassmat.bl.impl;
 import java.time.LocalTime;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -45,49 +45,45 @@ public class SyntheseBloImpl implements SyntheseBlo {
 
 		NombreHeures nbHeures = calculerNbHeures(donneesSaisies, paramGarde);
 
-		for (ParametrageEmploye employe : paramGarde.getEmployes()) {
+		// FIXME : lien employé <> enfant
+		ParametrageEmploye employe = IterableUtils.get(paramGarde.getEmployes(), 0);
 
-			synthese.setNbJoursTravailles(calculerJoursTravailles(donneesSaisies, paramGarde));
-			synthese.setNbHeuresNormalesReelles(nbHeures.getHeuresNormalesReelles());
-			synthese.setNbHeuresNormalesContrat(nbHeures.getHeuresNormalesContrat());
-			synthese.setNbHeuresComplementaires(nbHeures.getHeuresComplementaires());
-			synthese.setSalaireHoraireNetHeureNormale(employe.getSalaireNetHoraire());
+		synthese.setNbJoursTravailles(calculerJoursTravailles(donneesSaisies, paramGarde));
+		synthese.setNbHeuresNormalesReelles(nbHeures.getHeuresNormalesReelles());
+		synthese.setNbHeuresNormalesContrat(nbHeures.getHeuresNormalesContrat());
+		synthese.setNbHeuresComplementaires(nbHeures.getHeuresComplementaires());
+		synthese.setSalaireHoraireNetHeureNormale(employe.getSalaireNetHoraire());
 
-			Double salaireNetSansConges = calculerSalaireNetSansConges(paramGarde.getEnfants(), employe, nbHeures);
-			synthese.setSalaireNetTotalSansConges(salaireNetSansConges);
+		Double salaireNetSansConges = calculerSalaireNetSansConges(paramGarde.getEnfants(), employe, nbHeures);
+		synthese.setSalaireNetTotalSansConges(salaireNetSansConges);
 
-			Double congesPayes = salaireNetSansConges * employe.getTauxCongesPayes();
-			synthese.setCongesPayes(congesPayes);
-			synthese.setSalaireNetTotal(salaireNetSansConges + congesPayes);
+		Double congesPayes = salaireNetSansConges * employe.getTauxCongesPayes();
+		synthese.setCongesPayes(congesPayes);
+		synthese.setSalaireNetTotal(salaireNetSansConges + congesPayes);
 
-			synthese.setIndemnitesEntretien(calculerIndemnitesEntretien(donneesSaisies, employe));
+		synthese.setIndemnitesEntretien(calculerIndemnitesEntretien(donneesSaisies, employe));
 
-			synthese.setIndemnitesRepas(calculerIndemnitesRepas(donneesSaisies, employe));
+		synthese.setIndemnitesRepas(calculerIndemnitesRepas(donneesSaisies, employe));
 
-			synthese.setIndemnitesKm(calculerIndemnitesKm(donneesSaisies, employe, paramGarde.getEnfants()));
-		}
+		synthese.setIndemnitesKm(calculerIndemnitesKm(donneesSaisies, employe, paramGarde));
 
 		return synthese;
 	}
 
 	private Double calculerIndemnitesKm(Collection<SaisieJournaliere> donneesSaisies,
-			ParametrageEmploye employe, List<ParametrageEnfant> paramEnfants) {
+			ParametrageEmploye employe, ParametrageGarde paramGarde) {
 		Double fraisKm = 0d;
 
-		// FIXME : pb de km ecole-nounou - comme pour les repas, distinguer les frais
-		// par enfant
-		// for (HorairesPersonnelsEtFrais horaires : mapHorairesParDate.values()) {
-		// if (horaires != null && horaires.getFraisJournaliers() != null) {
-		// if (horaires.getFraisJournaliers().getArEcole() != null) {
-		// fraisKm += horaires.getFraisJournaliers().getArEcole() *
-		// employe.getIndemnitesKm() * arEcole;
-		// }
-		// if (horaires.getFraisJournaliers().getAutresDeplacementKm() != null) {
-		// fraisKm += horaires.getFraisJournaliers().getAutresDeplacementKm() *
-		// employe.getIndemnitesKm();
-		// }
-		// }
-		// }
+		if (CollectionUtils.isNotEmpty(donneesSaisies)) {
+
+			for (SaisieJournaliere saisie : donneesSaisies) {
+				if (paramGarde.getEnfant(saisie.getPrenom()) != null) {
+					Double kmEcole = paramGarde.getEnfant(saisie.getPrenom()).getArEcoleKm();
+					fraisKm += saisie.getNbArEcole() * kmEcole * employe.getIndemnitesKm();
+				}
+				fraisKm += saisie.getAutresDeplacementKm() * employe.getIndemnitesKm();
+			}
+		}
 
 		return fraisKm;
 	}
@@ -97,19 +93,13 @@ public class SyntheseBloImpl implements SyntheseBlo {
 
 		Double fraisRepas = 0d;
 
-		// for (HorairesPersonnelsEtFrais horaires : mapHorairesParDate.values()) {
-		// if (horaires != null && horaires.getFraisJournaliers() != null) {
-		// if (horaires.getFraisJournaliers().getNbDejeuners() != null) {
-		// fraisRepas += horaires.getFraisJournaliers().getNbDejeuners() *
-		// employe.getFraisDejeuner();
-		// }
-		// if (horaires.getFraisJournaliers().getNbGouters() != null) {
-		// fraisRepas += horaires.getFraisJournaliers().getNbGouters() *
-		// employe.getFraisGouter();
-		// }
-		//
-		// }
-		// }
+		if (CollectionUtils.isNotEmpty(donneesSaisies)) {
+
+			for (SaisieJournaliere saisie : donneesSaisies) {
+				fraisRepas += saisie.getNbDejeuners() * employe.getFraisDejeuner();
+				fraisRepas += saisie.getNbGouters() * employe.getFraisGouter();
+			}
+		}
 
 		return fraisRepas;
 	}
@@ -119,11 +109,9 @@ public class SyntheseBloImpl implements SyntheseBlo {
 
 		Integer nbJours = 0;
 
-		// for (HorairesPersonnelsEtFrais horaires : mapHorairesParDate.values()) {
-		// for (HeuresPersonnelles heure : horaires.getHeuresPersonnelles()) {
-		// nbJours += 1;
-		// }
-		// }
+		if (CollectionUtils.isNotEmpty(donneesSaisies)) {
+			nbJours = donneesSaisies.size();
+		}
 
 		return nbJours * employe.getIndemnitesEntretien();
 	}
