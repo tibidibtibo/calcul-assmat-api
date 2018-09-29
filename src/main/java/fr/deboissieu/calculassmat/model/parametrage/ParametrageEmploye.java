@@ -10,6 +10,10 @@ import lombok.Setter;
 @Setter
 public class ParametrageEmploye {
 
+	@SerializedName("id")
+	@Expose
+	private Long id;
+
 	@SerializedName("nom")
 	@Expose
 	private String nom;

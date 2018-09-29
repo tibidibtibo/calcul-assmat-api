@@ -13,6 +13,14 @@ import lombok.Setter;
 @Setter
 public class ParametrageEnfant {
 
+	@SerializedName("id")
+	@Expose
+	private Long id;
+
+	@SerializedName("employeId")
+	@Expose
+	private Long employeId;
+
 	@SerializedName("nom")
 	@Expose
 	private String nom;

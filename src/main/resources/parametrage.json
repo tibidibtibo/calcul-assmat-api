@@ -1,6 +1,7 @@
 {
 	"employes": [
 		{
+			"id": 1,
 			"nom": "Sylvie Moreau",
 			"salaireBrutHoraire": 3.20,
 			"salaireNetHoraire": 2.90,
@@ -13,6 +14,8 @@
 	],
 	"enfants": [
 		{
+			"id": 1,
+			"employeId": 1,
 			"nom": "Louise",
 			"typeGarde": "PERISCOLAIRE",
 			"salaireNetMensualise": 27.48,
@@ -37,6 +40,8 @@
 			]
 		},
 		{
+			"id": 2,
+			"employeId": 1,
 			"nom": "Joséphine",
 			"typeGarde": "TEMPS_PLEIN",
 			"salaireNetMensualise": 302.38,
