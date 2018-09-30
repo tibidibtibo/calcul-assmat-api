@@ -5,7 +5,8 @@ import lombok.Setter;
 
 public enum ValidationExceptionsEnum {
 
-	V001("V-001", "Paramètre d'entrée invalide. Usage : année valide et mois de 1 à 12");
+	V001("V-001", "Paramètre d'entrée invalide. Usage : année valide et mois de 1 à 12."), V101("V-101",
+			"Données invalides pour le calcul de la synthèse.");
 
 	@Getter
 	@Setter

@@ -1,48 +1,38 @@
 package fr.deboissieu.calculassmat.model.parametrage;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class ParametrageEnfant {
+@Document(collection = "enfants")
+public class ParametrageEnfant implements Serializable {
 
-	@SerializedName("id")
-	@Expose
-	private Long id;
+	private static final long serialVersionUID = -4571043328713820093L;
 
-	@SerializedName("employeId")
-	@Expose
-	private Long employeId;
+	@Id
+	private ObjectId _id;
 
-	@SerializedName("nom")
-	@Expose
+	private ObjectId employeId;
+
 	private String nom;
 
-	@SerializedName("typeGarde")
-	@Expose
 	private String typeGarde;
 
-	@SerializedName("salaireNetMensualise")
-	@Expose
 	private Double salaireNetMensualise;
 
-	@SerializedName("arEcoleKm")
-	@Expose
 	private Double arEcoleKm;
 
-	@SerializedName("horairesEcole")
-	@Expose
 	private List<HorairesEcole> horairesEcole;
 
-	@SerializedName("heuresNormales")
-	@Expose
 	private List<HeuresNormale> heuresNormales;
 
 	/**
@@ -83,6 +73,10 @@ public class ParametrageEnfant {
 				.findFirst()
 				.orElse(null);
 		return horaireTrouve != null ? horaireTrouve : null;
+	}
+
+	public String getNom() {
+		return this.nom;
 	}
 
 }

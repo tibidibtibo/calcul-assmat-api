@@ -1,49 +1,40 @@
 package fr.deboissieu.calculassmat.model.parametrage;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import java.io.Serializable;
+
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class ParametrageEmploye {
+@Document(collection = "employes")
+public class ParametrageEmploye implements Serializable {
 
-	@SerializedName("id")
-	@Expose
-	private Long id;
+	private static final long serialVersionUID = -1674024421832425607L;
 
-	@SerializedName("nom")
-	@Expose
+	@Id
+	private ObjectId _id;
+
 	private String nom;
 
-	@SerializedName("salaireBrutHoraire")
-	@Expose
+	private String prenom;
+
 	private Double salaireBrutHoraire;
 
-	@SerializedName("salaireNetHoraire")
-	@Expose
 	private Double salaireNetHoraire;
 
-	@SerializedName("indemnitesKm")
-	@Expose
 	private Double indemnitesKm;
 
-	@SerializedName("indemnitesEntretien")
-	@Expose
 	private Double indemnitesEntretien;
 
-	@SerializedName("fraisDejeuner")
-	@Expose
 	private Double fraisDejeuner;
 
-	@SerializedName("fraisGouter")
-	@Expose
 	private Double fraisGouter;
 
-	@SerializedName("tauxCongesPayes")
-	@Expose
 	private Double tauxCongesPayes;
 
 }
