@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class NombreHeures {
 
-	private Double heuresNormalesReelles;
+	private Double heuresReelles;
 
 	private Double heuresNormalesContrat;
 
@@ -18,8 +18,8 @@ public class NombreHeures {
 		this.heuresNormalesContrat += amount;
 	}
 
-	public void addHeuresNormalesReelles(Double amount) {
-		this.heuresNormalesReelles += amount;
+	public void addHeuresReelles(Double amount) {
+		this.heuresReelles += amount;
 	}
 
 	public void addHeuresComplementaires(Double amount) {
@@ -27,14 +27,14 @@ public class NombreHeures {
 	}
 
 	public NombreHeures() {
-		this.heuresNormalesReelles = 0d;
+		this.heuresReelles = 0d;
 		this.heuresNormalesContrat = 0d;
 		this.heuresComplementaires = 0d;
 	}
 
 	public void roundValues() {
-		if (this.heuresNormalesReelles != null) {
-			this.heuresNormalesReelles = MathsUtils.roundTo2Digits(this.heuresNormalesReelles);
+		if (this.heuresReelles != null) {
+			this.heuresReelles = MathsUtils.roundTo2Digits(this.heuresReelles);
 		}
 
 		if (this.heuresNormalesContrat != null) {

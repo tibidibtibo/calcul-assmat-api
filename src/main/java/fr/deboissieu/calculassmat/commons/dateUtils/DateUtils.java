@@ -61,7 +61,7 @@ public class DateUtils {
 	 */
 	public static Double diff(LocalTime heureArrivee, LocalTime heureDepart) {
 		Long diff = Duration.between(heureArrivee, heureDepart).toMinutes();
-		return diff.doubleValue() / 60;
+		return Math.abs(diff.doubleValue() / 60);
 	}
 
 	public static Integer getDayOfWeek(Date date) {

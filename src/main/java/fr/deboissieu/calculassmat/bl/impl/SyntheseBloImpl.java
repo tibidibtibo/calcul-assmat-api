@@ -59,23 +59,33 @@ public class SyntheseBloImpl implements SyntheseBlo {
 			NombreHeures nbHeures = calculerNbHeures(donneesSaisies, mapParamEnfants);
 
 			synthese.setNbJoursTravailles(calculerJoursTravailles(donneesSaisies));
-			synthese.setNbHeuresReelles(nbHeures.getHeuresNormalesReelles());
+			synthese.setNbHeuresReelles(nbHeures.getHeuresReelles());
 			synthese.setNbHeuresNormalesContrat(nbHeures.getHeuresNormalesContrat());
 			synthese.setNbHeuresComplementaires(nbHeures.getHeuresComplementaires());
 			synthese.setSalaireHoraireNetHeureNormale(paramAssmat.getSalaireNetHoraire());
 
-			Double salaireNetSansConges = calculerSalaireNetSansConges(mapParamEnfants, paramAssmat, nbHeures);
-			synthese.setSalaireNetTotalSansConges(salaireNetSansConges);
+			Double salaireMensualise = calculerSalaireNetSansConges(mapParamEnfants, paramAssmat, nbHeures);
+			synthese.setSalaireNetHeuresNormales(salaireMensualise);
 
-			Double congesPayes = MathsUtils.roundTo2Digits(salaireNetSansConges * paramAssmat.getTauxCongesPayes());
+			Double salaireHeuresComplementaires = nbHeures.getHeuresComplementaires()
+					* paramAssmat.getSalaireNetHoraire();
+			synthese.setSalaireNetHeuresComplementaires(salaireHeuresComplementaires);
+
+			Double congesPayes = MathsUtils.roundTo2Digits(
+					(salaireMensualise + salaireHeuresComplementaires) * paramAssmat.getTauxCongesPayes());
 			synthese.setCongesPayes(congesPayes);
-			synthese.setSalaireNetTotal(MathsUtils.roundTo2Digits(salaireNetSansConges + congesPayes));
+
+			Double salaireNetTotal = MathsUtils
+					.roundTo2Digits(salaireMensualise + salaireHeuresComplementaires + congesPayes);
+			synthese.setSalaireNetTotal(salaireNetTotal);
 
 			synthese.setIndemnitesEntretien(calculerIndemnitesEntretien(donneesSaisies, paramAssmat));
 
 			synthese.setIndemnitesRepas(calculerIndemnitesRepas(donneesSaisies, paramAssmat));
 
 			synthese.setIndemnitesKm(calculerIndemnitesKm(donneesSaisies, paramAssmat, mapParamEnfants));
+
+			synthese.calculerPaiementMensuel();
 
 			return synthese;
 		}
@@ -145,13 +155,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 			salaireNet += paramEnfant.getSalaireNetMensualise();
 		}
 
-		// Heures complémentaires
-		salaireNet += nbHeures.getHeuresComplementaires() * employe.getSalaireNetHoraire();
-
-		// Congés payés
-		Double congesPayes = salaireNet * employe.getTauxCongesPayes();
-
-		return MathsUtils.roundTo2Digits(salaireNet + congesPayes);
+		return MathsUtils.roundTo2Digits(salaireNet);
 
 	}
 
@@ -180,17 +184,19 @@ public class SyntheseBloImpl implements SyntheseBlo {
 					HorairesEcole horairesJournaliers = paramEnfant.getHorairesEcole(jourSemaine);
 					Double tempsJour = 0d;
 					if (heureArrivee != null) {
-						tempsJour += DateUtils.diff(heureArrivee,
+						Double temps1 = DateUtils.diff(heureArrivee,
 								horairesJournaliers.getHorairesJournaliersEcole().getArriveeMatin());
+						tempsJour += temps1;
 					}
 					if (heureDepart != null) {
-						tempsJour += DateUtils
+						Double temps2 = DateUtils
 								.diff(horairesJournaliers.getHorairesJournaliersEcole().getDepartAprem(),
 										heureDepart);
+						tempsJour += temps2;
 					}
 					// FIXME TDU : temps midi ?
 
-					nbHeures.addHeuresNormalesReelles(tempsJour);
+					nbHeures.addHeuresReelles(tempsJour);
 					nbHeures.addHeuresNormalesContrat(heuresNormalesRef);
 
 					Double differencePeriscolaire = tempsJour - heuresNormalesRef;
@@ -205,7 +211,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 
 						Double heuresGarde = DateUtils.diff(heureArrivee, heureDepart);
 
-						nbHeures.addHeuresNormalesReelles(heuresGarde);
+						nbHeures.addHeuresReelles(heuresGarde);
 						nbHeures.addHeuresNormalesContrat(heuresNormalesRef);
 
 						Double difference = heuresGarde - heuresNormalesRef;

@@ -18,7 +18,8 @@ public class ExcelFileRowMapper {
 	}
 
 	public static String cellToHour(Cell cell) {
-		return cell != null ? DateUtils.toStringHour(DateUtil.getJavaDate(cell.getNumericCellValue())) : null;
+		String heure = cell != null ? DateUtils.toStringHour(DateUtil.getJavaDate(cell.getNumericCellValue())) : null;
+		return heure == null || "00:00".equals(heure) ? null : heure;
 	}
 
 	public static String cellToString(Cell cell) {
