@@ -28,7 +28,7 @@ public class CalculBloImpl implements CalculBlo {
 	private SyntheseBlo syntheseBlo;
 
 	@Override
-	public Response calculerSyntheseGarde(int mois, int annee) {
+	public Response calculerSyntheseGarde(int mois, int annee, String nomAssMat) {
 		try {
 
 			// FIXME : pour l'instant lecture du fichier dans le classpath, ensuite envoyé
@@ -37,7 +37,7 @@ public class CalculBloImpl implements CalculBlo {
 
 			Collection<SaisieJournaliere> donneesSaisies = excelFileBlo.extractDataFromWorkbook(workbook, mois);
 
-			SyntheseGarde syntheseGarde = syntheseBlo.calculerFraisMensuels(donneesSaisies, mois, annee);
+			SyntheseGarde syntheseGarde = syntheseBlo.calculerFraisMensuels(donneesSaisies, mois, annee, nomAssMat);
 
 			return Response.ok(syntheseGarde).build();
 

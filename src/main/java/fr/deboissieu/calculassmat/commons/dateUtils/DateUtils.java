@@ -23,20 +23,42 @@ public class DateUtils {
 	private static final Logger logger = LogManager.getLogger(DateUtils.class);
 
 	public static final String DATE_FORMAT_PATTERN = "dd-MM-yyyy";
+
 	public static final String TIME_FORMAT_PATTERN = "HH:mm";
 
 	public static final String FUSEAU_HORAIRE = "GMT+2";
 
+	/**
+	 * Extraction du numéro du mois
+	 * 
+	 * @param Date
+	 *            date
+	 * @return {@link Integer} numéro du mois
+	 */
 	public static Integer getMonthNumber(Date date) {
 		LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		int month = localDate.getMonthValue();
 		return month;
 	}
 
+	/**
+	 * To string
+	 * 
+	 * @param date
+	 * @return {@link String} date en texte
+	 */
 	public static String toStringHour(Date date) {
 		return DateFormatUtils.format(date, TIME_FORMAT_PATTERN);
 	}
 
+	/**
+	 * Formatte la date selon les paramètres
+	 * 
+	 * @param date
+	 * @param pattern
+	 * @param fuseau
+	 * @return {@link String} date en texte
+	 */
 	public static String formatDate(Date date, String pattern, TimeZone fuseau) {
 		DateFormat format = new SimpleDateFormat(pattern);
 		format.setTimeZone(fuseau);
@@ -45,6 +67,12 @@ public class DateUtils {
 		return dateKey;
 	}
 
+	/**
+	 * Texte to LocalTime
+	 * 
+	 * @param timeStr
+	 * @return {@link LocalTime} heure locale
+	 */
 	public static LocalTime toLocalTime(String timeStr) {
 		if (StringUtils.isBlank(timeStr)) {
 			return null;
@@ -57,13 +85,19 @@ public class DateUtils {
 	 * 
 	 * @param heureArrivee
 	 * @param heureDepart
-	 * @return
+	 * @return {@link Double} différence
 	 */
 	public static Double diff(LocalTime heureArrivee, LocalTime heureDepart) {
 		Long diff = Duration.between(heureArrivee, heureDepart).toMinutes();
 		return Math.abs(diff.doubleValue() / 60);
 	}
 
+	/**
+	 * Retourne le numéro de jour dans la semaine
+	 * 
+	 * @param date
+	 * @return {@link Integer} numéro de jour dans la semaine
+	 */
 	public static Integer getDayOfWeek(Date date) {
 		Instant instant = date.toInstant();
 		LocalDate localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate();
@@ -71,11 +105,26 @@ public class DateUtils {
 		return dayOfWeek.getValue();
 	}
 
+	/**
+	 * Build Date
+	 * 
+	 * @param annee
+	 * @param mois
+	 * @param jour
+	 * @return {@link Date} date
+	 */
 	public static Date getDate(int annee, int mois, int jour) {
 		LocalDate date = LocalDate.of(annee, mois, jour);
 		return Date.from(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 	}
 
+	/**
+	 * Build time (date = now)
+	 * 
+	 * @param heures
+	 * @param minutes
+	 * @return {@link Date} time
+	 */
 	public static Date getTime(int heures, int minutes) {
 		LocalTime time = LocalTime.of(heures, minutes);
 		Instant instant = time

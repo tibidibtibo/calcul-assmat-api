@@ -2,6 +2,7 @@ package fr.deboissieu.calculassmat.model.synthese;
 
 import java.io.Serializable;
 
+import fr.deboissieu.calculassmat.commons.mathsutils.MathsUtils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,8 +25,8 @@ public class Salaire implements Serializable {
 	private Double salaireNetTotal;
 
 	public Double getSalaireMensuel(Indemnites indemnites) {
-		return this.salaireNetTotal + indemnites.getIndemnitesEntretien()
+		return MathsUtils.roundTo2Digits(this.salaireNetTotal + indemnites.getIndemnitesEntretien()
 				+ indemnites.getIndemnitesRepas()
-				+ indemnites.getIndemnitesKm();
+				+ indemnites.getIndemnitesKm());
 	}
 }

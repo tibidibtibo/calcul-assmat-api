@@ -42,11 +42,11 @@ public class SyntheseBloImpl implements SyntheseBlo {
 
 	@Override
 	public SyntheseGarde calculerFraisMensuels(Collection<SaisieJournaliere> donneesSaisies, int mois,
-			int annee) {
+			int annee, String nomAssMat) {
 
 		SyntheseGarde synthese = new SyntheseGarde(mois, annee);
 
-		ParametrageEmploye paramAssmat = parametrageBlo.findEmployeParNom("maternelle");
+		ParametrageEmploye paramAssmat = parametrageBlo.findEmployeParNom(nomAssMat);
 		Map<String, ParametrageEnfant> mapParamEnfants = parametrageBlo.findAllParamsEnfants();
 
 		validationBlo.validerAvantCalcul(donneesSaisies, paramAssmat, mapParamEnfants);

@@ -28,12 +28,14 @@ public class CalculController {
 	private ValidationBlo validationBlo;
 
 	@GET
-	@Path("/{annee}/{mois}")
+	@Path("/{annee}/{mois}/{nomEmploye}")
 	@Produces("application/json")
 	@LogCall
-	public Response calculer(@PathParam("annee") String annee, @PathParam("mois") String mois) {
+	public Response calculer(@PathParam("annee") String annee, @PathParam("mois") String mois,
+			@PathParam("nomEmploye") String nomEmploye) {
 		int numeroMois = validationBlo.validerPathParamCalculMoisAnnee(mois);
 		int numeroAnnee = validationBlo.validerPathParamCalculMoisAnnee(annee);
-		return calculBlo.calculerSyntheseGarde(numeroMois, numeroAnnee);
+		String nomAssMat = validationBlo.validerPathParamNomAssmat(nomEmploye);
+		return calculBlo.calculerSyntheseGarde(numeroMois, numeroAnnee, nomAssMat);
 	}
 }

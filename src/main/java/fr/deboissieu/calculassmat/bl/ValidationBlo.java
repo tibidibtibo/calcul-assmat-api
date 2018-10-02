@@ -13,4 +13,6 @@ public interface ValidationBlo {
 
 	void validerAvantCalcul(Collection<SaisieJournaliere> donneesSaisies, ParametrageEmploye paramAssmat,
 			Map<String, ParametrageEnfant> mapParamEnfants);
+
+	String validerPathParamNomAssmat(String nomEmploye);
 }

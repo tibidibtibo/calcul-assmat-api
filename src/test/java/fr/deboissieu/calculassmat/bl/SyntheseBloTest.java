@@ -1,7 +1,7 @@
 package fr.deboissieu.calculassmat.bl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.doReturn;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -64,16 +64,39 @@ public class SyntheseBloTest {
 
 		Collection<SaisieJournaliere> donneesSaisies = new ArrayList<>();
 		donneesSaisies.add(TestUtils.buildSaisie(
-				DateUtils.getDate(2018, 9, 30),
-				"enfant1", "07:45", "17:30", 0, 0d, 0, 0));
+				DateUtils.getDate(2018, 9, 27),
+				"enfant1", "07:45", "17:30", 0, 3.7d, 0, 1));
+		donneesSaisies.add(TestUtils.buildSaisie(
+				DateUtils.getDate(2018, 9, 28),
+				"enfant1", "08:00", "18:00", 2, 0d, 1, 1));
 
-		SyntheseGarde synthese = syntheseBlo.calculerFraisMensuels(donneesSaisies, 9, 2018);
+		SyntheseGarde synthese = syntheseBlo.calculerFraisMensuels(donneesSaisies, 9, 2018, "nom");
 
 		assertThat(synthese).isNotNull();
 		assertThat(synthese.getAnnee()).isEqualTo("2018");
 		assertThat(synthese.getMois()).isEqualTo("9");
+		assertThat(synthese.getNbJoursTravailles()).isEqualTo(2);
+
+		assertThat(synthese.getNombreHeures()).isNotNull();
+		assertThat(synthese.getNombreHeures().getHeuresNormalesMensualisees()).isEqualTo(10.1d);
+		assertThat(synthese.getNombreHeures().getHeuresNormalesReelles()).isEqualTo(17d);
+		assertThat(synthese.getNombreHeures().getHeuresReelles()).isEqualTo(19.75d);
+		assertThat(synthese.getNombreHeures().getHeuresComplementaires()).isEqualTo(2.75d);
+
+		assertThat(synthese.getSalaire()).isNotNull();
+		assertThat(synthese.getSalaire().getSalaireNetMensualise()).isEqualTo(250d);
+		assertThat(synthese.getSalaire().getSalaireNetHeuresComplementaires()).isEqualTo(7.975d);
+		assertThat(synthese.getSalaire().getCongesPayes()).isEqualTo(25.8d);
+		assertThat(synthese.getSalaire().getSalaireNetTotal()).isEqualTo(283.78d);
+		assertThat(synthese.getSalaire().getSalaireMensuel(synthese.getIndemnites())).isEqualTo(292.29d);
+
+		assertThat(synthese.getIndemnites()).isNotNull();
+		assertThat(synthese.getIndemnites().getIndemnitesEntretien()).isEqualTo(3d);
+		assertThat(synthese.getIndemnites().getIndemnitesKm()).isEqualTo(3.11d);
+		assertThat(synthese.getIndemnites().getIndemnitesRepas()).isEqualTo(2.4d);
+
 	}
 
-	// FIXME : continuer les TU
+	// FIXME : continuer les TU avec PERISCOLAIRE
 
 }

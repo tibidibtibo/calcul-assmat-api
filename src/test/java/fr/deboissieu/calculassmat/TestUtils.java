@@ -48,8 +48,8 @@ public class TestUtils {
 		employe.setIndemnitesEntretien(1.5d);
 		employe.setFraisDejeuner(1d);
 		employe.setFraisGouter(0.7d);
-		// employe.setNom("employe");
-		// employe.setPrenom(prenom);
+		employe.setNom("maternelle");
+		employe.setPrenom("assistante");
 		return employe;
 	}
 
@@ -58,6 +58,8 @@ public class TestUtils {
 		ParametrageEnfant enfant1 = TestUtils.buildParametrageEnfant("enfant1", "type1", 0d, 0d, 0d);
 		enfant1.setHeuresNormales(getHeuresNormales(9d, 9d, 0d, 8d, 9d, 0d, 0d));
 		enfant1.setTypeGarde("TEMPS_PLEIN");
+		enfant1.setHeuresNormalesMensualisees(10.1d);
+		enfant1.setSalaireNetMensualise(250d);
 		mapParamEnfants.put(enfant1.getNom(), enfant1);
 		return mapParamEnfants;
 	}

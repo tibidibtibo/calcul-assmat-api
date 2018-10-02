@@ -4,6 +4,6 @@ import javax.ws.rs.core.Response;
 
 public interface CalculBlo {
 
-	Response calculerSyntheseGarde(int mois, int numeroAnnee);
+	Response calculerSyntheseGarde(int mois, int numeroAnnee, String nomAssMat);
 
 }

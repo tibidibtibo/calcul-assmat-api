@@ -1,6 +1,6 @@
 package fr.deboissieu.calculassmat.bl;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 import java.io.IOException;
 
@@ -67,9 +67,9 @@ public class CalculBloTest {
 
 		SyntheseGarde synthese = new SyntheseGarde(9, 2018);
 		Mockito.doReturn(synthese).when(syntheseBloMock).calculerFraisMensuels(Mockito.anyCollection(),
-				Mockito.anyInt(), Mockito.anyInt());
+				Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString());
 
-		Response response = calculBlo.calculerSyntheseGarde(9, 2018);
+		Response response = calculBlo.calculerSyntheseGarde(9, 2018, "nom");
 
 		assertThat(response).isNotNull();
 		SyntheseGarde syntheseResponse = (SyntheseGarde) response.getEntity();
@@ -85,7 +85,7 @@ public class CalculBloTest {
 		Mockito.doThrow(new InvalidFormatException("Fichier pourri !")).when(excelFileBloMock)
 				.openFile(Mockito.anyString());
 
-		Response response = calculBlo.calculerSyntheseGarde(9, 2018);
+		Response response = calculBlo.calculerSyntheseGarde(9, 2018, "nom");
 
 		assertThat(response).isNotNull();
 		assertThat(response.getStatus()).isEqualTo(500);
