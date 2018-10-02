@@ -1,6 +1,6 @@
 package fr.deboissieu.calculassmat.bl;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 
@@ -13,17 +13,17 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import fr.deboissieu.calculassmat.bl.impl.CalculBloImpl;
+import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = { CalculBloImplTest.Config.class })
-public class CalculBloImplTest {
+@ContextConfiguration(classes = { CalculBloTest.Config.class })
+public class CalculBloTest {
 
 	public static class Config {
 
@@ -36,20 +36,26 @@ public class CalculBloImplTest {
 		ExcelFileBlo getExcelFileBlo() {
 			return Mockito.mock(ExcelFileBlo.class);
 		}
+
+		@Bean
+		SyntheseBlo getSyntheseBlo() {
+			return Mockito.mock(SyntheseBlo.class);
+		}
 	}
 
-	@Mock
+	@Resource
 	ExcelFileBlo excelFileBloMock;
+
+	@Resource
+	SyntheseBlo syntheseBloMock;
 
 	@Resource
 	CalculBlo calculBlo;
 
 	@Before
 	public void before() {
-		Mockito.reset(excelFileBloMock);
+		Mockito.reset(excelFileBloMock, syntheseBloMock);
 	}
-
-	// FIXME : faire les TU
 
 	@Test
 	public void devraitCalculerLaSyntheseMensuelle()
@@ -59,8 +65,29 @@ public class CalculBloImplTest {
 		Mockito.doReturn(null).when(excelFileBloMock).extractDataFromWorkbook(Mockito.any(Workbook.class),
 				Mockito.anyInt());
 
+		SyntheseGarde synthese = new SyntheseGarde(9, 2018);
+		Mockito.doReturn(synthese).when(syntheseBloMock).calculerFraisMensuels(Mockito.anyCollection(),
+				Mockito.anyInt(), Mockito.anyInt());
+
 		Response response = calculBlo.calculerSyntheseGarde(9, 2018);
 
-		assertNotNull(response);
+		assertThat(response).isNotNull();
+		SyntheseGarde syntheseResponse = (SyntheseGarde) response.getEntity();
+		assertThat(syntheseResponse).isNotNull();
+		assertThat(syntheseResponse.getAnnee()).isEqualTo("2018");
+		assertThat(syntheseResponse.getMois()).isEqualTo("9");
+	}
+
+	@Test
+	public void devraitPlanterACauseEchecDeChargementDuFichier()
+			throws EncryptedDocumentException, InvalidFormatException, IOException {
+
+		Mockito.doThrow(new InvalidFormatException("Fichier pourri !")).when(excelFileBloMock)
+				.openFile(Mockito.anyString());
+
+		Response response = calculBlo.calculerSyntheseGarde(9, 2018);
+
+		assertThat(response).isNotNull();
+		assertThat(response.getStatus()).isEqualTo(500);
 	}
 }

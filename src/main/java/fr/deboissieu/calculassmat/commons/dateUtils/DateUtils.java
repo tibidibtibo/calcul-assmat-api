@@ -70,4 +70,19 @@ public class DateUtils {
 		DayOfWeek dayOfWeek = localDate.getDayOfWeek();
 		return dayOfWeek.getValue();
 	}
+
+	public static Date getDate(int annee, int mois, int jour) {
+		LocalDate date = LocalDate.of(annee, mois, jour);
+		return Date.from(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+	}
+
+	public static Date getTime(int heures, int minutes) {
+		LocalTime time = LocalTime.of(heures, minutes);
+		Instant instant = time
+				.atDate(LocalDate.now())
+				.atZone(ZoneId.systemDefault())
+				.toInstant();
+
+		return Date.from(instant);
+	}
 }
