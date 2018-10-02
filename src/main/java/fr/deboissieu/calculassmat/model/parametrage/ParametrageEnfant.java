@@ -29,6 +29,8 @@ public class ParametrageEnfant implements Serializable {
 
 	private Double salaireNetMensualise;
 
+	private Double heuresNormalesMensualisees;
+
 	private Double arEcoleKm;
 
 	private List<HorairesEcole> horairesEcole;

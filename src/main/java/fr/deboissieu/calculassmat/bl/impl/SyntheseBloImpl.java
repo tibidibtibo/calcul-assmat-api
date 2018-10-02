@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import javax.annotation.Resource;
-import javax.validation.ValidationException;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -17,17 +16,17 @@ import org.springframework.stereotype.Component;
 
 import fr.deboissieu.calculassmat.bl.ParametrageBlo;
 import fr.deboissieu.calculassmat.bl.SyntheseBlo;
+import fr.deboissieu.calculassmat.bl.ValidationBlo;
 import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
-import fr.deboissieu.calculassmat.commons.exceptions.ValidationExceptionsEnum;
 import fr.deboissieu.calculassmat.commons.mathsutils.MathsUtils;
-import fr.deboissieu.calculassmat.dl.ParamEmployeRepository;
-import fr.deboissieu.calculassmat.dl.ParamEnfantRepository;
 import fr.deboissieu.calculassmat.model.parametrage.HorairesEcole;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant.TypeGardeEnum;
 import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
+import fr.deboissieu.calculassmat.model.synthese.Indemnites;
 import fr.deboissieu.calculassmat.model.synthese.NombreHeures;
+import fr.deboissieu.calculassmat.model.synthese.Salaire;
 import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
 @Component
@@ -39,10 +38,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 	ParametrageBlo parametrageBlo;
 
 	@Resource
-	ParamEnfantRepository paramEnfantRepository;
-
-	@Resource
-	ParamEmployeRepository paramEmployeRepository;
+	ValidationBlo validationBlo;
 
 	@Override
 	public SyntheseGarde calculerFraisMensuels(Collection<SaisieJournaliere> donneesSaisies, int mois,
@@ -50,46 +46,63 @@ public class SyntheseBloImpl implements SyntheseBlo {
 
 		SyntheseGarde synthese = new SyntheseGarde(mois, annee);
 
-		ParametrageEmploye paramAssmat = paramEmployeRepository.findByNom("maternelle");
-		Map<String, ParametrageEnfant> mapParamEnfants = ParamEnfantRepository
-				.findParamsEnfants(paramEnfantRepository.findAll());
+		ParametrageEmploye paramAssmat = parametrageBlo.findEmployeParNom("maternelle");
+		Map<String, ParametrageEnfant> mapParamEnfants = parametrageBlo.findAllParamsEnfants();
 
-		if (CollectionUtils.isNotEmpty(donneesSaisies) && paramAssmat != null && MapUtils.isNotEmpty(mapParamEnfants)) {
+		validationBlo.validerAvantCalcul(donneesSaisies, paramAssmat, mapParamEnfants);
 
-			NombreHeures nbHeures = calculerNbHeures(donneesSaisies, mapParamEnfants);
+		synthese.setNbJoursTravailles(calculerJoursTravailles(donneesSaisies));
 
-			synthese.setNbJoursTravailles(calculerJoursTravailles(donneesSaisies));
-			synthese.setNbHeuresReelles(nbHeures.getHeuresReelles());
-			synthese.setNbHeuresNormalesContrat(nbHeures.getHeuresNormalesContrat());
-			synthese.setNbHeuresComplementaires(nbHeures.getHeuresComplementaires());
-			synthese.setSalaireHoraireNetHeureNormale(paramAssmat.getSalaireNetHoraire());
+		// Nombre d'heures
+		NombreHeures nbHeures = calculerNbHeures(donneesSaisies, mapParamEnfants);
+		synthese.setNombreHeures(nbHeures);
 
-			Double salaireMensualise = calculerSalaireNetSansConges(mapParamEnfants, paramAssmat, nbHeures);
-			synthese.setSalaireNetHeuresNormales(salaireMensualise);
+		// Salaire
+		Salaire salaire = calculerSalaire(paramAssmat, mapParamEnfants, nbHeures);
+		synthese.setSalaire(salaire);
 
-			Double salaireHeuresComplementaires = nbHeures.getHeuresComplementaires()
-					* paramAssmat.getSalaireNetHoraire();
-			synthese.setSalaireNetHeuresComplementaires(salaireHeuresComplementaires);
+		// Indemnites
+		Indemnites indemnites = calculerIndemnites(donneesSaisies, paramAssmat, mapParamEnfants);
+		synthese.setIndemnites(indemnites);
 
-			Double congesPayes = MathsUtils.roundTo2Digits(
-					(salaireMensualise + salaireHeuresComplementaires) * paramAssmat.getTauxCongesPayes());
-			synthese.setCongesPayes(congesPayes);
+		// Calcul du paiement total
+		synthese.calculerPaiementMensuel();
 
-			Double salaireNetTotal = MathsUtils
-					.roundTo2Digits(salaireMensualise + salaireHeuresComplementaires + congesPayes);
-			synthese.setSalaireNetTotal(salaireNetTotal);
+		return synthese;
 
-			synthese.setIndemnitesEntretien(calculerIndemnitesEntretien(donneesSaisies, paramAssmat));
+	}
 
-			synthese.setIndemnitesRepas(calculerIndemnitesRepas(donneesSaisies, paramAssmat));
+	private Indemnites calculerIndemnites(Collection<SaisieJournaliere> donneesSaisies, ParametrageEmploye paramAssmat,
+			Map<String, ParametrageEnfant> mapParamEnfants) {
+		Indemnites indemnites = new Indemnites();
+		indemnites.setIndemnitesEntretien(calculerIndemnitesEntretien(donneesSaisies, paramAssmat));
+		indemnites.setIndemnitesRepas(calculerIndemnitesRepas(donneesSaisies, paramAssmat));
+		indemnites.setIndemnitesKm(calculerIndemnitesKm(donneesSaisies, paramAssmat, mapParamEnfants));
+		return indemnites;
+	}
 
-			synthese.setIndemnitesKm(calculerIndemnitesKm(donneesSaisies, paramAssmat, mapParamEnfants));
+	private Salaire calculerSalaire(ParametrageEmploye paramAssmat, Map<String, ParametrageEnfant> mapParamEnfants,
+			NombreHeures nbHeures) {
 
-			synthese.calculerPaiementMensuel();
+		Salaire salaire = new Salaire();
+		salaire.setTauxHoraireNetHeureNormale(paramAssmat.getTauxHoraireNormalNet());
+		salaire.setTauxHoraireNetHeureComplementaire(paramAssmat.getTauxHoraireComplementaireNet());
+		Double salaireMensualise = calculerSalaireNetMensualise(mapParamEnfants, paramAssmat, nbHeures);
+		salaire.setSalaireNetMensualise(salaireMensualise);
 
-			return synthese;
-		}
-		throw new ValidationException(ValidationExceptionsEnum.V101.getMessage());
+		Double salaireHeuresComplementaires = nbHeures.getHeuresComplementaires()
+				* paramAssmat.getTauxHoraireComplementaireNet();
+		salaire.setSalaireNetHeuresComplementaires(salaireHeuresComplementaires);
+
+		Double congesPayes = MathsUtils.roundTo2Digits(
+				(salaireMensualise + salaireHeuresComplementaires) * paramAssmat.getTauxCongesPayes());
+		salaire.setCongesPayes(congesPayes);
+
+		Double salaireNetTotal = MathsUtils
+				.roundTo2Digits(salaireMensualise + salaireHeuresComplementaires + congesPayes);
+		salaire.setSalaireNetTotal(salaireNetTotal);
+
+		return salaire;
 	}
 
 	private Double calculerIndemnitesKm(Collection<SaisieJournaliere> donneesSaisies,
@@ -144,7 +157,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		return MathsUtils.roundTo2Digits(nbJours * employe.getIndemnitesEntretien());
 	}
 
-	private Double calculerSalaireNetSansConges(Map<String, ParametrageEnfant> mapParamEnfants,
+	private Double calculerSalaireNetMensualise(Map<String, ParametrageEnfant> mapParamEnfants,
 			ParametrageEmploye employe,
 			NombreHeures nbHeures) {
 
@@ -197,7 +210,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 					// FIXME TDU : temps midi ?
 
 					nbHeures.addHeuresReelles(tempsJour);
-					nbHeures.addHeuresNormalesContrat(heuresNormalesRef);
+					nbHeures.addHeuresNormalesReelles(heuresNormalesRef);
 
 					Double differencePeriscolaire = tempsJour - heuresNormalesRef;
 					if (differencePeriscolaire > 0) {
@@ -212,7 +225,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 						Double heuresGarde = DateUtils.diff(heureArrivee, heureDepart);
 
 						nbHeures.addHeuresReelles(heuresGarde);
-						nbHeures.addHeuresNormalesContrat(heuresNormalesRef);
+						nbHeures.addHeuresNormalesReelles(heuresNormalesRef);
 
 						Double difference = heuresGarde - heuresNormalesRef;
 						if (difference > 0) {
@@ -228,6 +241,8 @@ public class SyntheseBloImpl implements SyntheseBlo {
 
 			}
 		}
+
+		nbHeures.setHeuresNormalesMensualisees(mapParamEnfants);
 
 		nbHeures.roundValues();
 

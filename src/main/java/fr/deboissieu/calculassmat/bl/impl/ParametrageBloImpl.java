@@ -1,51 +1,44 @@
 package fr.deboissieu.calculassmat.bl.impl;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.IterableUtils;
 import org.springframework.stereotype.Component;
 
 import fr.deboissieu.calculassmat.bl.ParametrageBlo;
-import fr.deboissieu.calculassmat.dl.ParametrageRepository;
+import fr.deboissieu.calculassmat.dl.ParamEmployeRepository;
+import fr.deboissieu.calculassmat.dl.ParamEnfantRepository;
+import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
-import fr.deboissieu.calculassmat.model.parametrage.ParametrageGarde;
 
 @Component
 public class ParametrageBloImpl implements ParametrageBlo {
 
 	@Resource
-	ParametrageRepository parametrageRepository;
+	ParamEnfantRepository paramEnfantRepository;
 
-	@Override
-	public ParametrageGarde getParametrageGarde() {
-		return parametrageRepository.getParametrageGarde();
+	@Resource
+	ParamEmployeRepository paramEmployeRepository;
+
+	public Map<String, ParametrageEnfant> findAllParamsEnfants() {
+		Collection<ParametrageEnfant> paramsEnfant = paramEnfantRepository.findAll();
+		if (CollectionUtils.isNotEmpty(paramsEnfant)) {
+
+			return paramsEnfant
+					.stream()
+					.collect(Collectors.toMap(ParametrageEnfant::getNom, Function.identity()));
+		}
+		return null;
 	}
 
 	@Override
-	public Collection<String> getListeNomsEnfants(ParametrageGarde paramGarde) {
-
-		if (CollectionUtils.isEmpty(paramGarde.getEnfants())) {
-			return Collections.emptyList();
-		}
-
-		return paramGarde.getEnfants()
-				.stream()
-				.map(ParametrageEnfant::getNom)
-				.collect(Collectors.toList());
-
-	}
-
-	@Override
-	public ParametrageEnfant getParamEnfant(ParametrageGarde paramGarde, final String nom) {
-		if (CollectionUtils.isEmpty(paramGarde.getEnfants())) {
-			return null;
-		}
-		return IterableUtils.find(paramGarde.getEnfants(), enfant -> nom.equals(enfant.getNom()));
+	public ParametrageEmploye findEmployeParNom(String nom) {
+		return paramEmployeRepository.findByNom(nom);
 	}
 
 }

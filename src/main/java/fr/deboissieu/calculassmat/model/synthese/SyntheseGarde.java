@@ -19,27 +19,11 @@ public class SyntheseGarde implements Serializable {
 
 	private int nbJoursTravailles;
 
-	private Double nbHeuresNormalesContrat;
+	private NombreHeures nombreHeures;
 
-	private Double nbHeuresReelles;
+	private Salaire salaire;
 
-	private Double nbHeuresComplementaires;
-
-	private Double salaireHoraireNetHeureNormale;
-
-	private Double salaireNetHeuresNormales;
-
-	private Double salaireNetHeuresComplementaires;
-
-	private Double salaireNetTotal;
-
-	private Double congesPayes;
-
-	private Double indemnitesEntretien;
-
-	private Double indemnitesRepas;
-
-	private Double indemnitesKm;
+	private Indemnites indemnites;
 
 	private Double montantPaiementMensuel;
 
@@ -49,9 +33,7 @@ public class SyntheseGarde implements Serializable {
 	}
 
 	public void calculerPaiementMensuel() {
-		this.montantPaiementMensuel = this.salaireNetTotal + this.indemnitesEntretien + this.indemnitesRepas
-				+ this.indemnitesKm;
-
+		this.montantPaiementMensuel = this.salaire.getSalaireMensuel(this.indemnites);
 	}
 
 }

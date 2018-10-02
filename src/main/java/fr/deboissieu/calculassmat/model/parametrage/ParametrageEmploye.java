@@ -23,9 +23,13 @@ public class ParametrageEmploye implements Serializable {
 
 	private String prenom;
 
-	private Double salaireBrutHoraire;
+	private Double tauxHoraireNormalBrut;
 
-	private Double salaireNetHoraire;
+	private Double tauxHoraireNormalNet;
+
+	private Double tauxHoraireComplementaireBrut;
+
+	private Double tauxHoraireComplementaireNet;
 
 	private Double indemnitesKm;
 

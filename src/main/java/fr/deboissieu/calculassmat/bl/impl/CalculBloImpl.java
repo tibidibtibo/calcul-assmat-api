@@ -1,7 +1,6 @@
 package fr.deboissieu.calculassmat.bl.impl;
 
 import java.util.Collection;
-import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 import javax.ws.rs.core.Response;
@@ -32,6 +31,8 @@ public class CalculBloImpl implements CalculBlo {
 	public Response calculerSyntheseGarde(int mois, int annee) {
 		try {
 
+			// FIXME : pour l'instant lecture du fichier dans le classpath, ensuite envoyé
+			// en attachement
 			Workbook workbook = excelFileBlo.openFile("testFiles/suivi_garde_test.xlsx");
 
 			Collection<SaisieJournaliere> donneesSaisies = excelFileBlo.extractDataFromWorkbook(workbook, mois);
@@ -42,23 +43,8 @@ public class CalculBloImpl implements CalculBlo {
 
 		} catch (Exception e) {
 			logger.error("Impossible de traiter le fichier : {}", e);
+			return Response.serverError().build();
 		}
-		return null;
-	}
-
-	@Override
-	public Stream<SaisieJournaliere> streamCalculSynthese(int mois) {
-
-		// try {
-		//
-		// Workbook workbook = excelFileBlo.openFile("testFiles/fichierTest.xlsx");
-		//
-		// return excelFileBlo.streamWorkbook(workbook, mois);
-		//
-		// } catch (Exception e) {
-		// logger.error("Impossible de traiter le fichier : {}", e);
-		// }
-		return null;
 	}
 
 }

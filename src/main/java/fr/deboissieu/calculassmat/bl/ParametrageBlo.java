@@ -1,15 +1,25 @@
 package fr.deboissieu.calculassmat.bl;
 
-import java.util.Collection;
+import java.util.Map;
 
+import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
-import fr.deboissieu.calculassmat.model.parametrage.ParametrageGarde;
 
 public interface ParametrageBlo {
 
-	ParametrageGarde getParametrageGarde();
+	/**
+	 * Recherche les paramètres enfant et retourne une map par prénom
+	 * 
+	 * @return Map<String, ParametrageEnfant> paramètres enfant par nom
+	 */
+	public Map<String, ParametrageEnfant> findAllParamsEnfants();
 
-	Collection<String> getListeNomsEnfants(ParametrageGarde paramGarde);
+	/**
+	 * Recherche le paramétrage employé par nom
+	 * 
+	 * @param string
+	 * @return
+	 */
+	public ParametrageEmploye findEmployeParNom(String nom);
 
-	ParametrageEnfant getParamEnfant(ParametrageGarde paramGarde, String prenom);
 }
