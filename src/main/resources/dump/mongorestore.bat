@@ -1,1 +1,0 @@
-mongorestore -d assmat assmat\

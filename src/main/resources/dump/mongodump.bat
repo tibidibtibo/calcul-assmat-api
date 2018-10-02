@@ -1,1 +1,0 @@
-mongodump --db assmat dump/
