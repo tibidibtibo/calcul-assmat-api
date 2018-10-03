@@ -5,6 +5,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.annotation.Resource;
 import javax.validation.ValidationException;
@@ -19,6 +20,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import fr.deboissieu.calculassmat.bl.impl.ValidationBloImpl;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
+import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
+import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = { ValidationBloTest.Config.class })
@@ -157,6 +160,39 @@ public class ValidationBloTest {
 
 		doReturn(new ParametrageEmploye()).when(parametrageBloMock).findEmployeParNom("nom");
 		assertThat(validationBlo.validerPathParamNomAssmat("nom")).isEqualTo("nom");
+	}
+
+	@Test
+	public void devraitValiderAvantArchivage() {
+
+		String expectedMessage = "Données invalides pour l'archivage";
+
+		try {
+			validationBlo.validerAvantArchivage(null, new SyntheseGarde(9, 2018));
+			fail();
+		} catch (ValidationException ve) {
+			assertThat(ve.getMessage())
+					.contains(expectedMessage);
+		}
+
+		try {
+			validationBlo.validerAvantArchivage(new ArrayList<>(), new SyntheseGarde(9, 2018));
+			fail();
+		} catch (ValidationException ve) {
+			assertThat(ve.getMessage())
+					.contains(expectedMessage);
+		}
+
+		try {
+			Collection<SaisieJournaliere> saisie = new ArrayList<>();
+			saisie.add(new SaisieJournaliere());
+			validationBlo.validerAvantArchivage(saisie, null);
+			fail();
+		} catch (ValidationException ve) {
+			assertThat(ve.getMessage())
+					.contains(expectedMessage);
+		}
+
 	}
 
 }

@@ -17,6 +17,7 @@ import fr.deboissieu.calculassmat.commons.exceptions.ValidationExceptionsEnum;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
+import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
 @Component
 public class ValidationBloImpl implements ValidationBlo {
@@ -52,6 +53,13 @@ public class ValidationBloImpl implements ValidationBlo {
 					ValidationExceptionsEnum.V003.toString(nomEmploye, new ValidationException()));
 		}
 		return nomEmploye;
+	}
+
+	@Override
+	public void validerAvantArchivage(Collection<SaisieJournaliere> saisie, SyntheseGarde synthese) {
+		if (CollectionUtils.isEmpty(saisie) || synthese == null) {
+			throw new ValidationException(ValidationExceptionsEnum.V102.getMessage());
+		}
 	}
 
 }

@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Component;
 
+import fr.deboissieu.calculassmat.bl.ArchivesBlo;
 import fr.deboissieu.calculassmat.bl.CalculBlo;
 import fr.deboissieu.calculassmat.bl.ExcelFileBlo;
 import fr.deboissieu.calculassmat.bl.SyntheseBlo;
@@ -27,6 +28,9 @@ public class CalculBloImpl implements CalculBlo {
 	@Resource
 	private SyntheseBlo syntheseBlo;
 
+	@Resource
+	ArchivesBlo archivesBlo;
+
 	@Override
 	public Response calculerSyntheseGarde(int mois, int annee, String nomAssMat) {
 		try {
@@ -38,6 +42,8 @@ public class CalculBloImpl implements CalculBlo {
 			Collection<SaisieJournaliere> donneesSaisies = excelFileBlo.extractDataFromWorkbook(workbook, mois);
 
 			SyntheseGarde syntheseGarde = syntheseBlo.calculerFraisMensuels(donneesSaisies, mois, annee, nomAssMat);
+
+			archivesBlo.archiverTraitement(donneesSaisies, syntheseGarde);
 
 			return Response.ok(syntheseGarde).build();
 
