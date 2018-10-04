@@ -18,6 +18,7 @@ import fr.deboissieu.calculassmat.bl.ParametrageBlo;
 import fr.deboissieu.calculassmat.bl.SyntheseBlo;
 import fr.deboissieu.calculassmat.bl.ValidationBlo;
 import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
+import fr.deboissieu.calculassmat.commons.exceptions.TechniqueExceptionEnum;
 import fr.deboissieu.calculassmat.commons.mathsutils.MathsUtils;
 import fr.deboissieu.calculassmat.model.parametrage.HorairesEcole;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
@@ -233,7 +234,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 						}
 
 					} else {
-						logger.error("Impossible de calculer les horaires de {} le {}.", saisie.getPrenom(),
+						logger.error(TechniqueExceptionEnum.T001.getMessage(), saisie.getPrenom(),
 								saisie.getDateSaisie());
 					}
 					break;

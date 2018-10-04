@@ -43,7 +43,7 @@ public class CalculBloImpl implements CalculBlo {
 
 			SyntheseGarde syntheseGarde = syntheseBlo.calculerFraisMensuels(donneesSaisies, mois, annee, nomAssMat);
 
-			archivesBlo.archiverTraitement(donneesSaisies, syntheseGarde);
+			archivesBlo.archiverTraitement(donneesSaisies, syntheseGarde, nomAssMat, mois, annee);
 
 			return Response.ok(syntheseGarde).build();
 

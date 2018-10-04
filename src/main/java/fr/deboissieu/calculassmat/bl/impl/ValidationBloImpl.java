@@ -38,7 +38,7 @@ public class ValidationBloImpl implements ValidationBlo {
 	public void validerAvantCalcul(Collection<SaisieJournaliere> donneesSaisies, ParametrageEmploye paramAssmat,
 			Map<String, ParametrageEnfant> mapParamEnfants) {
 		if (CollectionUtils.isEmpty(donneesSaisies) || paramAssmat == null || MapUtils.isEmpty(mapParamEnfants)) {
-			throw new ValidationException(ValidationExceptionsEnum.V101.getMessage());
+			throw new ValidationException(ValidationExceptionsEnum.V101.toString());
 		}
 	}
 
@@ -58,7 +58,7 @@ public class ValidationBloImpl implements ValidationBlo {
 	@Override
 	public void validerAvantArchivage(Collection<SaisieJournaliere> saisie, SyntheseGarde synthese) {
 		if (CollectionUtils.isEmpty(saisie) || synthese == null) {
-			throw new ValidationException(ValidationExceptionsEnum.V102.getMessage());
+			throw new ValidationException(ValidationExceptionsEnum.V102.toString());
 		}
 	}
 

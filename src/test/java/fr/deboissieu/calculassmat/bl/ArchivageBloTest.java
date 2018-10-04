@@ -1,7 +1,7 @@
 package fr.deboissieu.calculassmat.bl;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
@@ -58,14 +59,30 @@ public class ArchivageBloTest {
 		saisie1.setPrenom("enfant1");
 		saisie.add(saisie1);
 		SaisieJournaliere saisie2 = new SaisieJournaliere();
+		saisie2.setPrenom("enf2");
 		saisie2.setNbArEcole(7);
 		saisie.add(saisie2);
 
 		SyntheseGarde synthese = new SyntheseGarde(9, 2018);
+		synthese.setMontantPaiementMensuel(1000d);
 
-		archivesBlo.archiverTraitement(saisie, synthese);
+		archivesBlo.archiverTraitement(saisie, synthese, "nomAssmat", 9, 2018);
 
-		verify(archivesRepositoryMock, times(1)).save(any(Archive.class));
+		ArgumentCaptor<Archive> archiveCaptor = ArgumentCaptor.forClass(Archive.class);
+
+		verify(archivesRepositoryMock).save(archiveCaptor.capture());
+		assertThat(archiveCaptor.getValue()).isNotNull();
+		assertThat(archiveCaptor.getValue().getMois()).isEqualTo(9);
+		assertThat(archiveCaptor.getValue().getAnnee()).isEqualTo(2018);
+		assertThat(archiveCaptor.getValue().getEmploye()).isEqualTo("nomAssmat");
+		assertThat(archiveCaptor.getValue().getHorodatage()).isNotNull();
+		assertThat(archiveCaptor.getValue().getSaisie()).hasSize(2);
+		assertThat(archiveCaptor.getValue().getSaisie()).extracting("prenom").contains("enfant1", "enf2");
+		assertThat(archiveCaptor.getValue().getSaisie()).extracting("nbArEcole").contains(null, 7);
+		assertThat(archiveCaptor.getValue().getSynthese().getAnnee()).isEqualTo("2018");
+		assertThat(archiveCaptor.getValue().getSynthese().getMois()).isEqualTo("9");
+		assertThat(archiveCaptor.getValue().getSynthese().getMontantPaiementMensuel()).isEqualTo(1000d);
+
 	}
 
 }

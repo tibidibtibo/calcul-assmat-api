@@ -2,6 +2,7 @@ package fr.deboissieu.calculassmat.model.archives;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Date;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -19,7 +20,16 @@ public class Archive implements Serializable {
 
 	private static final long serialVersionUID = -1206871538044277050L;
 
+	private Date horodatage;
+
+	private int mois;
+
+	private int annee;
+
+	private String employe;
+
 	private Collection<SaisieJournaliere> saisie;
 
 	private SyntheseGarde synthese;
+
 }

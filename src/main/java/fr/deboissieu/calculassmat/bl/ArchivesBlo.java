@@ -7,5 +7,6 @@ import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
 public interface ArchivesBlo {
 
-	void archiverTraitement(Collection<SaisieJournaliere> saisie, SyntheseGarde synthese);
+	void archiverTraitement(Collection<SaisieJournaliere> saisie, SyntheseGarde synthese, String employe, int mois,
+			int annee);
 }

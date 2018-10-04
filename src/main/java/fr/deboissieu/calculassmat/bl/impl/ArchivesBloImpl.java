@@ -1,6 +1,7 @@
 package fr.deboissieu.calculassmat.bl.impl;
 
 import java.util.Collection;
+import java.util.Date;
 
 import javax.annotation.Resource;
 
@@ -23,11 +24,13 @@ public class ArchivesBloImpl implements ArchivesBlo {
 	ValidationBlo validationBlo;
 
 	@Override
-	public void archiverTraitement(Collection<SaisieJournaliere> saisie, SyntheseGarde synthese) {
+	public void archiverTraitement(Collection<SaisieJournaliere> saisie, SyntheseGarde synthese, String employe,
+			int mois,
+			int annee) {
 
 		validationBlo.validerAvantArchivage(saisie, synthese);
 
-		Archive archive = new Archive(saisie, synthese);
+		Archive archive = new Archive(new Date(), mois, annee, employe, saisie, synthese);
 		archivesRepository.save(archive);
 	}
 

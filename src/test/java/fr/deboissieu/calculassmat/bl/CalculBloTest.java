@@ -1,6 +1,6 @@
 package fr.deboissieu.calculassmat.bl;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 
@@ -40,6 +40,11 @@ public class CalculBloTest {
 		@Bean
 		SyntheseBlo getSyntheseBlo() {
 			return Mockito.mock(SyntheseBlo.class);
+		}
+
+		@Bean
+		ArchivesBlo getArchivesBlo() {
+			return Mockito.mock(ArchivesBlo.class);
 		}
 	}
 
