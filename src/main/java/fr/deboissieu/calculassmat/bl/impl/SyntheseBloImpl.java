@@ -196,43 +196,43 @@ public class SyntheseBloImpl implements SyntheseBlo {
 				case PERISCOLAIRE:
 
 					HorairesEcole horairesJournaliers = paramEnfant.getHorairesEcole(jourSemaine);
+
 					Double tempsJour = 0d;
-					if (heureArrivee != null) {
-						Double temps1 = DateUtils.diff(heureArrivee,
-								horairesJournaliers.getHorairesJournaliersEcole().getArriveeMatin());
-						tempsJour += temps1;
-					}
-					if (heureDepart != null) {
-						Double temps2 = DateUtils
-								.diff(horairesJournaliers.getHorairesJournaliersEcole().getDepartAprem(),
-										heureDepart);
-						tempsJour += temps2;
+
+					if (horairesJournaliers.jourSansEcole()) {
+						// Pas d'école ce jour = temps plein
+						if (heureArrivee != null && heureDepart != null) {
+							tempsJour += DateUtils.diff(heureArrivee, heureDepart);
+						}
+					} else {
+						if (heureArrivee != null) {
+							Double temps1 = DateUtils.diff(heureArrivee,
+									horairesJournaliers.getHorairesJournaliersEcole().getArriveeMatin());
+							tempsJour += temps1;
+						}
+						if (heureDepart != null) {
+							Double temps2 = DateUtils
+									.diff(horairesJournaliers.getHorairesJournaliersEcole().getDepartAprem(),
+											heureDepart);
+							tempsJour += temps2;
+						}
 					}
 					// FIXME TDU : temps midi ?
 
 					nbHeures.addHeuresReelles(tempsJour);
 					nbHeures.addHeuresNormalesReelles(heuresNormalesRef);
-
-					Double differencePeriscolaire = tempsJour - heuresNormalesRef;
-					if (differencePeriscolaire > 0) {
-						nbHeures.addHeuresComplementaires(differencePeriscolaire);
-					}
+					Double heuresComp = calculerHeuresComplementaires(tempsJour, heuresNormalesRef);
+					nbHeures.addHeuresComplementaires(heuresComp);
 
 					break;
 
 				case TEMPS_PLEIN:
 					if (heureArrivee != null && heureDepart != null) {
-
 						Double heuresGarde = DateUtils.diff(heureArrivee, heureDepart);
-
 						nbHeures.addHeuresReelles(heuresGarde);
 						nbHeures.addHeuresNormalesReelles(heuresNormalesRef);
-
-						Double difference = heuresGarde - heuresNormalesRef;
-						if (difference > 0) {
-							nbHeures.addHeuresComplementaires(difference);
-						}
-
+						nbHeures.addHeuresComplementaires(
+								calculerHeuresComplementaires(heuresGarde, heuresNormalesRef));
 					} else {
 						logger.error(TechniqueExceptionEnum.T001.getMessage(), saisie.getPrenom(),
 								saisie.getDateSaisie());
@@ -248,6 +248,18 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		nbHeures.roundValues();
 
 		return nbHeures;
+	}
+
+	private Double calculerHeuresComplementaires(Double tempsJour, Double heuresNormalesRef) {
+		if (tempsJour != null) {
+			if (heuresNormalesRef != null) {
+				Double difference = tempsJour - heuresNormalesRef;
+				return difference > 0 ? difference : 0d;
+			} else {
+				return tempsJour;
+			}
+		}
+		return 0d;
 	}
 
 	private Integer calculerJoursTravailles(Collection<SaisieJournaliere> donneesSaisies) {

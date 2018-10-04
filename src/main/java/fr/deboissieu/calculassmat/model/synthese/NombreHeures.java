@@ -25,20 +25,27 @@ public class NombreHeures implements Serializable {
 	private Double heuresComplementaires;
 
 	public void addHeuresNormalesReelles(Double amount) {
-		this.heuresNormalesReelles += amount;
+		if (amount != null) {
+			this.heuresNormalesReelles += amount;
+		}
 	}
 
 	public void addHeuresReelles(Double amount) {
-		this.heuresReelles += amount;
+		if (amount != null) {
+			this.heuresReelles += amount;
+		}
 	}
 
 	public void addHeuresComplementaires(Double amount) {
-		this.heuresComplementaires += amount;
+		if (amount != null) {
+			this.heuresComplementaires += amount;
+		}
 	}
 
 	public NombreHeures() {
 		this.heuresReelles = 0d;
 		this.heuresNormalesReelles = 0d;
+		this.heuresNormalesMensualisees = 0d;
 		this.heuresComplementaires = 0d;
 	}
 

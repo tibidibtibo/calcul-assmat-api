@@ -2,11 +2,11 @@ package fr.deboissieu.calculassmat;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import fr.deboissieu.calculassmat.model.parametrage.HeuresNormale;
+import fr.deboissieu.calculassmat.model.parametrage.HorairesEcole;
+import fr.deboissieu.calculassmat.model.parametrage.HorairesJournaliersEcole;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
@@ -53,18 +53,7 @@ public class TestUtils {
 		return employe;
 	}
 
-	public static Map<String, ParametrageEnfant> getMapParamEnfant() {
-		Map<String, ParametrageEnfant> mapParamEnfants = new HashMap<>();
-		ParametrageEnfant enfant1 = TestUtils.buildParametrageEnfant("enfant1", "type1", 0d, 0d, 0d);
-		enfant1.setHeuresNormales(getHeuresNormales(9d, 9d, 0d, 8d, 9d, 0d, 0d));
-		enfant1.setTypeGarde("TEMPS_PLEIN");
-		enfant1.setHeuresNormalesMensualisees(10.1d);
-		enfant1.setSalaireNetMensualise(250d);
-		mapParamEnfants.put(enfant1.getNom(), enfant1);
-		return mapParamEnfants;
-	}
-
-	private static List<HeuresNormale> getHeuresNormales(Double lundi, Double mardi, Double mercredi, Double jeudi,
+	public static List<HeuresNormale> getHeuresNormales(Double lundi, Double mardi, Double mercredi, Double jeudi,
 			Double vendredi,
 			Double samedi, Double dimanche) {
 		List<HeuresNormale> heures = new ArrayList<>();
@@ -76,5 +65,17 @@ public class TestUtils {
 		heures.add(new HeuresNormale(6, samedi));
 		heures.add(new HeuresNormale(7, dimanche));
 		return heures;
+	}
+
+	public static List<HorairesEcole> getHorairesEcole() {
+		List<HorairesEcole> horaires = new ArrayList<>();
+		horaires.add(new HorairesEcole(1, new HorairesJournaliersEcole("09:00", "12:00", "13:00", "16:30")));
+		horaires.add(new HorairesEcole(2, new HorairesJournaliersEcole("09:00", "12:00", "13:00", "16:30")));
+		horaires.add(new HorairesEcole(3, new HorairesJournaliersEcole()));
+		horaires.add(new HorairesEcole(4, new HorairesJournaliersEcole("09:00", "12:00", "13:00", "16:30")));
+		horaires.add(new HorairesEcole(5, new HorairesJournaliersEcole("09:00", "12:00", "13:00", "16:30")));
+		horaires.add(new HorairesEcole(6, new HorairesJournaliersEcole()));
+		horaires.add(new HorairesEcole(7, new HorairesJournaliersEcole()));
+		return horaires;
 	}
 }
