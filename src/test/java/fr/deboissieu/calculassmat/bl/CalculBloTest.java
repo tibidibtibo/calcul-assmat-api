@@ -1,11 +1,11 @@
 package fr.deboissieu.calculassmat.bl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
 import javax.annotation.Resource;
-import javax.ws.rs.core.Response;
 
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -64,7 +64,7 @@ public class CalculBloTest {
 
 	@Test
 	public void devraitCalculerLaSyntheseMensuelle()
-			throws EncryptedDocumentException, InvalidFormatException, IOException {
+			throws Exception {
 
 		Mockito.doReturn(null).when(excelFileBloMock).openFile(Mockito.anyString());
 		Mockito.doReturn(null).when(excelFileBloMock).extractDataFromWorkbook(Mockito.any(Workbook.class),
@@ -74,10 +74,8 @@ public class CalculBloTest {
 		Mockito.doReturn(synthese).when(syntheseBloMock).calculerFraisMensuels(Mockito.anyCollection(),
 				Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString());
 
-		Response response = calculBlo.calculerSyntheseGarde(9, 2018, "nom");
+		SyntheseGarde syntheseResponse = calculBlo.calculerSyntheseGarde(9, 2018, "nom");
 
-		assertThat(response).isNotNull();
-		SyntheseGarde syntheseResponse = (SyntheseGarde) response.getEntity();
 		assertThat(syntheseResponse).isNotNull();
 		assertThat(syntheseResponse.getAnnee()).isEqualTo("2018");
 		assertThat(syntheseResponse.getMois()).isEqualTo("9");
@@ -90,9 +88,13 @@ public class CalculBloTest {
 		Mockito.doThrow(new InvalidFormatException("Fichier pourri !")).when(excelFileBloMock)
 				.openFile(Mockito.anyString());
 
-		Response response = calculBlo.calculerSyntheseGarde(9, 2018, "nom");
+		SyntheseGarde syntheseResponse;
+		try {
+			syntheseResponse = calculBlo.calculerSyntheseGarde(9, 2018, "nom");
+			fail();
+		} catch (Exception e) {
+			assertThat(e).isNotNull();
+		}
 
-		assertThat(response).isNotNull();
-		assertThat(response.getStatus()).isEqualTo(500);
 	}
 }

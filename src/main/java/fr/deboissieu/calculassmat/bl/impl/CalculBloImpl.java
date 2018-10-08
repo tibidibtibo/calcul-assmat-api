@@ -3,7 +3,6 @@ package fr.deboissieu.calculassmat.bl.impl;
 import java.util.Collection;
 
 import javax.annotation.Resource;
-import javax.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,7 +31,7 @@ public class CalculBloImpl implements CalculBlo {
 	ArchivesBlo archivesBlo;
 
 	@Override
-	public Response calculerSyntheseGarde(int mois, int annee, String nomAssMat) {
+	public SyntheseGarde calculerSyntheseGarde(int mois, int annee, String nomAssMat) throws Exception {
 		try {
 
 			// FIXME : pour l'instant lecture du fichier dans le classpath, ensuite envoyé
@@ -45,11 +44,11 @@ public class CalculBloImpl implements CalculBlo {
 
 			archivesBlo.archiverTraitement(donneesSaisies, syntheseGarde, nomAssMat, mois, annee);
 
-			return Response.ok(syntheseGarde).build();
+			return syntheseGarde;
 
 		} catch (Exception e) {
 			logger.error("Impossible de traiter le fichier : {}", e);
-			return Response.serverError().build();
+			throw e;
 		}
 	}
 

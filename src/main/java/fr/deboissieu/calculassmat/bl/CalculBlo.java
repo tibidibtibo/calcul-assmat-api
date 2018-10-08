@@ -1,9 +1,9 @@
 package fr.deboissieu.calculassmat.bl;
 
-import javax.ws.rs.core.Response;
+import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
 public interface CalculBlo {
 
-	Response calculerSyntheseGarde(int mois, int numeroAnnee, String nomAssMat);
+	SyntheseGarde calculerSyntheseGarde(int mois, int numeroAnnee, String nomAssMat) throws Exception;
 
 }
