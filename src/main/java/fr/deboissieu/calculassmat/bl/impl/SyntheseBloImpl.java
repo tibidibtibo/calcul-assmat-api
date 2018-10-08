@@ -91,8 +91,8 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		Double salaireMensualise = calculerSalaireNetMensualise(mapParamEnfants, paramAssmat, nbHeures);
 		salaire.setSalaireNetMensualise(salaireMensualise);
 
-		Double salaireHeuresComplementaires = nbHeures.getHeuresComplementaires()
-				* paramAssmat.getTauxHoraireComplementaireNet();
+		Double salaireHeuresComplementaires = MathsUtils.roundTo2Digits(nbHeures.getHeuresComplementaires()
+				* paramAssmat.getTauxHoraireComplementaireNet());
 		salaire.setSalaireNetHeuresComplementaires(salaireHeuresComplementaires);
 
 		Double congesPayes = MathsUtils.roundTo2Digits(

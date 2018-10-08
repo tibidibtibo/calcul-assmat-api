@@ -110,7 +110,7 @@ public class SyntheseBloTest {
 		Collection<SaisieJournaliere> donneesSaisies = new ArrayList<>();
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 25),
-				"enfant2", "07:00", null, 1, 0d, 0, 0)); // 0 hc
+				"enfant2", "07:00", null, 1, 0d, 0, 0)); // 1 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 26),
 				"enfant2", "15:00", "17:00", 0, 4d, 0, 1)); // 2 hc
@@ -132,19 +132,84 @@ public class SyntheseBloTest {
 		assertThat(synthese.getNombreHeures().getHeuresNormalesMensualisees()).isEqualTo(2d);
 		assertThat(synthese.getNombreHeures().getHeuresNormalesReelles()).isEqualTo(4d);
 		assertThat(synthese.getNombreHeures().getHeuresReelles()).isEqualTo(7.5d);
-		assertThat(synthese.getNombreHeures().getHeuresComplementaires()).isEqualTo(3.5d);
+		assertThat(synthese.getNombreHeures().getHeuresComplementaires()).isEqualTo(4.5d);
 
 		assertThat(synthese.getSalaire()).isNotNull();
-		assertThat(synthese.getSalaire().getSalaireNetMensualise()).isEqualTo(250d);
-		assertThat(synthese.getSalaire().getSalaireNetHeuresComplementaires()).isEqualTo(3.5d);
-		assertThat(synthese.getSalaire().getCongesPayes()).isEqualTo(25.8d);
-		assertThat(synthese.getSalaire().getSalaireNetTotal()).isEqualTo(283.78d);
-		assertThat(synthese.getSalaire().getSalaireMensuel(synthese.getIndemnites())).isEqualTo(292.29d);
+		assertThat(synthese.getSalaire().getSalaireNetMensualise()).isEqualTo(104d);
+		assertThat(synthese.getSalaire().getSalaireNetHeuresComplementaires()).isEqualTo(13.05d);
+		assertThat(synthese.getSalaire().getCongesPayes()).isEqualTo(11.71d);
+		assertThat(synthese.getSalaire().getSalaireNetTotal()).isEqualTo(128.76d);
+		assertThat(synthese.getSalaire().getSalaireMensuel(synthese.getIndemnites())).isEqualTo(151.97d);
 
 		assertThat(synthese.getIndemnites()).isNotNull();
-		assertThat(synthese.getIndemnites().getIndemnitesEntretien()).isEqualTo(3d);
-		assertThat(synthese.getIndemnites().getIndemnitesKm()).isEqualTo(3.11d);
-		assertThat(synthese.getIndemnites().getIndemnitesRepas()).isEqualTo(2.4d);
+		assertThat(synthese.getIndemnites().getIndemnitesEntretien()).isEqualTo(6d);
+		assertThat(synthese.getIndemnites().getIndemnitesKm()).isEqualTo(14.11d);
+		assertThat(synthese.getIndemnites().getIndemnitesRepas()).isEqualTo(3.1d);
+
+	}
+
+	@Test
+	public void devraitCalculerLesInformationsDeSynthesePourTempsPleinEtPeriscolaire() {
+
+		ParametrageEmploye paramEmploye = TestUtils.getParametrageEmploye();
+		Map<String, ParametrageEnfant> mapParamEnfant = new HashMap<>();
+		mapParamEnfant.putAll(getMapParamEnfant1());
+		mapParamEnfant.putAll(getMapParamEnfant2());
+
+		doReturn(paramEmploye).when(parametrageBloMock).findEmployeParNom(Mockito.anyString());
+		doReturn(mapParamEnfant).when(parametrageBloMock).findAllParamsEnfants();
+
+		Collection<SaisieJournaliere> donneesSaisies = new ArrayList<>();
+
+		// Enfant 1
+		donneesSaisies.add(TestUtils.buildSaisie(
+				DateUtils.getDate(2018, 9, 25),
+				"enfant1", "07:00", "18:30", 0, 3.7d, 0, 1)); // 2.5 hc
+		donneesSaisies.add(TestUtils.buildSaisie(
+				DateUtils.getDate(2018, 9, 27),
+				"enfant1", "07:45", "17:30", 0, 3.7d, 0, 1)); // 1.75 hc
+		donneesSaisies.add(TestUtils.buildSaisie(
+				DateUtils.getDate(2018, 9, 28),
+				"enfant1", "08:00", "18:00", 0, 0d, 1, 1)); // 1 hc
+
+		// Enfant 2
+		donneesSaisies.add(TestUtils.buildSaisie(
+				DateUtils.getDate(2018, 9, 25),
+				"enfant2", "07:00", null, 1, 0d, 0, 0)); // 1 hc
+		donneesSaisies.add(TestUtils.buildSaisie(
+				DateUtils.getDate(2018, 9, 26),
+				"enfant2", "15:00", "17:00", 0, 4d, 0, 1)); // 2 hc
+		donneesSaisies.add(TestUtils.buildSaisie(
+				DateUtils.getDate(2018, 9, 27),
+				"enfant2", null, "17:30", 1, 0d, 0, 1)); // 0 hc
+		donneesSaisies.add(TestUtils.buildSaisie(
+				DateUtils.getDate(2018, 9, 28),
+				"enfant2", "08:00", "18:00", 2, 0d, 1, 1)); // 1.5 hc
+
+		SyntheseGarde synthese = syntheseBlo.calculerFraisMensuels(donneesSaisies, 9, 2018, "nom");
+
+		assertThat(synthese).isNotNull();
+		assertThat(synthese.getAnnee()).isEqualTo("2018");
+		assertThat(synthese.getMois()).isEqualTo("9");
+		assertThat(synthese.getNbJoursTravailles()).isEqualTo(4);
+
+		assertThat(synthese.getNombreHeures()).isNotNull();
+		assertThat(synthese.getNombreHeures().getHeuresNormalesMensualisees()).isEqualTo(12.1d);
+		assertThat(synthese.getNombreHeures().getHeuresNormalesReelles()).isEqualTo(30d);
+		assertThat(synthese.getNombreHeures().getHeuresReelles()).isEqualTo(38.75d);
+		assertThat(synthese.getNombreHeures().getHeuresComplementaires()).isEqualTo(9.75d);
+
+		assertThat(synthese.getSalaire()).isNotNull();
+		assertThat(synthese.getSalaire().getSalaireNetMensualise()).isEqualTo(354d);
+		assertThat(synthese.getSalaire().getSalaireNetHeuresComplementaires()).isEqualTo(28.27d);
+		assertThat(synthese.getSalaire().getCongesPayes()).isEqualTo(38.23d);
+		assertThat(synthese.getSalaire().getSalaireNetTotal()).isEqualTo(420.5d);
+		assertThat(synthese.getSalaire().getSalaireMensuel(synthese.getIndemnites())).isEqualTo(457.53);
+
+		assertThat(synthese.getIndemnites()).isNotNull();
+		assertThat(synthese.getIndemnites().getIndemnitesEntretien()).isEqualTo(10.5d);
+		assertThat(synthese.getIndemnites().getIndemnitesKm()).isEqualTo(20.33d);
+		assertThat(synthese.getIndemnites().getIndemnitesRepas()).isEqualTo(6.2d);
 
 	}
 
@@ -168,7 +233,5 @@ public class SyntheseBloTest {
 
 		return mapParamEnfants;
 	}
-
-	// FIXME : continuer les TU avec TEMPS PLEIN + PERISCOLAIRE
 
 }
