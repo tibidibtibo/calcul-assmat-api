@@ -88,7 +88,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		Salaire salaire = new Salaire();
 		salaire.setTauxHoraireNetHeureNormale(paramAssmat.getTauxHoraireNormalNet());
 		salaire.setTauxHoraireNetHeureComplementaire(paramAssmat.getTauxHoraireComplementaireNet());
-		Double salaireMensualise = calculerSalaireNetMensualise(mapParamEnfants, paramAssmat, nbHeures);
+		Double salaireMensualise = calculerSalaireNetMensualise(mapParamEnfants);
 		salaire.setSalaireNetMensualise(salaireMensualise);
 
 		Double salaireHeuresComplementaires = MathsUtils.roundTo2Digits(nbHeures.getHeuresComplementaires()
@@ -158,96 +158,103 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		return MathsUtils.roundTo2Digits(nbJours * employe.getIndemnitesEntretien());
 	}
 
-	private Double calculerSalaireNetMensualise(Map<String, ParametrageEnfant> mapParamEnfants,
-			ParametrageEmploye employe,
-			NombreHeures nbHeures) {
+	private Double calculerSalaireNetMensualise(Map<String, ParametrageEnfant> mapParamEnfants) {
 
 		Double salaireNet = 0d;
-
-		// Salaire mensualisé
 		for (ParametrageEnfant paramEnfant : mapParamEnfants.values()) {
 			salaireNet += paramEnfant.getSalaireNetMensualise();
 		}
-
 		return MathsUtils.roundTo2Digits(salaireNet);
 
 	}
 
-	private NombreHeures calculerNbHeures(Collection<SaisieJournaliere> donneesSaisies,
+	public NombreHeures calculerNbHeures(Collection<SaisieJournaliere> donneesSaisies,
 			Map<String, ParametrageEnfant> mapParamEnfants) {
 
 		NombreHeures nbHeures = new NombreHeures();
+		nbHeures.setHeuresNormalesMensualisees(mapParamEnfants);
 
 		if (CollectionUtils.isNotEmpty(donneesSaisies)) {
 
 			for (SaisieJournaliere saisie : donneesSaisies) {
 
-				ParametrageEnfant paramEnfant = mapParamEnfants.get(saisie.getPrenom());
-
 				LocalTime heureArrivee = DateUtils.toLocalTime(saisie.getHeureArrivee());
 				LocalTime heureDepart = DateUtils.toLocalTime(saisie.getHeureDepart());
 
+				ParametrageEnfant paramEnfant = mapParamEnfants.get(saisie.getPrenom());
 				// Récupération heures normales du jour
 				int jourSemaine = fr.deboissieu.calculassmat.commons.dateUtils.DateUtils
 						.getDayOfWeek(saisie.getDateSaisie());
 				Double heuresNormalesRef = paramEnfant.getHeuresNormales(jourSemaine);
 
-				switch (TypeGardeEnum.valueOf(paramEnfant.getTypeGarde())) {
-				case PERISCOLAIRE:
-
-					HorairesEcole horairesJournaliers = paramEnfant.getHorairesEcole(jourSemaine);
-
-					Double tempsJour = 0d;
-
-					if (horairesJournaliers.jourSansEcole()) {
-						// Pas d'école ce jour = temps plein
-						if (heureArrivee != null && heureDepart != null) {
-							tempsJour += DateUtils.diff(heureArrivee, heureDepart);
-						}
-					} else {
-						if (heureArrivee != null) {
-							Double temps1 = DateUtils.diff(heureArrivee,
-									horairesJournaliers.getHorairesJournaliersEcole().getArriveeMatin());
-							tempsJour += temps1;
-						}
-						if (heureDepart != null) {
-							Double temps2 = DateUtils
-									.diff(horairesJournaliers.getHorairesJournaliersEcole().getDepartAprem(),
-											heureDepart);
-							tempsJour += temps2;
-						}
-					}
-					// FIXME TDU : temps midi ?
-
-					nbHeures.addHeuresReelles(tempsJour);
-					nbHeures.addHeuresNormalesReelles(heuresNormalesRef);
-					Double heuresComp = calculerHeuresComplementaires(tempsJour, heuresNormalesRef);
-					nbHeures.addHeuresComplementaires(heuresComp);
-
-					break;
-
-				case TEMPS_PLEIN:
-					if (heureArrivee != null && heureDepart != null) {
-						Double heuresGarde = DateUtils.diff(heureArrivee, heureDepart);
-						nbHeures.addHeuresReelles(heuresGarde);
-						nbHeures.addHeuresNormalesReelles(heuresNormalesRef);
-						nbHeures.addHeuresComplementaires(
-								calculerHeuresComplementaires(heuresGarde, heuresNormalesRef));
-					} else {
-						logger.error(TechniqueExceptionEnum.T001.getMessage(), saisie.getPrenom(),
-								saisie.getDateSaisie());
-					}
-					break;
+				if (TypeGardeEnum.valueOf(paramEnfant.getTypeGarde()).equals(TypeGardeEnum.PERISCOLAIRE)) {
+					calculTempsPeriscolaire(nbHeures, saisie, paramEnfant, heureArrivee, heureDepart, jourSemaine,
+							heuresNormalesRef);
+				} else if (TypeGardeEnum.valueOf(paramEnfant.getTypeGarde()).equals(TypeGardeEnum.TEMPS_PLEIN)) {
+					calculerTempsPlein(nbHeures, saisie, heureArrivee, heureDepart, heuresNormalesRef);
 				}
 
 			}
 		}
 
-		nbHeures.setHeuresNormalesMensualisees(mapParamEnfants);
-
+		// Post traitement
 		nbHeures.roundValues();
 
 		return nbHeures;
+	}
+
+	private void calculerTempsPlein(NombreHeures nbHeures, SaisieJournaliere saisie, LocalTime heureArrivee,
+			LocalTime heureDepart, Double heuresNormalesRef) {
+		if (heureArrivee != null && heureDepart != null) {
+			Double heuresGarde = DateUtils.diff(heureArrivee, heureDepart);
+			nbHeures.addHeuresReelles(heuresGarde);
+			nbHeures.addHeuresNormalesReelles(heuresNormalesRef);
+			nbHeures.addHeuresComplementaires(
+					calculerHeuresComplementaires(heuresGarde, heuresNormalesRef));
+		} else {
+			logger.error(TechniqueExceptionEnum.T001.getMessage(), saisie.getPrenom(),
+					saisie.getDateSaisie());
+		}
+	}
+
+	private void calculTempsPeriscolaire(NombreHeures nbHeures, SaisieJournaliere saisie, ParametrageEnfant paramEnfant,
+			LocalTime heureArrivee, LocalTime heureDepart, int jourSemaine, Double heuresNormalesRef) {
+		HorairesEcole horairesJournaliers = paramEnfant.getHorairesEcole(jourSemaine);
+
+		Double tempsJour = 0d;
+
+		// Calcul temps de garde matin/soir
+		if (horairesJournaliers.jourSansEcole()) {
+			// Pas d'école ce jour = temps plein
+			if (heureArrivee != null && heureDepart != null) {
+				tempsJour += DateUtils.diff(heureArrivee, heureDepart);
+			}
+		} else {
+			if (heureArrivee != null) {
+				Double temps1 = DateUtils.diff(heureArrivee,
+						horairesJournaliers.getHorairesJournaliersEcole().getArriveeMatin());
+				tempsJour += temps1;
+			}
+			if (heureDepart != null) {
+				Double temps2 = DateUtils
+						.diff(horairesJournaliers.getHorairesJournaliersEcole().getDepartAprem(),
+								heureDepart);
+				tempsJour += temps2;
+			}
+		}
+
+		// Calcul du temps de garde midi
+		if (!horairesJournaliers.jourSansEcole() && saisie.getNbDejeuners() != null
+				&& saisie.getNbDejeuners() > 0) {
+			Double tempMidi = DateUtils
+					.diff(horairesJournaliers.getHorairesJournaliersEcole().getDepartMatin(),
+							horairesJournaliers.getHorairesJournaliersEcole().getArriveeAprem());
+			tempsJour += tempMidi;
+		}
+
+		nbHeures.addHeuresReelles(tempsJour);
+		nbHeures.addHeuresNormalesReelles(heuresNormalesRef);
+		nbHeures.addHeuresComplementaires(calculerHeuresComplementaires(tempsJour, heuresNormalesRef));
 	}
 
 	private Double calculerHeuresComplementaires(Double tempsJour, Double heuresNormalesRef) {
@@ -265,7 +272,8 @@ public class SyntheseBloImpl implements SyntheseBlo {
 	private Integer calculerJoursTravailles(Collection<SaisieJournaliere> donneesSaisies) {
 		Map<String, SaisieJournaliere> mapJoursTravailles = new HashMap<>();
 		for (SaisieJournaliere saisie : donneesSaisies) {
-			String key = DateUtils.formatDate(saisie.getDateSaisie(), "dd-MM-yyyy", TimeZone.getDefault());
+			String key = DateUtils.formatDate(saisie.getDateSaisie(), DateUtils.DATE_FORMAT_PATTERN,
+					TimeZone.getDefault());
 			mapJoursTravailles.put(key, saisie);
 		}
 		if (MapUtils.isNotEmpty(mapJoursTravailles)) {

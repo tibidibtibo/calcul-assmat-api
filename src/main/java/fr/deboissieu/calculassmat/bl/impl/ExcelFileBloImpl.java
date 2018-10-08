@@ -9,7 +9,6 @@ import java.util.Iterator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -28,7 +27,7 @@ public class ExcelFileBloImpl implements ExcelFileBlo {
 	private static final Logger logger = LogManager.getLogger(ExcelFileBloImpl.class);
 
 	@Override
-	public Workbook openFile(String fileName) throws EncryptedDocumentException, InvalidFormatException, IOException {
+	public Workbook openFile(String fileName) throws InvalidFormatException, IOException {
 
 		File file = new File(getClass().getClassLoader().getResource(fileName).getFile());
 
