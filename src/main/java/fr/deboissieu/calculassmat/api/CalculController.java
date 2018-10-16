@@ -45,7 +45,8 @@ public class CalculController {
 	}
 
 	@LogCall
-	@RequestMapping(produces = "application/json", method = RequestMethod.POST, value = "/file/{annee}/{mois}/{nomEmploye}")
+	@RequestMapping(produces = "application/json", method = { RequestMethod.OPTIONS,
+			RequestMethod.POST }, value = "/file/{annee}/{mois}/{nomEmploye}")
 	public SyntheseGarde calculerFichier(@RequestParam("files") MultipartFile[] files,
 			@PathVariable("annee") String annee, @PathVariable("mois") String mois,
 			@PathVariable("nomEmploye") String nomEmploye) throws Exception {
