@@ -11,11 +11,11 @@ import fr.deboissieu.calculassmat.configuration.LogCall;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "http://localhost:8888")
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class AuthenticationController {
 
 	@LogCall
-	@RequestMapping(method = { RequestMethod.OPTIONS, RequestMethod.POST }, value = "/user")
+	@RequestMapping(method = { RequestMethod.OPTIONS, RequestMethod.GET }, value = "/user")
 	public Principal user(Principal user) {
 		return user;
 	}
