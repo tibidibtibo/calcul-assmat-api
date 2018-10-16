@@ -25,7 +25,7 @@ import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
 @RestController
 @RequestMapping("/calcul")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:8888")
 public class CalculController {
 
 	@Resource
