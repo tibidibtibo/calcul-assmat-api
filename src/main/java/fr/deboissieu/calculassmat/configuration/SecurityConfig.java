@@ -8,7 +8,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -33,11 +32,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
-		http.cors().and()
-				.httpBasic().and()
-				.authorizeRequests().antMatchers("/index.html", "/", "/auth", "/login").permitAll()
-				.anyRequest().authenticated().and()
-				.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+		http.cors()
+				.and().httpBasic()
+				.and().authorizeRequests()
+				.antMatchers("/index.html", "/", "/auth/user", "/login", "/logout").permitAll()
+				.anyRequest().authenticated()
+				.and().csrf().disable();
 
 	}
 

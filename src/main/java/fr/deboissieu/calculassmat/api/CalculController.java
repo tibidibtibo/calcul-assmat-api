@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 import javax.annotation.Resource;
 
@@ -36,15 +33,6 @@ public class CalculController {
 
 	@Resource
 	private ValidationBlo validationBlo;
-
-	@LogCall
-	@RequestMapping("/test")
-	public Map<String, Object> home() {
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("id", UUID.randomUUID().toString());
-		model.put("content", "TEST !!");
-		return model;
-	}
 
 	@LogCall
 	@RequestMapping(produces = "application/json", method = RequestMethod.GET, value = "/{annee}/{mois}/{nomEmploye}")
