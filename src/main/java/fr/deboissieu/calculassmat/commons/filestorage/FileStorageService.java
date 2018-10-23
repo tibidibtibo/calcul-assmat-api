@@ -29,7 +29,8 @@ public class FileStorageService {
 		try {
 			Files.createDirectories(this.fileStorageLocation);
 		} catch (Exception ex) {
-			throw new FileStorageException("Could not create the directory where the uploaded files will be stored.",
+			throw new FileStorageException(
+					"Impossible de créer le répertoire de stockage temporaire, une erreur est survenue : ",
 					ex);
 		}
 	}
@@ -41,7 +42,7 @@ public class FileStorageService {
 		try {
 			// Check if the file's name contains invalid characters
 			if (fileName.contains("..")) {
-				throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
+				throw new FileStorageException("Le chemin du fichier est invalide : " + fileName);
 			}
 
 			// Copy file to the target location (Replacing existing file with the same name)
@@ -50,21 +51,23 @@ public class FileStorageService {
 
 			return fileName;
 		} catch (IOException ex) {
-			throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
+			throw new FileStorageException(
+					"Impossible d'enregistrer le fichier '" + fileName + "'. Merci de réessayer ! Erreur : ", ex);
 		}
 	}
 
 	public Resource loadFileAsResource(String fileName) {
+		String fileNotFoundMsg = "Fichier introuvable ";
 		try {
 			Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
 			Resource resource = new UrlResource(filePath.toUri());
 			if (resource.exists()) {
 				return resource;
 			} else {
-				throw new MyFileNotFoundException("File not found " + fileName);
+				throw new MyFileNotFoundException(fileNotFoundMsg + fileName);
 			}
 		} catch (MalformedURLException ex) {
-			throw new MyFileNotFoundException("File not found " + fileName, ex);
+			throw new MyFileNotFoundException(fileNotFoundMsg + fileName, ex);
 		}
 	}
 }

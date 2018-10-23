@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import javax.annotation.Resource;
 
@@ -19,6 +20,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import fr.deboissieu.calculassmat.bl.impl.CalculBloImpl;
+import fr.deboissieu.calculassmat.commons.filestorage.FileStorageService;
+import fr.deboissieu.calculassmat.commons.mocks.ResourceMock;
+import fr.deboissieu.calculassmat.commons.mocks.WorkbookMock;
 import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
 @RunWith(SpringRunner.class)
@@ -46,6 +50,11 @@ public class CalculBloTest {
 		ArchivesBlo getArchivesBlo() {
 			return Mockito.mock(ArchivesBlo.class);
 		}
+
+		@Bean
+		FileStorageService getFileStorageService() {
+			return Mockito.mock(FileStorageService.class);
+		}
 	}
 
 	@Resource
@@ -53,6 +62,9 @@ public class CalculBloTest {
 
 	@Resource
 	SyntheseBlo syntheseBloMock;
+
+	@Resource
+	FileStorageService fileStorageServiceMock;
 
 	@Resource
 	CalculBlo calculBlo;
@@ -66,15 +78,18 @@ public class CalculBloTest {
 	public void devraitCalculerLaSyntheseMensuelle()
 			throws Exception {
 
-		Mockito.doReturn(null).when(excelFileBloMock).openFile(Mockito.anyString());
-		Mockito.doReturn(null).when(excelFileBloMock).extractDataFromWorkbook(Mockito.any(Workbook.class),
+		Mockito.doReturn(new WorkbookMock()).when(excelFileBloMock).openFileAsWorkbook(null);
+		Mockito.doReturn(Arrays.asList(new WorkbookMock())).when(excelFileBloMock).extractDataFromWorkbook(
+				Mockito.any(Workbook.class),
 				Mockito.anyInt());
+		org.springframework.core.io.Resource resource = new ResourceMock();
+		Mockito.doReturn(resource).when(fileStorageServiceMock).loadFileAsResource(Mockito.anyString());
 
 		SyntheseGarde synthese = new SyntheseGarde(9, 2018);
 		Mockito.doReturn(synthese).when(syntheseBloMock).calculerFraisMensuels(Mockito.anyCollection(),
 				Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString());
 
-		SyntheseGarde syntheseResponse = calculBlo.calculerSyntheseGarde(9, 2018, "nom");
+		SyntheseGarde syntheseResponse = calculBlo.calculerSyntheseGardeFromFilename(9, 2018, "nom", "path");
 
 		assertThat(syntheseResponse).isNotNull();
 		assertThat(syntheseResponse.getAnnee()).isEqualTo("2018");
@@ -84,13 +99,17 @@ public class CalculBloTest {
 	@Test
 	public void devraitPlanterACauseEchecDeChargementDuFichier()
 			throws EncryptedDocumentException, InvalidFormatException, IOException {
-
+		Mockito.doReturn(Arrays.asList(new WorkbookMock())).when(excelFileBloMock).extractDataFromWorkbook(
+				Mockito.any(Workbook.class),
+				Mockito.anyInt());
+		org.springframework.core.io.Resource resource = new ResourceMock();
+		Mockito.doReturn(resource).when(fileStorageServiceMock).loadFileAsResource(Mockito.anyString());
 		Mockito.doThrow(new InvalidFormatException("Fichier pourri !")).when(excelFileBloMock)
-				.openFile(Mockito.anyString());
+				.openFileAsWorkbook(null);
 
 		SyntheseGarde syntheseResponse;
 		try {
-			syntheseResponse = calculBlo.calculerSyntheseGarde(9, 2018, "nom");
+			syntheseResponse = calculBlo.calculerSyntheseGardeFromFilename(9, 2018, "nom", "path");
 			fail();
 		} catch (Exception e) {
 			assertThat(e).isNotNull();

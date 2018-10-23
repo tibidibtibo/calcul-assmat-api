@@ -36,35 +36,12 @@ public class CalculBloImpl implements CalculBlo {
 	FileStorageService fileStorageService;
 
 	@Override
-	public SyntheseGarde calculerSyntheseGarde(int mois, int annee, String nomAssMat) throws Exception {
-		try {
-
-			// FIXME : pour l'instant lecture du fichier dans le classpath, ensuite envoyé
-			// en attachement
-			Workbook workbook = excelFileBlo.openFile("testFiles/suivi_garde_test.xlsx");
-
-			Collection<SaisieJournaliere> donneesSaisies = excelFileBlo.extractDataFromWorkbook(workbook, mois);
-
-			SyntheseGarde syntheseGarde = syntheseBlo.calculerFraisMensuels(donneesSaisies, mois, annee, nomAssMat);
-
-			archivesBlo.archiverTraitement(donneesSaisies, syntheseGarde, nomAssMat, mois, annee);
-
-			return syntheseGarde;
-
-		} catch (Exception e) {
-			logger.error("Impossible de traiter le fichier : {}", e);
-			throw e;
-		}
-	}
-
-	@Override
 	public SyntheseGarde calculerSyntheseGardeFromFilename(int mois, int annee, String nomAssMat, String filename)
 			throws Exception {
 		try {
 
 			org.springframework.core.io.Resource fileResource = fileStorageService.loadFileAsResource(filename);
 			File file = fileResource.getFile();
-			System.out.println(file);
 
 			Workbook workbook = excelFileBlo.openFileAsWorkbook(file);
 
