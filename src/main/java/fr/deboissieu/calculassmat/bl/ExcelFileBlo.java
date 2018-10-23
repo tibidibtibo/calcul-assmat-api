@@ -1,5 +1,6 @@
 package fr.deboissieu.calculassmat.bl;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 
@@ -14,5 +15,7 @@ public interface ExcelFileBlo {
 	Workbook openFile(String fileName) throws EncryptedDocumentException, InvalidFormatException, IOException;
 
 	Collection<SaisieJournaliere> extractDataFromWorkbook(Workbook workbook, int mois);
+
+	Workbook openFileAsWorkbook(File file) throws InvalidFormatException, IOException;
 
 }

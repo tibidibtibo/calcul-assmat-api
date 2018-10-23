@@ -41,6 +41,18 @@ public class ExcelFileBloImpl implements ExcelFileBlo {
 	}
 
 	@Override
+	public Workbook openFileAsWorkbook(File file) throws InvalidFormatException, IOException {
+
+		// Creating a Workbook from an Excel file (.xls or .xlsx)
+		Workbook workbook = WorkbookFactory.create(file);
+
+		// Retrieving the number of sheets in the Workbook
+		logger.info("Ouverture du fichier '{}' - {} feuille(s)", file.getPath(), workbook.getNumberOfSheets());
+
+		return workbook;
+	}
+
+	@Override
 	public Collection<SaisieJournaliere> extractDataFromWorkbook(Workbook workbook, int mois) {
 		Sheet feuille1 = workbook.getSheetAt(0);
 

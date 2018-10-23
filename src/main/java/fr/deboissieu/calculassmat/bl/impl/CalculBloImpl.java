@@ -1,5 +1,6 @@
 package fr.deboissieu.calculassmat.bl.impl;
 
+import java.io.File;
 import java.util.Collection;
 
 import javax.annotation.Resource;
@@ -13,6 +14,7 @@ import fr.deboissieu.calculassmat.bl.ArchivesBlo;
 import fr.deboissieu.calculassmat.bl.CalculBlo;
 import fr.deboissieu.calculassmat.bl.ExcelFileBlo;
 import fr.deboissieu.calculassmat.bl.SyntheseBlo;
+import fr.deboissieu.calculassmat.commons.filestorage.FileStorageService;
 import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
 import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
@@ -30,6 +32,9 @@ public class CalculBloImpl implements CalculBlo {
 	@Resource
 	ArchivesBlo archivesBlo;
 
+	@Resource
+	FileStorageService fileStorageService;
+
 	@Override
 	public SyntheseGarde calculerSyntheseGarde(int mois, int annee, String nomAssMat) throws Exception {
 		try {
@@ -44,6 +49,32 @@ public class CalculBloImpl implements CalculBlo {
 
 			archivesBlo.archiverTraitement(donneesSaisies, syntheseGarde, nomAssMat, mois, annee);
 
+			return syntheseGarde;
+
+		} catch (Exception e) {
+			logger.error("Impossible de traiter le fichier : {}", e);
+			throw e;
+		}
+	}
+
+	@Override
+	public SyntheseGarde calculerSyntheseGardeFromFilename(int mois, int annee, String nomAssMat, String filename)
+			throws Exception {
+		try {
+
+			org.springframework.core.io.Resource fileResource = fileStorageService.loadFileAsResource(filename);
+			File file = fileResource.getFile();
+			System.out.println(file);
+
+			Workbook workbook = excelFileBlo.openFileAsWorkbook(file);
+
+			Collection<SaisieJournaliere> donneesSaisies = excelFileBlo.extractDataFromWorkbook(workbook, mois);
+
+			SyntheseGarde syntheseGarde = syntheseBlo.calculerFraisMensuels(donneesSaisies, mois, annee, nomAssMat);
+
+			archivesBlo.archiverTraitement(donneesSaisies, syntheseGarde, nomAssMat, mois, annee);
+
+			workbook.close();
 			return syntheseGarde;
 
 		} catch (Exception e) {
