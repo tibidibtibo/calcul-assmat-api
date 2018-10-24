@@ -1,7 +1,5 @@
 package fr.deboissieu.calculassmat.configuration;
 
-import javax.ws.rs.ApplicationPath;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -15,7 +13,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
 @EnableSwagger2
-@ApplicationPath("api")
 public class WsConfig extends WebMvcConfigurationSupport {
 
 	@Bean
@@ -23,7 +20,7 @@ public class WsConfig extends WebMvcConfigurationSupport {
 		return new Docket(DocumentationType.SWAGGER_2)
 				.select()
 				.apis(RequestHandlerSelectors.basePackage("fr.deboissieu.calculassmat.api"))
-				.paths(PathSelectors.regex("/calcul.*"))
+				.paths(PathSelectors.regex("/.*"))
 				.build();
 
 	}
@@ -36,9 +33,5 @@ public class WsConfig extends WebMvcConfigurationSupport {
 		registry.addResourceHandler("/webjars/**")
 				.addResourceLocations("classpath:/META-INF/resources/webjars/");
 	}
-
-	// public WsConfig() {
-	// packages("fr.deboissieu.calculassmat.api");
-	// }
 
 }
