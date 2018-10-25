@@ -2,14 +2,13 @@ package fr.deboissieu.calculassmat.api;
 
 import java.security.Principal;
 
-import javax.ws.rs.core.Response;
-
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.deboissieu.calculassmat.configuration.LogCall;
+import fr.deboissieu.calculassmat.model.authentication.ServerAlive;
 
 @RestController
 @RequestMapping("/auth")
@@ -24,7 +23,7 @@ public class AuthenticationController {
 
 	@LogCall
 	@RequestMapping(method = { RequestMethod.OPTIONS, RequestMethod.GET }, value = "/alive")
-	public Response isServerAlive() {
-		return Response.ok("OK").build();
+	public ServerAlive isServerAlive() {
+		return new ServerAlive();
 	}
 }
