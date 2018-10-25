@@ -20,4 +20,9 @@ public class AuthenticationController {
 		return user;
 	}
 
+	@LogCall
+	@RequestMapping(produces = "application/json", method = { RequestMethod.GET }, value = "/alive")
+	public boolean isServerAlive() {
+		return true;
+	}
 }

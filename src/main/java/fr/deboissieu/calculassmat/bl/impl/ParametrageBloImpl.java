@@ -1,6 +1,7 @@
 package fr.deboissieu.calculassmat.bl.impl;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -39,6 +40,11 @@ public class ParametrageBloImpl implements ParametrageBlo {
 	@Override
 	public ParametrageEmploye findEmployeParNom(String nom) {
 		return paramEmployeRepository.findByNom(nom);
+	}
+
+	@Override
+	public List<ParametrageEmploye> findAllEmployes() {
+		return paramEmployeRepository.findAll();
 	}
 
 }

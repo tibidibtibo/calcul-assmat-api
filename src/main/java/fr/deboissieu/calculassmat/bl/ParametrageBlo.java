@@ -1,5 +1,6 @@
 package fr.deboissieu.calculassmat.bl;
 
+import java.util.List;
 import java.util.Map;
 
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
@@ -10,7 +11,8 @@ public interface ParametrageBlo {
 	/**
 	 * Recherche les paramètres enfant et retourne une map par prénom
 	 * 
-	 * @return Map<String, ParametrageEnfant> paramètres enfant par nom
+	 * @return {@link Map}<{@link String}, {@link ParametrageEnfant}> paramètres
+	 *         enfant par nom
 	 */
 	public Map<String, ParametrageEnfant> findAllParamsEnfants();
 
@@ -18,8 +20,14 @@ public interface ParametrageBlo {
 	 * Recherche le paramétrage employé par nom
 	 * 
 	 * @param string
-	 * @return
+	 * @return {@link ParametrageEmploye}
 	 */
 	public ParametrageEmploye findEmployeParNom(String nom);
 
+	/**
+	 * Retourne la liste des employés
+	 * 
+	 * @return {@link List}<{@link ParametrageEmploye}>
+	 */
+	public List<ParametrageEmploye> findAllEmployes();
 }
