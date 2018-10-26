@@ -30,4 +30,11 @@ public interface ParametrageBlo {
 	 * @return {@link List}<{@link ParametrageEmploye}>
 	 */
 	public List<ParametrageEmploye> findAllEmployes();
+
+	/**
+	 * Recherche le paramétrage des employés
+	 * 
+	 * @return Liste de {@link ParametrageEmploye} paramétrage employé
+	 */
+	public List<ParametrageEmploye> getAllEmployes();
 }
