@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 
 import fr.deboissieu.calculassmat.bl.ParametrageBlo;
@@ -38,8 +39,9 @@ public class ParametrageBloImpl implements ParametrageBlo {
 	}
 
 	@Override
-	public ParametrageEmploye findEmployeParNom(String nom) {
-		return paramEmployeRepository.findByNom(nom);
+	public ParametrageEmploye findEmployeParId(String idEmploye) {
+		ObjectId objectIdEmploye = new ObjectId(idEmploye);
+		return paramEmployeRepository.findBy_id(objectIdEmploye);
 	}
 
 	@Override

@@ -17,12 +17,12 @@ public interface ParametrageBlo {
 	public Map<String, ParametrageEnfant> findAllParamsEnfants();
 
 	/**
-	 * Recherche le paramétrage employé par nom
+	 * Recherche le paramétrage employé par idEmploye
 	 * 
 	 * @param string
 	 * @return {@link ParametrageEmploye}
 	 */
-	public ParametrageEmploye findEmployeParNom(String nom);
+	public ParametrageEmploye findEmployeParId(String idEmploye);
 
 	/**
 	 * Retourne la liste des employés

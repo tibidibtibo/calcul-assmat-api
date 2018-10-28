@@ -21,7 +21,6 @@ public class AuthenticationController {
 		return user;
 	}
 
-	@LogCall
 	@RequestMapping(method = { RequestMethod.OPTIONS, RequestMethod.GET }, value = "/alive")
 	public ServerAlive isServerAlive() {
 		return new ServerAlive();

@@ -32,17 +32,17 @@ public class CalculController {
 
 	@LogCall
 	@RequestMapping(produces = "application/json", method = { RequestMethod.OPTIONS,
-			RequestMethod.POST }, value = "/file/{annee}/{mois}/{nomEmploye}")
+			RequestMethod.POST }, value = "/file/{annee}/{mois}/{idEmploye}")
 	public SyntheseGarde calculerFichier(@RequestParam("fichier") MultipartFile multipartFile,
 			@PathVariable("annee") String annee, @PathVariable("mois") String mois,
-			@PathVariable("nomEmploye") String nomEmploye) throws Exception {
+			@PathVariable("idEmploye") String idEmploye) throws Exception {
 
 		String fileName = fileStorageService.storeFile(multipartFile);
 
 		int numeroMois = validationBlo.validerPathParamCalculMoisAnnee(mois);
 		int numeroAnnee = validationBlo.validerPathParamCalculMoisAnnee(annee);
-		String nomAssMat = validationBlo.validerPathParamNomAssmat(nomEmploye);
+		String idAssmat = validationBlo.validerPathParamNomAssmat(idEmploye);
 
-		return calculBlo.calculerSyntheseGardeFromFilename(numeroMois, numeroAnnee, nomAssMat, fileName);
+		return calculBlo.calculerSyntheseGardeFromFilename(numeroMois, numeroAnnee, idAssmat, fileName);
 	}
 }

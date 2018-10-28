@@ -49,16 +49,16 @@ public class ValidationBloImpl implements ValidationBlo {
 	}
 
 	@Override
-	public String validerPathParamNomAssmat(String nomEmploye) {
-		if (StringUtils.isBlank(nomEmploye)) {
+	public String validerPathParamNomAssmat(String idEmploye) {
+		if (StringUtils.isBlank(idEmploye)) {
 			throw new ValidationException(ValidationExceptionsEnum.V002.getMessage());
 		}
-		ParametrageEmploye employe = parametrageBlo.findEmployeParNom(nomEmploye);
+		ParametrageEmploye employe = parametrageBlo.findEmployeParId(idEmploye);
 		if (employe == null) {
 			throw new ValidationException(
-					ValidationExceptionsEnum.V003.toString(nomEmploye, new ValidationException()));
+					ValidationExceptionsEnum.V003.toString(idEmploye, new ValidationException()));
 		}
-		return nomEmploye;
+		return idEmploye;
 	}
 
 	@Override

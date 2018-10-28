@@ -1,6 +1,6 @@
 package fr.deboissieu.calculassmat.api;
 
-import java.util.List;
+import java.util.Collection;
 
 import javax.annotation.Resource;
 import javax.validation.ValidationException;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import fr.deboissieu.calculassmat.bl.ParametrageBlo;
 import fr.deboissieu.calculassmat.commons.exceptions.ValidationExceptionsEnum;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
+import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmployeDto;
 
 @RestController
 @RequestMapping("/parametrage")
@@ -24,8 +25,8 @@ public class ParametrageController {
 	ParametrageBlo parametrageBlo;
 
 	@RequestMapping(method = RequestMethod.GET, path = "/employes")
-	public List<ParametrageEmploye> getAllEmployes() {
-		return parametrageBlo.getAllEmployes();
+	public Collection<ParametrageEmployeDto> getAllEmployes() {
+		return ParametrageEmployeDto.from(parametrageBlo.getAllEmployes());
 	}
 
 	@RequestMapping(method = RequestMethod.GET, path = "/employes/:id")

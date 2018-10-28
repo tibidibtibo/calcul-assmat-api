@@ -21,10 +21,10 @@ public interface ValidationBlo {
 	/**
 	 * Validation du nom de l'employé (avec check en base)
 	 * 
-	 * @param nomEmploye
+	 * @param idEmploye
 	 * @return
 	 */
-	String validerPathParamNomAssmat(String nomEmploye);
+	String validerPathParamNomAssmat(String idEmploye);
 
 	/**
 	 * Validation des données avant synthèse
