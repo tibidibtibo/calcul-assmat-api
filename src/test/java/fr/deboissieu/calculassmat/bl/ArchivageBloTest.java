@@ -1,13 +1,16 @@
 package fr.deboissieu.calculassmat.bl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -19,6 +22,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import fr.deboissieu.calculassmat.bl.impl.ArchivesBloImpl;
 import fr.deboissieu.calculassmat.dl.ArchivesRepository;
 import fr.deboissieu.calculassmat.model.archives.Archive;
+import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
+import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
 import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
@@ -66,7 +71,11 @@ public class ArchivageBloTest {
 		SyntheseGarde synthese = new SyntheseGarde(9, 2018);
 		synthese.setMontantPaiementMensuel(1000d);
 
-		archivesBlo.archiverTraitement(saisie, synthese, "nomAssmat", 9, 2018);
+		ParametrageEmploye paramEmploye = new ParametrageEmploye();
+		paramEmploye.set_id(new ObjectId("5baff2462efb71c0790b6e55"));
+		Map<String, ParametrageEnfant> paramsEnfant = new HashMap<>();
+
+		archivesBlo.archiverTraitement(saisie, synthese, 9, 2018, paramEmploye, paramsEnfant);
 
 		ArgumentCaptor<Archive> archiveCaptor = ArgumentCaptor.forClass(Archive.class);
 
@@ -74,7 +83,6 @@ public class ArchivageBloTest {
 		assertThat(archiveCaptor.getValue()).isNotNull();
 		assertThat(archiveCaptor.getValue().getMois()).isEqualTo(9);
 		assertThat(archiveCaptor.getValue().getAnnee()).isEqualTo(2018);
-		assertThat(archiveCaptor.getValue().getEmploye()).isEqualTo("nomAssmat");
 		assertThat(archiveCaptor.getValue().getHorodatage()).isNotNull();
 		assertThat(archiveCaptor.getValue().getSaisie()).hasSize(2);
 		assertThat(archiveCaptor.getValue().getSaisie()).extracting("prenom").contains("enfant1", "enf2");

@@ -3,6 +3,7 @@ package fr.deboissieu.calculassmat.bl.impl;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -15,8 +16,11 @@ import org.springframework.stereotype.Component;
 import fr.deboissieu.calculassmat.bl.ArchivesBlo;
 import fr.deboissieu.calculassmat.bl.CalculBlo;
 import fr.deboissieu.calculassmat.bl.ExcelFileBlo;
+import fr.deboissieu.calculassmat.bl.ParametrageBlo;
 import fr.deboissieu.calculassmat.bl.SyntheseBlo;
 import fr.deboissieu.calculassmat.commons.filestorage.FileStorageService;
+import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
+import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
 import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
@@ -35,10 +39,13 @@ public class CalculBloImpl implements CalculBlo {
 	ArchivesBlo archivesBlo;
 
 	@Resource
+	ParametrageBlo parametrageBlo;
+
+	@Resource
 	FileStorageService fileStorageService;
 
 	@Override
-	public SyntheseGarde calculerSyntheseGardeFromFilename(int mois, int annee, String nomAssMat, String filename)
+	public SyntheseGarde calculerSyntheseGardeFromFilename(int mois, int annee, String idAssmat, String filename)
 			throws Exception {
 
 		Workbook workbook = openWorkbook(filename);
@@ -48,8 +55,13 @@ public class CalculBloImpl implements CalculBlo {
 
 		try {
 			Collection<SaisieJournaliere> donneesSaisies = excelFileBlo.extractDataFromWorkbook(workbook, mois);
-			syntheseGarde = syntheseBlo.calculerFraisMensuels(donneesSaisies, mois, annee, nomAssMat);
-			archivesBlo.archiverTraitement(donneesSaisies, syntheseGarde, nomAssMat, mois, annee);
+
+			ParametrageEmploye paramAssmat = parametrageBlo.findEmployeParId(idAssmat);
+			Map<String, ParametrageEnfant> mapParamEnfants = parametrageBlo.findAllParamsEnfants();
+
+			syntheseGarde = syntheseBlo.calculerFraisMensuels(donneesSaisies, mois, annee, paramAssmat,
+					mapParamEnfants);
+			archivesBlo.archiverTraitement(donneesSaisies, syntheseGarde, mois, annee, paramAssmat, mapParamEnfants);
 		} catch (Exception e) {
 			logger.error("Impossible de traiter le fichier : {}", e);
 			exception = e;

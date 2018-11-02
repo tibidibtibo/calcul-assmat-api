@@ -2,9 +2,12 @@ package fr.deboissieu.calculassmat.bl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -19,10 +22,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import fr.deboissieu.calculassmat.TestUtils;
 import fr.deboissieu.calculassmat.bl.impl.CalculBloImpl;
 import fr.deboissieu.calculassmat.commons.filestorage.FileStorageService;
 import fr.deboissieu.calculassmat.commons.mocks.ResourceMock;
 import fr.deboissieu.calculassmat.commons.mocks.WorkbookMock;
+import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
+import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
 @RunWith(SpringRunner.class)
@@ -34,6 +40,11 @@ public class CalculBloTest {
 		@Bean
 		CalculBlo getCalculBlo() {
 			return new CalculBloImpl();
+		}
+
+		@Bean
+		ParametrageBlo getParametrageBlo() {
+			return Mockito.mock(ParametrageBlo.class);
 		}
 
 		@Bean
@@ -69,6 +80,9 @@ public class CalculBloTest {
 	@Resource
 	CalculBlo calculBlo;
 
+	@Resource
+	ParametrageBlo parametrageBloMock;
+
 	@Before
 	public void before() {
 		Mockito.reset(excelFileBloMock, syntheseBloMock);
@@ -77,6 +91,13 @@ public class CalculBloTest {
 	@Test
 	public void devraitCalculerLaSyntheseMensuelle()
 			throws Exception {
+
+		// Arrange
+		ParametrageEmploye paramEmploye = TestUtils.getParametrageEmploye();
+		Map<String, ParametrageEnfant> mapParamEnfant = getMapParamEnfant2();
+
+		doReturn(paramEmploye).when(parametrageBloMock).findEmployeParId(Mockito.anyString());
+		doReturn(mapParamEnfant).when(parametrageBloMock).findAllParamsEnfants();
 
 		Mockito.doReturn(new WorkbookMock()).when(excelFileBloMock).openFileAsWorkbook(null);
 		Mockito.doReturn(Arrays.asList(new WorkbookMock())).when(excelFileBloMock).extractDataFromWorkbook(
@@ -87,7 +108,7 @@ public class CalculBloTest {
 
 		SyntheseGarde synthese = new SyntheseGarde(9, 2018);
 		Mockito.doReturn(synthese).when(syntheseBloMock).calculerFraisMensuels(Mockito.anyCollection(),
-				Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString());
+				Mockito.anyInt(), Mockito.anyInt(), Mockito.any(ParametrageEmploye.class), Mockito.any(Map.class));
 
 		SyntheseGarde syntheseResponse = calculBlo.calculerSyntheseGardeFromFilename(9, 2018, "nom", "path");
 
@@ -115,5 +136,16 @@ public class CalculBloTest {
 			assertThat(e).isNotNull();
 		}
 
+	}
+
+	public static Map<String, ParametrageEnfant> getMapParamEnfant2() {
+		Map<String, ParametrageEnfant> mapParamEnfants = new HashMap<>();
+
+		ParametrageEnfant enfant2 = TestUtils.buildParametrageEnfant("enfant2", "PERISCOLAIRE", 104d, 2d, 3.2d);
+		enfant2.setHeuresNormales(TestUtils.getHeuresNormales(2d, 1d, 0d, 2d, 1d, 0d, 0d));
+		enfant2.setHorairesEcole(TestUtils.getHorairesEcole());
+		mapParamEnfants.put(enfant2.getNom(), enfant2);
+
+		return mapParamEnfants;
 	}
 }

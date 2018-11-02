@@ -6,4 +6,5 @@ import fr.deboissieu.calculassmat.model.archives.Archive;
 
 public interface ArchivesRepository extends MongoRepository<Archive, String> {
 
+	// TODO : archives all
 }

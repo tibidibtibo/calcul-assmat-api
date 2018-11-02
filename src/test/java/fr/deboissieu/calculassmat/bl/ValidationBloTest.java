@@ -92,7 +92,7 @@ public class ValidationBloTest {
 	@Test
 	public void devraitValiderLesDonneesAvantCalcul() {
 
-		String expectedMessage = "Données invalides pour le calcul de la synthèse.";
+		String expectedMessage = "Impossible de charger le paramétrage.";
 
 		try {
 			validationBlo.validerAvantCalcul(new ArrayList<>(), null, null);
@@ -140,7 +140,7 @@ public class ValidationBloTest {
 					.contains(expectedMessage);
 		}
 
-		doReturn(new ParametrageEmploye()).when(parametrageBloMock).findEmployeParNom("nom");
+		doReturn(new ParametrageEmploye()).when(parametrageBloMock).findEmployeParId("nom");
 		assertThat(validationBlo.validerPathParamNomAssmat("nom")).isEqualTo("nom");
 	}
 
@@ -149,7 +149,7 @@ public class ValidationBloTest {
 
 		String expectedMessage = "Erreur V-003 : Employé inconnu. - Variable saisie : nom";
 
-		doReturn(null).when(parametrageBloMock).findEmployeParNom("nom");
+		doReturn(null).when(parametrageBloMock).findEmployeParId("nom");
 		try {
 			validationBlo.validerPathParamNomAssmat("nom");
 			fail();
@@ -158,7 +158,7 @@ public class ValidationBloTest {
 					.contains(expectedMessage);
 		}
 
-		doReturn(new ParametrageEmploye()).when(parametrageBloMock).findEmployeParNom("nom");
+		doReturn(new ParametrageEmploye()).when(parametrageBloMock).findEmployeParId("nom");
 		assertThat(validationBlo.validerPathParamNomAssmat("nom")).isEqualTo("nom");
 	}
 

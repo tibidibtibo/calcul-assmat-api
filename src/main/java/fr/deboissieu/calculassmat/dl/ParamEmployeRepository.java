@@ -7,8 +7,6 @@ import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 
 public interface ParamEmployeRepository extends MongoRepository<ParametrageEmploye, String> {
 
-	ParametrageEmploye findByNom(String nom);
-
 	ParametrageEmploye findBy_id(ObjectId objectIdEmploye);
 
 }

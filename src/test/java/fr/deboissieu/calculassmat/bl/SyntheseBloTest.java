@@ -1,7 +1,7 @@
 package fr.deboissieu.calculassmat.bl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.doReturn;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -65,7 +65,7 @@ public class SyntheseBloTest {
 		ParametrageEmploye paramEmploye = TestUtils.getParametrageEmploye();
 		Map<String, ParametrageEnfant> mapParamEnfant = getMapParamEnfant1();
 
-		doReturn(paramEmploye).when(parametrageBloMock).findEmployeParNom(Mockito.anyString());
+		doReturn(paramEmploye).when(parametrageBloMock).findEmployeParId(Mockito.anyString());
 		doReturn(mapParamEnfant).when(parametrageBloMock).findAllParamsEnfants();
 
 		Collection<SaisieJournaliere> donneesSaisies = new ArrayList<>();
@@ -77,7 +77,8 @@ public class SyntheseBloTest {
 				"enfant1", "08:00", "18:00", 2, 0d, 1, 1));
 
 		// Act
-		SyntheseGarde synthese = syntheseBlo.calculerFraisMensuels(donneesSaisies, 9, 2018, "nom");
+		SyntheseGarde synthese = syntheseBlo.calculerFraisMensuels(donneesSaisies, 9, 2018, paramEmploye,
+				mapParamEnfant);
 
 		// Assert
 		assertThat(synthese).isNotNull();
@@ -112,7 +113,7 @@ public class SyntheseBloTest {
 		ParametrageEmploye paramEmploye = TestUtils.getParametrageEmploye();
 		Map<String, ParametrageEnfant> mapParamEnfant = getMapParamEnfant2();
 
-		doReturn(paramEmploye).when(parametrageBloMock).findEmployeParNom(Mockito.anyString());
+		doReturn(paramEmploye).when(parametrageBloMock).findEmployeParId(Mockito.anyString());
 		doReturn(mapParamEnfant).when(parametrageBloMock).findAllParamsEnfants();
 
 		Collection<SaisieJournaliere> donneesSaisies = new ArrayList<>();
@@ -130,7 +131,8 @@ public class SyntheseBloTest {
 				"enfant2", "08:00", "18:00", 2, 0d, 1, 1)); // 1.5 hc
 
 		// Act
-		SyntheseGarde synthese = syntheseBlo.calculerFraisMensuels(donneesSaisies, 9, 2018, "nom");
+		SyntheseGarde synthese = syntheseBlo.calculerFraisMensuels(donneesSaisies, 9, 2018, paramEmploye,
+				mapParamEnfant);
 
 		// Assert
 		assertThat(synthese).isNotNull();
@@ -167,7 +169,7 @@ public class SyntheseBloTest {
 		mapParamEnfant.putAll(getMapParamEnfant1());
 		mapParamEnfant.putAll(getMapParamEnfant2());
 
-		doReturn(paramEmploye).when(parametrageBloMock).findEmployeParNom(Mockito.anyString());
+		doReturn(paramEmploye).when(parametrageBloMock).findEmployeParId(Mockito.anyString());
 		doReturn(mapParamEnfant).when(parametrageBloMock).findAllParamsEnfants();
 
 		Collection<SaisieJournaliere> donneesSaisies = new ArrayList<>();
@@ -198,7 +200,8 @@ public class SyntheseBloTest {
 				"enfant2", "08:00", "18:00", 2, 0d, 1, 1)); // 1.5 hc
 
 		// Act
-		SyntheseGarde synthese = syntheseBlo.calculerFraisMensuels(donneesSaisies, 9, 2018, "nom");
+		SyntheseGarde synthese = syntheseBlo.calculerFraisMensuels(donneesSaisies, 9, 2018, paramEmploye,
+				mapParamEnfant);
 
 		// Assert
 		assertThat(synthese).isNotNull();

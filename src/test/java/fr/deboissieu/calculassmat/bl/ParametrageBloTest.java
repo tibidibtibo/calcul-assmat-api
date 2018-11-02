@@ -1,9 +1,7 @@
 package fr.deboissieu.calculassmat.bl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +10,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -100,25 +99,25 @@ public class ParametrageBloTest {
 
 		ParametrageEmploye employe = new ParametrageEmploye();
 		employe.setPrenom("employeTest");
-		doReturn(employe).when(paramEmployeRepoMock).findByNom("test");
+		doReturn(employe).when(paramEmployeRepoMock).findBy_id(Mockito.any(ObjectId.class));
 
-		ParametrageEmploye paramEmploye = parametrageBlo.findEmployeParNom("test");
+		ParametrageEmploye paramEmploye = parametrageBlo.findEmployeParId("5baff2462efb71c0790b6e55");
 
 		assertThat(paramEmploye).isNotNull();
 		assertThat(paramEmploye.getPrenom()).isEqualTo("employeTest");
 
-		verify(paramEmployeRepoMock, times(1)).findByNom("test");
+		verify(paramEmployeRepoMock, times(1)).findBy_id(Mockito.any(ObjectId.class));
 	}
 
 	@Test
 	public void neDevraitPasTrouverDEmploye() {
 
-		doReturn(null).when(paramEmployeRepoMock).findByNom("test");
+		doReturn(null).when(paramEmployeRepoMock).findBy_id(Mockito.any(ObjectId.class));
 
-		ParametrageEmploye paramEmploye = parametrageBlo.findEmployeParNom("test");
+		ParametrageEmploye paramEmploye = parametrageBlo.findEmployeParId("5baff2462efb71c0790b6e55");
 
 		assertThat(paramEmploye).isNull();
 
-		verify(paramEmployeRepoMock, times(1)).findByNom("test");
+		verify(paramEmployeRepoMock, times(1)).findBy_id(Mockito.any(ObjectId.class));
 	}
 }

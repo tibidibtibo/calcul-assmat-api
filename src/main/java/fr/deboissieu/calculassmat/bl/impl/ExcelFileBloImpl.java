@@ -52,7 +52,7 @@ public class ExcelFileBloImpl implements ExcelFileBlo {
 			Row row = rowIterator.next();
 			if (counter > ExcelFileRowMapper.HEADER_ROW) {
 				Date dateSaisie = ExcelFileRowMapper.extraireDateSaisie(row);
-				if (DateUtils.getMonthNumber(dateSaisie).equals(mois)) {
+				if (dateSaisie != null && DateUtils.getMonthNumber(dateSaisie).equals(mois)) {
 					SaisieJournaliere saisieJournaliere = ExcelFileRowMapper.toSaisieJournaliere(row, dateSaisie);
 					if (saisieJournaliere != null) {
 						data.add(saisieJournaliere);

@@ -6,6 +6,8 @@ import java.util.Date;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmployeDto;
+import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfantDto;
 import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
 import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 import lombok.AllArgsConstructor;
@@ -26,10 +28,11 @@ public class Archive implements Serializable {
 
 	private int annee;
 
-	private String employe;
-
 	private Collection<SaisieJournaliere> saisie;
 
 	private SyntheseGarde synthese;
 
+	private ParametrageEmployeDto parametrageEmploye;
+
+	private Collection<ParametrageEnfantDto> parametrageEnfants;
 }
