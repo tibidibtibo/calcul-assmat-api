@@ -22,7 +22,7 @@ public class ArchivesController {
 	ArchivesBlo archivesBlo;
 
 	@LogCall
-	@RequestMapping(method = { RequestMethod.OPTIONS, RequestMethod.GET }, value = "/user")
+	@RequestMapping(produces = "application/json", method = { RequestMethod.GET }, value = "/all")
 	public List<Archive> getArchives() {
 		return archivesBlo.getArchives();
 	}

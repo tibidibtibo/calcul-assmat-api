@@ -31,7 +31,7 @@ public class CalculController {
 	private FileStorageService fileStorageService;
 
 	@LogCall
-	@RequestMapping(produces = "application/json", method = { RequestMethod.OPTIONS,
+	@RequestMapping(produces = "application/json", method = {
 			RequestMethod.POST }, value = "/file/{annee}/{mois}/{idEmploye}")
 	public SyntheseGarde calculerFichier(@RequestParam("fichier") MultipartFile multipartFile,
 			@PathVariable("annee") String annee, @PathVariable("mois") String mois,

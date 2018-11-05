@@ -32,8 +32,7 @@ public class ParametrageController {
 	@RequestMapping(method = RequestMethod.GET, path = "/employes/:id")
 	public ParametrageEmploye getOneEmploye(@PathVariable String id) {
 		if (id != null) {
-			// TODO
-			// return parametrageBlo.findEmploye(id);
+			return parametrageBlo.findEmployeParId(id);
 		}
 		throw new ValidationException(ValidationExceptionsEnum.V004.getMessage());
 	}

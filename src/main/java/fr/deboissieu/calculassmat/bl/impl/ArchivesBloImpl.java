@@ -43,8 +43,7 @@ public class ArchivesBloImpl implements ArchivesBlo {
 
 	@Override
 	public List<Archive> getArchives() {
-		// TODO Auto-generated method stub
-		return null;
+		return archivesRepository.findAll();
 	}
 
 }
