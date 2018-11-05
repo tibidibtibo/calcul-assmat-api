@@ -24,12 +24,12 @@ public class ParametrageController {
 	@Resource
 	ParametrageBlo parametrageBlo;
 
-	@RequestMapping(method = RequestMethod.GET, path = "/employes")
+	@RequestMapping(method = { RequestMethod.GET, RequestMethod.OPTIONS }, path = "/employes")
 	public Collection<ParametrageEmployeDto> getAllEmployes() {
 		return ParametrageEmployeDto.from(parametrageBlo.getAllEmployes());
 	}
 
-	@RequestMapping(method = RequestMethod.GET, path = "/employes/:id")
+	@RequestMapping(method = { RequestMethod.GET, RequestMethod.OPTIONS }, path = "/employes/:id")
 	public ParametrageEmploye getOneEmploye(@PathVariable String id) {
 		if (id != null) {
 			return parametrageBlo.findEmployeParId(id);
