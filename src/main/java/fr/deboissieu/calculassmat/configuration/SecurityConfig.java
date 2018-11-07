@@ -51,7 +51,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.anyRequest().authenticated()
 				.and()
 				.exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+				.and()
+				// Custom logout handler only exists to handle a CORS problem with /logout
+				// where spring-session processes the logout request/response before it gets
+				// to the CORS filter so it doesn't get the allow-origin header which then
+				// causes the browser to reject the /logout response. Manually set the
+				// allow-origin header in the logout handler and Bob's your uncle.
+				.logout()
+				.logoutUrl("/logout")
+				.logoutSuccessHandler(new CustomLogoutSuccessHandler())
+				.addLogoutHandler(new CustomLogoutHandler())
+				.invalidateHttpSession(true);
+
 		http
 				.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
 	}
