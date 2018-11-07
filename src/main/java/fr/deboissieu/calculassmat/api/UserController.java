@@ -3,6 +3,7 @@ package fr.deboissieu.calculassmat.api;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -13,6 +14,7 @@ import fr.deboissieu.calculassmat.configuration.LogCall;
 import fr.deboissieu.calculassmat.model.authentication.User;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:8888", maxAge = 3600)
 public class UserController {
 
 	@Autowired
