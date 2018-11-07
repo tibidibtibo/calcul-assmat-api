@@ -1,44 +1,62 @@
 package fr.deboissieu.calculassmat.configuration;
 
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-	@Value(value = "${basic.auth.user}")
-	private String basicAuthUser;
-
-	@Value(value = "${basic.auth.encoded.password}")
-	private String basicAuthEncodedPassword;
+	@Resource(name = "userService")
+	private UserDetailsService userDetailsService;
 
 	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+	private JwtAuthenticationEntryPoint unauthorizedHandler;
 
-		auth.inMemoryAuthentication()
-				.passwordEncoder(new BCryptPasswordEncoder())
-				.withUser(basicAuthUser)
-				.password(basicAuthEncodedPassword)
-				.roles("USER");
+	@Override
+	@Bean
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
+	}
+
+	@Autowired
+	public void globalUserDetails(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(userDetailsService)
+				.passwordEncoder(encoder());
+	}
+
+	@Bean
+	public JwtAuthenticationFilter authenticationTokenFilterBean() throws Exception {
+		return new JwtAuthenticationFilter();
 	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-
-		http.cors()
-				.and().httpBasic()
-				.and().authorizeRequests()
-				.antMatchers("/index.html", "/auth/user", "/auth/alive", "/login", "/logout").permitAll()
+		http.cors().and().csrf().disable().authorizeRequests()
+				.antMatchers("/token/*").permitAll()
 				.anyRequest().authenticated()
-				.and().csrf().disable();
+				.and()
+				.exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		http
+				.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
+	}
 
+	@Bean
+	public BCryptPasswordEncoder encoder() {
+		return new BCryptPasswordEncoder();
 	}
 
 }
