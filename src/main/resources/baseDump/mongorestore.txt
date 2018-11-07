@@ -1,1 +1,1 @@
-mongorestore -d assmat
+mongorestore --db assmat .\dump\assmat\ --drop
