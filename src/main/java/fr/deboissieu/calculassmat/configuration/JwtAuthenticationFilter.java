@@ -21,6 +21,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.SignatureException;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -44,10 +45,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				logger.error("an error occured during getting username from token", e);
 			} catch (ExpiredJwtException e) {
 				logger.warn("the token is expired and not valid anymore", e);
+			} catch (SignatureException e) {
+				logger.error("Authentication Failed. Username or Password not valid.");
 			}
-			// catch (SignatureException e) {
-			// logger.error("Authentication Failed. Username or Password not valid.");
-			// }
 		} else {
 			logger.warn("couldn't find bearer string, will ignore the header");
 		}
