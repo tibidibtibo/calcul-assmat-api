@@ -47,7 +47,7 @@ public class AuthenticationController {
 		return ResponseEntity.ok(new AuthToken(token));
 	}
 
-	@RequestMapping(method = { RequestMethod.OPTIONS, RequestMethod.GET }, value = "/alive")
+	@RequestMapping(method = { RequestMethod.GET }, value = "/alive")
 	public ServerAlive isServerAlive() {
 		return new ServerAlive();
 	}
