@@ -15,6 +15,7 @@ import fr.deboissieu.calculassmat.bl.ParametrageBlo;
 import fr.deboissieu.calculassmat.commons.exceptions.ValidationExceptionsEnum;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmployeDto;
+import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfantDto;
 
 @RestController
 @RequestMapping("/parametrage")
@@ -24,12 +25,17 @@ public class ParametrageController {
 	@Resource
 	ParametrageBlo parametrageBlo;
 
-	@RequestMapping(method = { RequestMethod.GET, RequestMethod.OPTIONS }, path = "/employes")
+	@RequestMapping(method = { RequestMethod.GET }, path = "/employes")
 	public Collection<ParametrageEmployeDto> getAllEmployes() {
 		return ParametrageEmployeDto.from(parametrageBlo.getAllEmployes());
 	}
 
-	@RequestMapping(method = { RequestMethod.GET, RequestMethod.OPTIONS }, path = "/employes/:id")
+	@RequestMapping(method = { RequestMethod.GET }, path = "/enfants")
+	public Collection<ParametrageEnfantDto> getAllEnfants() {
+		return ParametrageEnfantDto.from(parametrageBlo.getAllEnfants());
+	}
+
+	@RequestMapping(method = { RequestMethod.GET }, path = "/employes/:id")
 	public ParametrageEmploye getOneEmploye(@PathVariable String id) {
 		if (id != null) {
 			return parametrageBlo.findEmployeParId(id);

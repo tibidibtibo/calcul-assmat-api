@@ -54,4 +54,9 @@ public class ParametrageBloImpl implements ParametrageBlo {
 		return paramEmployeRepository.findAll();
 	}
 
+	@Override
+	public Collection<ParametrageEnfant> getAllEnfants() {
+		return paramEnfantRepository.findAll();
+	}
+
 }

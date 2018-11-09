@@ -1,5 +1,6 @@
 package fr.deboissieu.calculassmat.bl;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -37,4 +38,11 @@ public interface ParametrageBlo {
 	 * @return Liste de {@link ParametrageEmploye} paramétrage employé
 	 */
 	public List<ParametrageEmploye> getAllEmployes();
+
+	/**
+	 * Recherche le paramétrage des enfants
+	 * 
+	 * @return Liste de {@link ParametrageEnfant} paramétrage enfant
+	 */
+	public Collection<ParametrageEnfant> getAllEnfants();
 }
