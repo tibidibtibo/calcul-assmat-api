@@ -22,6 +22,8 @@ public class WsConfig extends WebMvcConfigurationSupport {
 				.apis(RequestHandlerSelectors.basePackage("fr.deboissieu.calculassmat.api"))
 				.paths(PathSelectors.regex("/.*"))
 				.build();
+		// .securitySchemes(Arrays.asList(securityScheme()))
+		// .securityContexts(Arrays.asList(securityContext()));
 
 	}
 
