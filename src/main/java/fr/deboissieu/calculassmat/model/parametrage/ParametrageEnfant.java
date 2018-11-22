@@ -21,7 +21,7 @@ public class ParametrageEnfant implements Serializable {
 	@Id
 	private ObjectId _id;
 
-	private ObjectId employeId;
+	private List<ObjectId> employesIds;
 
 	private String nom;
 

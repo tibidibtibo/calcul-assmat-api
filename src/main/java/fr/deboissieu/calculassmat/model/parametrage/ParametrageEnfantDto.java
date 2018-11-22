@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import fr.deboissieu.calculassmat.commons.IdentifiantUtils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,7 +19,7 @@ public class ParametrageEnfantDto implements Serializable {
 
 	private String id;
 
-	private String employeId;
+	private List<String> employesIds;
 
 	private String nom;
 
@@ -50,7 +51,7 @@ public class ParametrageEnfantDto implements Serializable {
 	public static ParametrageEnfantDto from(ParametrageEnfant paramEnfant) {
 		ParametrageEnfantDto paramEnfantDto = new ParametrageEnfantDto();
 		paramEnfantDto.setId(paramEnfant.get_id().toHexString());
-		paramEnfantDto.setEmployeId(paramEnfant.getEmployeId().toHexString());
+		paramEnfantDto.setEmployesIds(IdentifiantUtils.convertToHexIds(paramEnfant.getEmployesIds()));
 		paramEnfantDto.setNom(paramEnfant.getNom());
 		paramEnfantDto.setTypeGarde(paramEnfant.getTypeGarde());
 		paramEnfantDto.setSalaireNetMensualise(paramEnfant.getSalaireNetMensualise());
