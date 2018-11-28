@@ -35,7 +35,7 @@ public class ParametrageController {
 		return ParametrageEnfantDto.from(parametrageBlo.getAllEnfants());
 	}
 
-	@RequestMapping(method = { RequestMethod.GET }, path = "/employes/:id")
+	@RequestMapping(method = { RequestMethod.GET }, path = "/employes/{id}")
 	public ParametrageEmploye getOneEmploye(@PathVariable String id) {
 		if (id != null) {
 			return parametrageBlo.findEmployeParId(id);
@@ -43,13 +43,15 @@ public class ParametrageController {
 		throw new ValidationException(ValidationExceptionsEnum.V004.getMessage());
 	}
 
-	@RequestMapping(method = { RequestMethod.DELETE }, path = "/employes/:id")
+	@RequestMapping(method = { RequestMethod.DELETE }, path = "/employes/{id}")
 	public void deleteParamEmploye(@PathVariable String id) {
 		// TODO
+		System.out.println("Delete : " + id);
 	}
 
-	@RequestMapping(method = { RequestMethod.DELETE }, path = "/enfants/:id")
+	@RequestMapping(method = { RequestMethod.DELETE }, path = "/enfants/{id}")
 	public void deleteParamEnfants(@PathVariable String id) {
 		// TODO
+		System.out.println("Delete : " + id);
 	}
 }
