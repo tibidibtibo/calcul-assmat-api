@@ -42,4 +42,14 @@ public class ParametrageController {
 		}
 		throw new ValidationException(ValidationExceptionsEnum.V004.getMessage());
 	}
+
+	@RequestMapping(method = { RequestMethod.DELETE }, path = "/employes/:id")
+	public void deleteParamEmploye(@PathVariable String id) {
+		// TODO
+	}
+
+	@RequestMapping(method = { RequestMethod.DELETE }, path = "/enfants/:id")
+	public void deleteParamEnfants(@PathVariable String id) {
+		// TODO
+	}
 }
