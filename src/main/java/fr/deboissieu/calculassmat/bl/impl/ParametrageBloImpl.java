@@ -62,9 +62,13 @@ public class ParametrageBloImpl implements ParametrageBlo {
 
 	@Override
 	public void updateParamEmploye(ParametrageEmployeDto paramEmployeDto) {
-		// TODO Auto-generated method stub
 		ParametrageEmploye paramEmploye = ParametrageEmployeDto.from(paramEmployeDto);
 		paramEmployeRepository.save(paramEmploye);
+	}
+
+	@Override
+	public void deleteParamEmploye(String employeId) {
+		paramEmployeRepository.deleteById(employeId);
 	}
 
 }

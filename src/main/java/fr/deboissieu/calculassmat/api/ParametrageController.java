@@ -36,8 +36,7 @@ public class ParametrageController {
 
 	@RequestMapping(method = { RequestMethod.DELETE }, path = "/employes/{id}")
 	public void deleteParamEmploye(@PathVariable String id) {
-		// TODO
-		System.out.println("Delete : " + id);
+		parametrageBlo.deleteParamEmploye(id);
 	}
 
 	@RequestMapping(method = { RequestMethod.PUT }, path = "/employes/{id}")

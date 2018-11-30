@@ -53,4 +53,11 @@ public interface ParametrageBlo {
 	 * @param paramEmploye
 	 */
 	public void updateParamEmploye(ParametrageEmployeDto paramEmployeDto);
+
+	/**
+	 * Suppression du paramétrage
+	 * 
+	 * @param employeId
+	 */
+	public void deleteParamEmploye(String employeId);
 }
