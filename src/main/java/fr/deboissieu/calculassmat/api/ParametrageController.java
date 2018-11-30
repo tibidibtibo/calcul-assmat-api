@@ -25,14 +25,23 @@ public class ParametrageController {
 	@Resource
 	ParametrageBlo parametrageBlo;
 
+	// Employes
+	// --------
+
 	@RequestMapping(method = { RequestMethod.GET }, path = "/employes")
 	public Collection<ParametrageEmployeDto> getAllEmployes() {
 		return ParametrageEmployeDto.from(parametrageBlo.getAllEmployes());
 	}
 
-	@RequestMapping(method = { RequestMethod.GET }, path = "/enfants")
-	public Collection<ParametrageEnfantDto> getAllEnfants() {
-		return ParametrageEnfantDto.from(parametrageBlo.getAllEnfants());
+	@RequestMapping(method = { RequestMethod.DELETE }, path = "/employes/{id}")
+	public void deleteParamEmploye(@PathVariable String id) {
+		// TODO
+		System.out.println("Delete : " + id);
+	}
+
+	@RequestMapping(method = { RequestMethod.PUT }, path = "/employes/{id}")
+	public void updateParamEmploye(@PathVariable String id, ParametrageEmployeDto updateEmployeRequest) {
+		parametrageBlo.updateParamEmploye(updateEmployeRequest);
 	}
 
 	@RequestMapping(method = { RequestMethod.GET }, path = "/employes/{id}")
@@ -43,15 +52,22 @@ public class ParametrageController {
 		throw new ValidationException(ValidationExceptionsEnum.V004.getMessage());
 	}
 
-	@RequestMapping(method = { RequestMethod.DELETE }, path = "/employes/{id}")
-	public void deleteParamEmploye(@PathVariable String id) {
-		// TODO
-		System.out.println("Delete : " + id);
+	// Enfants
+	// --------
+	@RequestMapping(method = { RequestMethod.GET }, path = "/enfants")
+	public Collection<ParametrageEnfantDto> getAllEnfants() {
+		return ParametrageEnfantDto.from(parametrageBlo.getAllEnfants());
 	}
 
 	@RequestMapping(method = { RequestMethod.DELETE }, path = "/enfants/{id}")
 	public void deleteParamEnfants(@PathVariable String id) {
 		// TODO
 		System.out.println("Delete : " + id);
+	}
+
+	@RequestMapping(method = { RequestMethod.PUT }, path = "/enfants/{id}")
+	public void updateParamEnfants(@PathVariable String id) {
+		// TODO
+		System.out.println("Update : " + id);
 	}
 }

@@ -16,6 +16,7 @@ import fr.deboissieu.calculassmat.bl.ParametrageBlo;
 import fr.deboissieu.calculassmat.dl.ParamEmployeRepository;
 import fr.deboissieu.calculassmat.dl.ParamEnfantRepository;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
+import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmployeDto;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 
 @Component
@@ -57,6 +58,13 @@ public class ParametrageBloImpl implements ParametrageBlo {
 	@Override
 	public Collection<ParametrageEnfant> getAllEnfants() {
 		return paramEnfantRepository.findAll();
+	}
+
+	@Override
+	public void updateParamEmploye(ParametrageEmployeDto paramEmployeDto) {
+		// TODO Auto-generated method stub
+		ParametrageEmploye paramEmploye = ParametrageEmployeDto.from(paramEmployeDto);
+		paramEmployeRepository.save(paramEmploye);
 	}
 
 }

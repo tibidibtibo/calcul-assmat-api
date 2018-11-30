@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
+import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmployeDto;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 
 public interface ParametrageBlo {
@@ -45,4 +46,11 @@ public interface ParametrageBlo {
 	 * @return Liste de {@link ParametrageEnfant} paramétrage enfant
 	 */
 	public Collection<ParametrageEnfant> getAllEnfants();
+
+	/**
+	 * Update de l'objet {@link ParametrageEmploye}
+	 * 
+	 * @param paramEmploye
+	 */
+	public void updateParamEmploye(ParametrageEmployeDto paramEmployeDto);
 }
