@@ -7,6 +7,7 @@ import javax.validation.ValidationException;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,7 +41,7 @@ public class ParametrageController {
 	}
 
 	@RequestMapping(method = { RequestMethod.PUT }, path = "/employes/{id}")
-	public void updateParamEmploye(@PathVariable String id, ParametrageEmployeDto updateEmployeRequest) {
+	public void updateParamEmploye(@PathVariable String id, @RequestBody ParametrageEmployeDto updateEmployeRequest) {
 		parametrageBlo.updateParamEmploye(updateEmployeRequest);
 	}
 
