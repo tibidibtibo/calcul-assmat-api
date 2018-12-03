@@ -16,7 +16,9 @@ public class SaisieJournaliere implements Serializable {
 
 	private Date dateSaisie;
 
-	private String prenom;
+	private String employe;
+
+	private String enfant;
 
 	private String heureArrivee;
 

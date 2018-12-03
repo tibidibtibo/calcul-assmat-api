@@ -33,7 +33,7 @@ public class ParametrageEmployeDto implements Serializable {
 
 	private Double indemnitesKm;
 
-	private Double indemnitesEntretien;
+	private IndemnitesEntretien indemnitesEntretien;
 
 	private Double fraisDejeuner;
 

@@ -7,6 +7,7 @@ import java.util.List;
 import fr.deboissieu.calculassmat.model.parametrage.HeuresNormale;
 import fr.deboissieu.calculassmat.model.parametrage.HorairesEcole;
 import fr.deboissieu.calculassmat.model.parametrage.HorairesJournaliersEcole;
+import fr.deboissieu.calculassmat.model.parametrage.IndemnitesEntretien;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
@@ -30,7 +31,7 @@ public class TestUtils {
 			Integer nbArEcole, Double autresDeplacementKm, Integer nbDejeuners, Integer nbGouters) {
 		SaisieJournaliere saisie = new SaisieJournaliere();
 		saisie.setDateSaisie(dateSaisie);
-		saisie.setPrenom(prenom);
+		saisie.setEnfant(prenom);
 		saisie.setHeureArrivee(heureArrivee);
 		saisie.setHeureDepart(heureDepart);
 		saisie.setNbArEcole(nbArEcole);
@@ -45,7 +46,7 @@ public class TestUtils {
 		employe.setTauxHoraireComplementaireNet(2.90d);
 		employe.setTauxCongesPayes(0.10d);
 		employe.setIndemnitesKm(0.84d);
-		employe.setIndemnitesEntretien(1.5d);
+		employe.setIndemnitesEntretien(new IndemnitesEntretien(8d, 2.90d, 3.10d));
 		employe.setFraisDejeuner(1d);
 		employe.setFraisGouter(0.7d);
 		employe.setNom("maternelle");

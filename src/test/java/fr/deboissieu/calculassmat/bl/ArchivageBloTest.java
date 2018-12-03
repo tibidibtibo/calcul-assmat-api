@@ -1,7 +1,7 @@
 package fr.deboissieu.calculassmat.bl;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,10 +61,10 @@ public class ArchivageBloTest {
 	public void devraitArchiverLesObjets() {
 		Collection<SaisieJournaliere> saisie = new ArrayList<>();
 		SaisieJournaliere saisie1 = new SaisieJournaliere();
-		saisie1.setPrenom("enfant1");
+		saisie1.setEnfant("enfant1");
 		saisie.add(saisie1);
 		SaisieJournaliere saisie2 = new SaisieJournaliere();
-		saisie2.setPrenom("enf2");
+		saisie2.setEnfant("enf2");
 		saisie2.setNbArEcole(7);
 		saisie.add(saisie2);
 

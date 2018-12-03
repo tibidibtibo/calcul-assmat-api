@@ -110,7 +110,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		if (CollectionUtils.isNotEmpty(donneesSaisies)) {
 
 			for (SaisieJournaliere saisie : donneesSaisies) {
-				ParametrageEnfant paramEnfant = mapParamEnfants.get(saisie.getPrenom());
+				ParametrageEnfant paramEnfant = mapParamEnfants.get(saisie.getEnfant());
 				if (paramEnfant != null && paramEnfant.getArEcoleKm() != null && saisie.getNbArEcole() != null) {
 					fraisKm += saisie.getNbArEcole() * paramEnfant.getArEcoleKm() * employe.getIndemnitesKm();
 				}
@@ -152,7 +152,9 @@ public class SyntheseBloImpl implements SyntheseBlo {
 			nbJours = donneesSaisies.size();
 		}
 
-		return MathsUtils.roundTo2Digits(nbJours * employe.getIndemnitesEntretien());
+		// return MathsUtils.roundTo2Digits(nbJours * employe.getIndemnitesEntretien());
+		// FIXME : calcul selon seuil
+		return 0d;
 	}
 
 	private Double calculerSalaireNetMensualise(Map<String, ParametrageEnfant> mapParamEnfants) {
@@ -168,6 +170,8 @@ public class SyntheseBloImpl implements SyntheseBlo {
 	public NombreHeures calculerNbHeures(Collection<SaisieJournaliere> donneesSaisies,
 			Map<String, ParametrageEnfant> mapParamEnfants) {
 
+		Map<String, Integer> nbHeuresParJourEmploye = new HashMap<>();
+
 		NombreHeures nbHeures = new NombreHeures();
 		nbHeures.setHeuresNormalesMensualisees(mapParamEnfants);
 
@@ -178,7 +182,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 				LocalTime heureArrivee = DateUtils.toLocalTime(saisie.getHeureArrivee());
 				LocalTime heureDepart = DateUtils.toLocalTime(saisie.getHeureDepart());
 
-				ParametrageEnfant paramEnfant = mapParamEnfants.get(saisie.getPrenom());
+				ParametrageEnfant paramEnfant = mapParamEnfants.get(saisie.getEnfant());
 				// Récupération heures normales du jour
 				int jourSemaine = fr.deboissieu.calculassmat.commons.dateUtils.DateUtils
 						.getDayOfWeek(saisie.getDateSaisie());
@@ -191,6 +195,8 @@ public class SyntheseBloImpl implements SyntheseBlo {
 					calculerTempsPlein(nbHeures, saisie, heureArrivee, heureDepart, heuresNormalesRef);
 				}
 
+				completerMapHeuresJourEmploye(nbHeuresParJourEmploye, saisie, paramEnfant);
+
 			}
 		}
 
@@ -198,6 +204,14 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		nbHeures.roundValues();
 
 		return nbHeures;
+	}
+
+	private void completerMapHeuresJourEmploye(Map<String, Integer> nbHeuresParJourEmploye, SaisieJournaliere saisie,
+			ParametrageEnfant paramEnfant) {
+		// TODO : compléter objet "Saisie"
+		// if(nbHeuresParJourEmploye.get())
+		// saisie.get
+		// paramEnfant.get
 	}
 
 	private void calculerTempsPlein(NombreHeures nbHeures, SaisieJournaliere saisie, LocalTime heureArrivee,
@@ -209,7 +223,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 			nbHeures.addHeuresComplementaires(
 					calculerHeuresComplementaires(heuresGarde, heuresNormalesRef));
 		} else {
-			logger.error(TechniqueExceptionEnum.T001.getMessage(), saisie.getPrenom(),
+			logger.error(TechniqueExceptionEnum.T001.getMessage(), saisie.getEnfant(),
 					saisie.getDateSaisie());
 		}
 	}

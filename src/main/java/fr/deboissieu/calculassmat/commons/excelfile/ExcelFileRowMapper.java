@@ -48,7 +48,8 @@ public class ExcelFileRowMapper {
 	public static SaisieJournaliere toSaisieJournaliere(Row row, Date dateSaisie) {
 		SaisieJournaliere saisieJournaliere = new SaisieJournaliere();
 		saisieJournaliere.setDateSaisie(dateSaisie);
-		saisieJournaliere.setPrenom(cellToString(getCell(row, ExcelFileColEnum.QUI)));
+		saisieJournaliere.setEmploye(cellToString(getCell(row, ExcelFileColEnum.EMPLOYE)));
+		saisieJournaliere.setEnfant(cellToString(getCell(row, ExcelFileColEnum.ENFANT)));
 		saisieJournaliere.setHeureArrivee(cellToHour(getCell(row, ExcelFileColEnum.HEURE_ARRIVEE)));
 		saisieJournaliere.setHeureDepart(cellToHour(getCell(row, ExcelFileColEnum.HEURE_DEPART)));
 		saisieJournaliere.setNbDejeuners(cellToInteger(getCell(row, ExcelFileColEnum.DEJEUNER)));
