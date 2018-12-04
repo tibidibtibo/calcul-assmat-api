@@ -43,11 +43,11 @@ public class SyntheseBloImpl implements SyntheseBlo {
 
 	@Override
 	public SyntheseGarde calculerFraisMensuels(Collection<SaisieJournaliere> donneesSaisies, int mois,
-			int annee, ParametrageEmploye paramAssmat, Map<String, ParametrageEnfant> mapParamEnfants) {
+			int annee, Map<String, ParametrageEnfant> mapParamEnfants) {
 
 		SyntheseGarde synthese = new SyntheseGarde(mois, annee);
 
-		validationBlo.validerAvantCalcul(donneesSaisies, paramAssmat, mapParamEnfants);
+		validationBlo.validerAvantCalcul(donneesSaisies, mapParamEnfants);
 
 		synthese.setNbJoursTravailles(calculerJoursTravailles(donneesSaisies));
 
@@ -56,11 +56,11 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		synthese.setNombreHeures(nbHeures);
 
 		// Salaire
-		Salaire salaire = calculerSalaire(paramAssmat, mapParamEnfants, nbHeures);
+		Salaire salaire = calculerSalaire(null, mapParamEnfants, nbHeures);
 		synthese.setSalaire(salaire);
 
 		// Indemnites
-		Indemnites indemnites = calculerIndemnites(donneesSaisies, paramAssmat, mapParamEnfants);
+		Indemnites indemnites = calculerIndemnites(donneesSaisies, null, mapParamEnfants);
 		synthese.setIndemnites(indemnites);
 
 		// Calcul du paiement total

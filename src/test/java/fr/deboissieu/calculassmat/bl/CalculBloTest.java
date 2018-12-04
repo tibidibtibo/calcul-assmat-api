@@ -2,7 +2,7 @@ package fr.deboissieu.calculassmat.bl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -108,9 +108,9 @@ public class CalculBloTest {
 
 		SyntheseGarde synthese = new SyntheseGarde(9, 2018);
 		Mockito.doReturn(synthese).when(syntheseBloMock).calculerFraisMensuels(Mockito.anyCollection(),
-				Mockito.anyInt(), Mockito.anyInt(), Mockito.any(ParametrageEmploye.class), Mockito.any(Map.class));
+				Mockito.anyInt(), Mockito.anyInt(), Mockito.any(Map.class));
 
-		SyntheseGarde syntheseResponse = calculBlo.calculerSyntheseGardeFromFilename(9, 2018, "nom", "path");
+		SyntheseGarde syntheseResponse = calculBlo.calculerSyntheseGardeFromFilename(9, 2018, "path");
 
 		assertThat(syntheseResponse).isNotNull();
 		assertThat(syntheseResponse.getAnnee()).isEqualTo("2018");
@@ -130,7 +130,7 @@ public class CalculBloTest {
 
 		SyntheseGarde syntheseResponse;
 		try {
-			syntheseResponse = calculBlo.calculerSyntheseGardeFromFilename(9, 2018, "nom", "path");
+			syntheseResponse = calculBlo.calculerSyntheseGardeFromFilename(9, 2018, "path");
 			fail();
 		} catch (Exception e) {
 			assertThat(e).isNotNull();

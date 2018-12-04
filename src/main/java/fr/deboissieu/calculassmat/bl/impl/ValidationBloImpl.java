@@ -35,10 +35,10 @@ public class ValidationBloImpl implements ValidationBlo {
 	}
 
 	@Override
-	public void validerAvantCalcul(Collection<SaisieJournaliere> donneesSaisies, ParametrageEmploye paramAssmat,
+	public void validerAvantCalcul(Collection<SaisieJournaliere> donneesSaisies,
 			Map<String, ParametrageEnfant> mapParamEnfants) {
 
-		if (paramAssmat == null || MapUtils.isEmpty(mapParamEnfants)) {
+		if (MapUtils.isEmpty(mapParamEnfants)) {
 			throw new ValidationException(ValidationExceptionsEnum.V101.toString());
 		}
 

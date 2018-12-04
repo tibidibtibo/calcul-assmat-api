@@ -3,7 +3,6 @@ package fr.deboissieu.calculassmat.bl;
 import java.util.Collection;
 import java.util.Map;
 
-import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
 import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
@@ -36,7 +35,7 @@ public interface ValidationBlo {
 	 * @param Map<String,
 	 *            ParametrageEnfant> mapParamEnfants
 	 */
-	void validerAvantCalcul(Collection<SaisieJournaliere> donneesSaisies, ParametrageEmploye paramAssmat,
+	void validerAvantCalcul(Collection<SaisieJournaliere> donneesSaisies,
 			Map<String, ParametrageEnfant> mapParamEnfants);
 
 	/**

@@ -13,8 +13,6 @@ import fr.deboissieu.calculassmat.bl.ArchivesBlo;
 import fr.deboissieu.calculassmat.bl.ValidationBlo;
 import fr.deboissieu.calculassmat.dl.ArchivesRepository;
 import fr.deboissieu.calculassmat.model.archives.Archive;
-import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
-import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmployeDto;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfantDto;
 import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
@@ -32,12 +30,13 @@ public class ArchivesBloImpl implements ArchivesBlo {
 	@Override
 	public void archiverTraitement(Collection<SaisieJournaliere> saisie, SyntheseGarde synthese,
 			int mois,
-			int annee, ParametrageEmploye paramAssmat, Map<String, ParametrageEnfant> mapParamEnfants) {
+			int annee, Map<String, ParametrageEnfant> mapParamEnfants) {
 
 		validationBlo.validerAvantArchivage(saisie, synthese);
 
+		// FIXME : param employe
 		Archive archive = new Archive(new Date(), mois, annee, saisie, synthese,
-				ParametrageEmployeDto.from(paramAssmat), ParametrageEnfantDto.from(mapParamEnfants.values()));
+				null, ParametrageEnfantDto.from(mapParamEnfants.values()));
 		archivesRepository.save(archive);
 	}
 

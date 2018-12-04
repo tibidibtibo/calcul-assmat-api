@@ -2,7 +2,7 @@ package fr.deboissieu.calculassmat.bl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -95,7 +95,7 @@ public class ValidationBloTest {
 		String expectedMessage = "Impossible de charger le paramétrage.";
 
 		try {
-			validationBlo.validerAvantCalcul(new ArrayList<>(), null, null);
+			validationBlo.validerAvantCalcul(new ArrayList<>(), null);
 			fail();
 		} catch (ValidationException ve) {
 			assertThat(ve.getMessage())
@@ -103,7 +103,7 @@ public class ValidationBloTest {
 		}
 
 		try {
-			validationBlo.validerAvantCalcul(null, null, null);
+			validationBlo.validerAvantCalcul(null, null);
 			fail();
 		} catch (ValidationException ve) {
 			assertThat(ve.getMessage())

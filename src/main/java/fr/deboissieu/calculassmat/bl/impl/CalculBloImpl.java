@@ -19,7 +19,6 @@ import fr.deboissieu.calculassmat.bl.ExcelFileBlo;
 import fr.deboissieu.calculassmat.bl.ParametrageBlo;
 import fr.deboissieu.calculassmat.bl.SyntheseBlo;
 import fr.deboissieu.calculassmat.commons.filestorage.FileStorageService;
-import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
 import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
@@ -45,7 +44,7 @@ public class CalculBloImpl implements CalculBlo {
 	FileStorageService fileStorageService;
 
 	@Override
-	public SyntheseGarde calculerSyntheseGardeFromFilename(int mois, int annee, String idAssmat, String filename)
+	public SyntheseGarde calculerSyntheseGardeFromFilename(int mois, int annee, String filename)
 			throws Exception {
 
 		Workbook workbook = openWorkbook(filename);
@@ -56,12 +55,11 @@ public class CalculBloImpl implements CalculBlo {
 		try {
 			Collection<SaisieJournaliere> donneesSaisies = excelFileBlo.extractDataFromWorkbook(workbook, mois);
 
-			ParametrageEmploye paramAssmat = parametrageBlo.findEmployeParId(idAssmat);
 			Map<String, ParametrageEnfant> mapParamEnfants = parametrageBlo.findAllParamsEnfants();
 
-			syntheseGarde = syntheseBlo.calculerFraisMensuels(donneesSaisies, mois, annee, paramAssmat,
+			syntheseGarde = syntheseBlo.calculerFraisMensuels(donneesSaisies, mois, annee,
 					mapParamEnfants);
-			archivesBlo.archiverTraitement(donneesSaisies, syntheseGarde, mois, annee, paramAssmat, mapParamEnfants);
+			archivesBlo.archiverTraitement(donneesSaisies, syntheseGarde, mois, annee, mapParamEnfants);
 		} catch (Exception e) {
 			logger.error("Impossible de traiter le fichier : {}", e);
 			exception = e;

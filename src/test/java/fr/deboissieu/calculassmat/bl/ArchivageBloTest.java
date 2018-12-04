@@ -74,8 +74,7 @@ public class ArchivageBloTest {
 		ParametrageEmploye paramEmploye = new ParametrageEmploye();
 		paramEmploye.set_id(new ObjectId("5baff2462efb71c0790b6e55"));
 		Map<String, ParametrageEnfant> paramsEnfant = new HashMap<>();
-
-		archivesBlo.archiverTraitement(saisie, synthese, 9, 2018, paramEmploye, paramsEnfant);
+		archivesBlo.archiverTraitement(saisie, synthese, 9, 2018, paramsEnfant);
 
 		ArgumentCaptor<Archive> archiveCaptor = ArgumentCaptor.forClass(Archive.class);
 

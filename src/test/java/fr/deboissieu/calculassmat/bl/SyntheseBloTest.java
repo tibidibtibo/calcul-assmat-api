@@ -1,7 +1,7 @@
 package fr.deboissieu.calculassmat.bl;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -77,7 +77,7 @@ public class SyntheseBloTest {
 				"enfant1", "08:00", "18:00", 2, 0d, 1, 1));
 
 		// Act
-		SyntheseGarde synthese = syntheseBlo.calculerFraisMensuels(donneesSaisies, 9, 2018, paramEmploye,
+		SyntheseGarde synthese = syntheseBlo.calculerFraisMensuels(donneesSaisies, 9, 2018,
 				mapParamEnfant);
 
 		// Assert
@@ -131,7 +131,7 @@ public class SyntheseBloTest {
 				"enfant2", "08:00", "18:00", 2, 0d, 1, 1)); // 1.5 hc
 
 		// Act
-		SyntheseGarde synthese = syntheseBlo.calculerFraisMensuels(donneesSaisies, 9, 2018, paramEmploye,
+		SyntheseGarde synthese = syntheseBlo.calculerFraisMensuels(donneesSaisies, 9, 2018,
 				mapParamEnfant);
 
 		// Assert
@@ -200,7 +200,7 @@ public class SyntheseBloTest {
 				"enfant2", "08:00", "18:00", 2, 0d, 1, 1)); // 1.5 hc
 
 		// Act
-		SyntheseGarde synthese = syntheseBlo.calculerFraisMensuels(donneesSaisies, 9, 2018, paramEmploye,
+		SyntheseGarde synthese = syntheseBlo.calculerFraisMensuels(donneesSaisies, 9, 2018,
 				mapParamEnfant);
 
 		// Assert
