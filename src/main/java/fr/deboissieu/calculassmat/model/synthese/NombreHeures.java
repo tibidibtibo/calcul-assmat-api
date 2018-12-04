@@ -1,12 +1,14 @@
 package fr.deboissieu.calculassmat.model.synthese;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.collections4.MapUtils;
 
 import fr.deboissieu.calculassmat.commons.mathsutils.MathsUtils;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
+import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,6 +25,8 @@ public class NombreHeures implements Serializable {
 	private Double heuresNormalesMensualisees;
 
 	private Double heuresComplementaires;
+
+	private Map<String, Double> nbreHeureEmployeJour;
 
 	public void addHeuresNormalesReelles(Double amount) {
 		if (amount != null) {
@@ -47,6 +51,7 @@ public class NombreHeures implements Serializable {
 		this.heuresNormalesReelles = 0d;
 		this.heuresNormalesMensualisees = 0d;
 		this.heuresComplementaires = 0d;
+		this.nbreHeureEmployeJour = new HashMap<>();
 	}
 
 	public void roundValues() {
@@ -73,5 +78,12 @@ public class NombreHeures implements Serializable {
 				this.heuresNormalesMensualisees += param.getHeuresNormalesMensualisees();
 			}
 		}
+	}
+
+	public void updateNbHeureEmployeJour(SaisieJournaliere saisie, Double tempsEmployeJour) {
+
+		String key = saisie.getEmploye() + saisie.getDateSaisie().toString();
+		this.nbreHeureEmployeJour.put(key, tempsEmployeJour);
+
 	}
 }
