@@ -1,5 +1,7 @@
 package fr.deboissieu.calculassmat.api;
 
+import java.util.Collection;
+
 import javax.annotation.Resource;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -33,7 +35,7 @@ public class CalculController {
 	@LogCall
 	@RequestMapping(produces = "application/json", method = {
 			RequestMethod.POST }, value = "/file/{annee}/{mois}")
-	public SyntheseGarde calculerFichier(@RequestParam("fichier") MultipartFile multipartFile,
+	public Collection<SyntheseGarde> calculerFichier(@RequestParam("fichier") MultipartFile multipartFile,
 			@PathVariable("annee") String annee, @PathVariable("mois") String mois) throws Exception {
 
 		String fileName = fileStorageService.storeFile(multipartFile);

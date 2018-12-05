@@ -5,7 +5,9 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doReturn;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -106,15 +108,17 @@ public class CalculBloTest {
 		org.springframework.core.io.Resource resource = new ResourceMock();
 		Mockito.doReturn(resource).when(fileStorageServiceMock).loadFileAsResource(Mockito.anyString());
 
+		Collection<SyntheseGarde> syntheses = new ArrayList<>();
 		SyntheseGarde synthese = new SyntheseGarde(9, 2018);
-		Mockito.doReturn(synthese).when(syntheseBloMock).calculerFraisMensuels(Mockito.anyCollection(),
+		syntheses.add(synthese);
+		Mockito.doReturn(syntheses).when(syntheseBloMock).calculerFraisMensuels(Mockito.anyCollection(),
 				Mockito.anyInt(), Mockito.anyInt(), Mockito.any(Map.class));
 
-		SyntheseGarde syntheseResponse = calculBlo.calculerSyntheseGardeFromFilename(9, 2018, "path");
+		Collection<SyntheseGarde> syntheseResponse = calculBlo.calculerSyntheseGardeFromFilename(9, 2018, "path");
 
-		assertThat(syntheseResponse).isNotNull();
-		assertThat(syntheseResponse.getAnnee()).isEqualTo("2018");
-		assertThat(syntheseResponse.getMois()).isEqualTo("9");
+		assertThat(syntheseResponse).isNotEmpty().hasSize(1);
+		assertThat(syntheseResponse).extracting("annee").contains("2018");
+		assertThat(syntheseResponse).extracting("mois").contains("9");
 	}
 
 	@Test
@@ -128,7 +132,7 @@ public class CalculBloTest {
 		Mockito.doThrow(new InvalidFormatException("Fichier pourri !")).when(excelFileBloMock)
 				.openFileAsWorkbook(null);
 
-		SyntheseGarde syntheseResponse;
+		Collection<SyntheseGarde> syntheseResponse;
 		try {
 			syntheseResponse = calculBlo.calculerSyntheseGardeFromFilename(9, 2018, "path");
 			fail();

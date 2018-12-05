@@ -28,7 +28,7 @@ public class TestUtils {
 	}
 
 	public static SaisieJournaliere buildSaisie(Date dateSaisie, String prenom, String heureArrivee, String heureDepart,
-			Integer nbArEcole, Double autresDeplacementKm, Integer nbDejeuners, Integer nbGouters) {
+			Integer nbArEcole, Double autresDeplacementKm, Integer nbDejeuners, Integer nbGouters, String employe) {
 		SaisieJournaliere saisie = new SaisieJournaliere();
 		saisie.setDateSaisie(dateSaisie);
 		saisie.setEnfant(prenom);
@@ -38,6 +38,7 @@ public class TestUtils {
 		saisie.setAutresDeplacementKm(autresDeplacementKm);
 		saisie.setNbDejeuners(nbDejeuners);
 		saisie.setNbGouters(nbGouters);
+		saisie.setEmploye(employe);
 		return saisie;
 	}
 

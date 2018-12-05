@@ -12,61 +12,61 @@ public class ResourceMock implements Resource {
 
 	@Override
 	public InputStream getInputStream() throws IOException {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
 	@Override
 	public boolean exists() {
-		// TODO Auto-generated method stub
+
 		return false;
 	}
 
 	@Override
 	public URL getURL() throws IOException {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
 	@Override
 	public URI getURI() throws IOException {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
 	@Override
 	public File getFile() throws IOException {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
 	@Override
 	public long contentLength() throws IOException {
-		// TODO Auto-generated method stub
+
 		return 0;
 	}
 
 	@Override
 	public long lastModified() throws IOException {
-		// TODO Auto-generated method stub
+
 		return 0;
 	}
 
 	@Override
 	public Resource createRelative(String relativePath) throws IOException {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
 	@Override
 	public String getFilename() {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
 	@Override
 	public String getDescription() {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 

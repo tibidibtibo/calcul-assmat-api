@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections4.IterableUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -71,16 +72,17 @@ public class SyntheseBloTest {
 		Collection<SaisieJournaliere> donneesSaisies = new ArrayList<>();
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 27),
-				"enfant1", "07:45", "17:30", 0, 3.7d, 0, 1));
+				"enfant1", "07:45", "17:30", 0, 3.7d, 0, 1, "employe1"));
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 28),
-				"enfant1", "08:00", "18:00", 2, 0d, 1, 1));
+				"enfant1", "08:00", "18:00", 2, 0d, 1, 1, "employe1"));
 
 		// Act
-		SyntheseGarde synthese = syntheseBlo.calculerFraisMensuels(donneesSaisies, 9, 2018,
+		Collection<SyntheseGarde> syntheses = syntheseBlo.calculerFraisMensuels(donneesSaisies, 9, 2018,
 				mapParamEnfant);
 
 		// Assert
+		SyntheseGarde synthese = IterableUtils.get(syntheses, 0);
 		assertThat(synthese).isNotNull();
 		assertThat(synthese.getAnnee()).isEqualTo("2018");
 		assertThat(synthese.getMois()).isEqualTo("9");
@@ -119,22 +121,23 @@ public class SyntheseBloTest {
 		Collection<SaisieJournaliere> donneesSaisies = new ArrayList<>();
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 25),
-				"enfant2", "07:00", null, 1, 0d, 0, 0)); // 1 hc
+				"enfant2", "07:00", null, 1, 0d, 0, 0, "employe1")); // 1 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 26),
-				"enfant2", "15:00", "17:00", 0, 4d, 1, 1)); // 2 hc
+				"enfant2", "15:00", "17:00", 0, 4d, 1, 1, "employe1")); // 2 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 27),
-				"enfant2", null, "17:30", 1, 0d, 0, 1)); // 0 hc
+				"enfant2", null, "17:30", 1, 0d, 0, 1, "employe1")); // 0 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 28),
-				"enfant2", "08:00", "18:00", 2, 0d, 1, 1)); // 1.5 hc
+				"enfant2", "08:00", "18:00", 2, 0d, 1, 1, "employe1")); // 1.5 hc
 
 		// Act
-		SyntheseGarde synthese = syntheseBlo.calculerFraisMensuels(donneesSaisies, 9, 2018,
+		Collection<SyntheseGarde> syntheses = syntheseBlo.calculerFraisMensuels(donneesSaisies, 9, 2018,
 				mapParamEnfant);
 
 		// Assert
+		SyntheseGarde synthese = IterableUtils.get(syntheses, 0);
 		assertThat(synthese).isNotNull();
 		assertThat(synthese.getAnnee()).isEqualTo("2018");
 		assertThat(synthese.getMois()).isEqualTo("9");
@@ -177,33 +180,34 @@ public class SyntheseBloTest {
 		// Enfant 1
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 25),
-				"enfant1", "07:00", "18:30", 0, 3.7d, 0, 1)); // 2.5 hc
+				"enfant1", "07:00", "18:30", 0, 3.7d, 0, 1, "employe1")); // 2.5 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 27),
-				"enfant1", "07:45", "17:30", 0, 3.7d, 0, 1)); // 1.75 hc
+				"enfant1", "07:45", "17:30", 0, 3.7d, 0, 1, "employe1")); // 1.75 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 28),
-				"enfant1", "08:00", "18:00", 0, 0d, 1, 1)); // 1 hc
+				"enfant1", "08:00", "18:00", 0, 0d, 1, 1, "employe1")); // 1 hc
 
 		// Enfant 2
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 25),
-				"enfant2", "07:00", null, 1, 0d, 0, 0)); // 1 hc
+				"enfant2", "07:00", null, 1, 0d, 0, 0, "employe1")); // 1 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 26),
-				"enfant2", "15:00", "17:00", 0, 4d, 0, 1)); // 2 hc
+				"enfant2", "15:00", "17:00", 0, 4d, 0, 1, "employe1")); // 2 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 27),
-				"enfant2", null, "17:30", 1, 0d, 0, 1)); // 0 hc
+				"enfant2", null, "17:30", 1, 0d, 0, 1, "employe1")); // 0 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 28),
-				"enfant2", "08:00", "18:00", 2, 0d, 1, 1)); // 1.5 hc
+				"enfant2", "08:00", "18:00", 2, 0d, 1, 1, "employe1")); // 1.5 hc
 
 		// Act
-		SyntheseGarde synthese = syntheseBlo.calculerFraisMensuels(donneesSaisies, 9, 2018,
+		Collection<SyntheseGarde> syntheses = syntheseBlo.calculerFraisMensuels(donneesSaisies, 9, 2018,
 				mapParamEnfant);
 
 		// Assert
+		SyntheseGarde synthese = IterableUtils.get(syntheses, 0);
 		assertThat(synthese).isNotNull();
 		assertThat(synthese.getAnnee()).isEqualTo("2018");
 		assertThat(synthese.getMois()).isEqualTo("9");
@@ -262,27 +266,27 @@ public class SyntheseBloTest {
 		// Enfant 1
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 25),
-				"enfant1", "07:00", "18:30", 0, 3.7d, 0, 1)); // 2.5 hc
+				"enfant1", "07:00", "18:30", 0, 3.7d, 0, 1, "employe1")); // 2.5 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 27),
-				"enfant1", "07:45", "17:30", 0, 3.7d, 0, 1)); // 1.75 hc
+				"enfant1", "07:45", "17:30", 0, 3.7d, 0, 1, "employe1")); // 1.75 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 28),
-				"enfant1", "08:00", "18:00", 0, 0d, 1, 1)); // 1 hc
+				"enfant1", "08:00", "18:00", 0, 0d, 1, 1, "employe1")); // 1 hc
 
 		// Enfant 2
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 25),
-				"enfant2", "07:00", null, 1, 0d, 0, 0)); // 1 hc
+				"enfant2", "07:00", null, 1, 0d, 0, 0, "employe1")); // 1 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 26),
-				"enfant2", "15:00", "17:00", 0, 4d, 1, 1)); // 2 hc
+				"enfant2", "15:00", "17:00", 0, 4d, 1, 1, "employe1")); // 2 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 27),
-				"enfant2", null, "17:30", 1, 0d, 0, 1)); // 0 hc
+				"enfant2", null, "17:30", 1, 0d, 0, 1, "employe1")); // 0 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 28),
-				"enfant2", "08:00", "18:00", 2, 0d, 1, 1)); // 1.5 hc
+				"enfant2", "08:00", "18:00", 2, 0d, 1, 1, "employe1")); // 1.5 hc
 
 		// Act
 		NombreHeures nbHeures = syntheseBloImpl.calculerNbHeures(donneesSaisies, mapParamEnfant);
