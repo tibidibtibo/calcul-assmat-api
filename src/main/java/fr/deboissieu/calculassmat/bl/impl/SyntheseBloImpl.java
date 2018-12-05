@@ -88,7 +88,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		Map<ParametrageEmploye, Collection<SaisieJournaliere>> mapEmployeSaisie = new HashMap<>();
 		if (MapUtils.isNotEmpty(saisieParEmploye)) {
 			for (Map.Entry<String, Collection<SaisieJournaliere>> entry : saisieParEmploye.entrySet()) {
-				ParametrageEmploye parametrageEmploye = parametrageBlo.findEmployeParId(entry.getKey());
+				ParametrageEmploye parametrageEmploye = parametrageBlo.findEmployeParNom(entry.getKey());
 				if (parametrageEmploye != null) {
 					mapEmployeSaisie.put(parametrageEmploye, entry.getValue());
 				}

@@ -71,4 +71,8 @@ public class ParametrageBloImpl implements ParametrageBlo {
 		paramEmployeRepository.deleteById(employeId);
 	}
 
+	@Override
+	public ParametrageEmploye findEmployeParNom(String nomEmploye) {
+		return paramEmployeRepository.findByNom(nomEmploye);
+	}
 }

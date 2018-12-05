@@ -15,12 +15,8 @@ import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class DateUtils {
-
-	private static final Logger logger = LogManager.getLogger(DateUtils.class);
 
 	public static final String DATE_FORMAT_PATTERN = "dd-MM-yyyy";
 

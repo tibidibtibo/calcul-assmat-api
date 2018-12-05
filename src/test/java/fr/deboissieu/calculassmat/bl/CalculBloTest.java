@@ -2,7 +2,7 @@ package fr.deboissieu.calculassmat.bl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -132,9 +132,8 @@ public class CalculBloTest {
 		Mockito.doThrow(new InvalidFormatException("Fichier pourri !")).when(excelFileBloMock)
 				.openFileAsWorkbook(null);
 
-		Collection<SyntheseGarde> syntheseResponse;
 		try {
-			syntheseResponse = calculBlo.calculerSyntheseGardeFromFilename(9, 2018, "path");
+			calculBlo.calculerSyntheseGardeFromFilename(9, 2018, "path");
 			fail();
 		} catch (Exception e) {
 			assertThat(e).isNotNull();

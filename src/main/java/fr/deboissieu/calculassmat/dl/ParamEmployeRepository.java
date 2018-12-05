@@ -9,4 +9,6 @@ public interface ParamEmployeRepository extends MongoRepository<ParametrageEmplo
 
 	ParametrageEmploye findBy_id(ObjectId objectIdEmploye);
 
+	ParametrageEmploye findByNom(String nomEmploye);
+
 }

@@ -27,6 +27,14 @@ public interface ParametrageBlo {
 	public ParametrageEmploye findEmployeParId(String idEmploye);
 
 	/**
+	 * Recherche le paramétrage employé par nom
+	 * 
+	 * @param nomEmploye
+	 * @return {@link ParametrageEmploye}
+	 */
+	public ParametrageEmploye findEmployeParNom(String nomEmploye);
+
+	/**
 	 * Retourne la liste des employés
 	 * 
 	 * @return {@link List}<{@link ParametrageEmploye}>
