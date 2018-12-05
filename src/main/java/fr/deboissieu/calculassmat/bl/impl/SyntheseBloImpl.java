@@ -1,6 +1,7 @@
 package fr.deboissieu.calculassmat.bl.impl;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,32 +43,74 @@ public class SyntheseBloImpl implements SyntheseBlo {
 	ValidationBlo validationBlo;
 
 	@Override
-	public SyntheseGarde calculerFraisMensuels(Collection<SaisieJournaliere> donneesSaisies, int mois,
+	public Collection<SyntheseGarde> calculerFraisMensuels(Collection<SaisieJournaliere> donneesSaisies, int mois,
 			int annee, Map<String, ParametrageEnfant> mapParamEnfants) {
 
-		SyntheseGarde synthese = new SyntheseGarde(mois, annee);
+		Map<String, Collection<SaisieJournaliere>> saisieParEmploye = mapperParEmploye(donneesSaisies);
+		Map<ParametrageEmploye, Collection<SaisieJournaliere>> mapEmployeSaisie = consoliderParamEmploye(
+				saisieParEmploye);
 
-		validationBlo.validerAvantCalcul(donneesSaisies, mapParamEnfants);
+		Collection<SyntheseGarde> syntheses = new ArrayList<>();
 
-		synthese.setNbJoursTravailles(calculerJoursTravailles(donneesSaisies));
+		for (Map.Entry<ParametrageEmploye, Collection<SaisieJournaliere>> entry : mapEmployeSaisie.entrySet()) {
+			Collection<SaisieJournaliere> saisieEmploye = entry.getValue();
+			ParametrageEmploye employe = entry.getKey();
+			SyntheseGarde synthese = new SyntheseGarde(mois, annee);
 
-		// Nombre d'heures
-		NombreHeures nbHeures = calculerNbHeures(donneesSaisies, mapParamEnfants);
-		synthese.setNombreHeures(nbHeures);
+			validationBlo.validerAvantCalcul(saisieEmploye, mapParamEnfants);
 
-		// Salaire
-		Salaire salaire = calculerSalaire(null, mapParamEnfants, nbHeures);
-		synthese.setSalaire(salaire);
+			synthese.setNbJoursTravailles(calculerJoursTravailles(saisieEmploye));
 
-		// Indemnites
-		Indemnites indemnites = calculerIndemnites(donneesSaisies, nbHeures, mapParamEnfants);
-		synthese.setIndemnites(indemnites);
+			// Nombre d'heures
+			NombreHeures nbHeures = calculerNbHeures(saisieEmploye, mapParamEnfants);
+			synthese.setNombreHeures(nbHeures);
 
-		// Calcul du paiement total
-		synthese.calculerPaiementMensuel();
+			// Salaire
+			Salaire salaire = calculerSalaire(employe, mapParamEnfants, nbHeures);
+			synthese.setSalaire(salaire);
 
-		return synthese;
+			// Indemnites
+			Indemnites indemnites = calculerIndemnites(saisieEmploye, nbHeures, mapParamEnfants);
+			synthese.setIndemnites(indemnites);
 
+			// Calcul du paiement total
+			synthese.calculerPaiementMensuel();
+
+			syntheses.add(synthese);
+		}
+
+		return syntheses;
+
+	}
+
+	private Map<ParametrageEmploye, Collection<SaisieJournaliere>> consoliderParamEmploye(
+			Map<String, Collection<SaisieJournaliere>> saisieParEmploye) {
+		Map<ParametrageEmploye, Collection<SaisieJournaliere>> mapEmployeSaisie = new HashMap<>();
+		if (MapUtils.isNotEmpty(saisieParEmploye)) {
+			for (String key : saisieParEmploye.keySet()) {
+				ParametrageEmploye parametrageEmploye = parametrageBlo.findEmployeParId(key);
+				if (parametrageEmploye != null) {
+					mapEmployeSaisie.put(parametrageEmploye, saisieParEmploye.get(key));
+				}
+			}
+		}
+		return mapEmployeSaisie;
+	}
+
+	private Map<String, Collection<SaisieJournaliere>> mapperParEmploye(Collection<SaisieJournaliere> donneesSaisies) {
+		Map<String, Collection<SaisieJournaliere>> saisieParEmploye = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(donneesSaisies)) {
+			for (SaisieJournaliere saisie : donneesSaisies) {
+				if (saisieParEmploye.get(saisie.getEmploye()) != null) {
+					saisieParEmploye.get(saisie.getEmploye()).add(saisie);
+				} else {
+					Collection<SaisieJournaliere> saisies = new ArrayList<>();
+					saisies.add(saisie);
+					saisieParEmploye.put(saisie.getEmploye(), saisies);
+				}
+			}
+		}
+		return saisieParEmploye;
 	}
 
 	private Indemnites calculerIndemnites(Collection<SaisieJournaliere> donneesSaisies, NombreHeures nbHeures,
@@ -176,7 +219,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 
 			for (SaisieJournaliere saisie : donneesSaisies) {
 
-				Double tempsEmployeJour = 0d;
+				Double tempsJour = 0d;
 
 				LocalTime heureArrivee = DateUtils.toLocalTime(saisie.getHeureArrivee());
 				LocalTime heureDepart = DateUtils.toLocalTime(saisie.getHeureDepart());
@@ -188,15 +231,15 @@ public class SyntheseBloImpl implements SyntheseBlo {
 				Double heuresNormalesRef = paramEnfant.getHeuresNormales(jourSemaine);
 
 				if (TypeGardeEnum.valueOf(paramEnfant.getTypeGarde()).equals(TypeGardeEnum.PERISCOLAIRE)) {
-					tempsEmployeJour += calculTempsPeriscolaire(nbHeures, saisie, paramEnfant, heureArrivee,
+					tempsJour += calculTempsPeriscolaire(nbHeures, saisie, paramEnfant, heureArrivee,
 							heureDepart, jourSemaine,
 							heuresNormalesRef);
 				} else if (TypeGardeEnum.valueOf(paramEnfant.getTypeGarde()).equals(TypeGardeEnum.TEMPS_PLEIN)) {
-					tempsEmployeJour += calculerTempsPlein(nbHeures, saisie, heureArrivee, heureDepart,
+					tempsJour += calculerTempsPlein(nbHeures, saisie, heureArrivee, heureDepart,
 							heuresNormalesRef);
 				}
 
-				nbHeures.updateNbHeureEmployeJour(saisie, tempsEmployeJour);
+				nbHeures.updateNbHeuresJour(saisie, tempsJour);
 
 			}
 		}

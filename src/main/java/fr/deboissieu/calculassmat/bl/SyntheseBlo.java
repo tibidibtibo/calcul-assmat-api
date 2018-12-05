@@ -15,9 +15,9 @@ public interface SyntheseBlo {
 	 * @param mois
 	 * @param nomAssMat
 	 * @param donneesAsemblees
-	 * @return
+	 * @return Collection<SyntheseGarde>
 	 */
-	SyntheseGarde calculerFraisMensuels(Collection<SaisieJournaliere> donneesSaisies, int mois, int annee,
+	Collection<SyntheseGarde> calculerFraisMensuels(Collection<SaisieJournaliere> donneesSaisies, int mois, int annee,
 			Map<String, ParametrageEnfant> mapParamEnfants);
 
 }

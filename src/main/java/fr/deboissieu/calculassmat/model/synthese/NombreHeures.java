@@ -26,7 +26,7 @@ public class NombreHeures implements Serializable {
 
 	private Double heuresComplementaires;
 
-	private Map<String, Double> nbreHeureEmployeJour;
+	private Map<String, Double> nbreHeuresJour;
 
 	public void addHeuresNormalesReelles(Double amount) {
 		if (amount != null) {
@@ -51,7 +51,7 @@ public class NombreHeures implements Serializable {
 		this.heuresNormalesReelles = 0d;
 		this.heuresNormalesMensualisees = 0d;
 		this.heuresComplementaires = 0d;
-		this.nbreHeureEmployeJour = new HashMap<>();
+		this.nbreHeuresJour = new HashMap<>();
 	}
 
 	public void roundValues() {
@@ -80,10 +80,10 @@ public class NombreHeures implements Serializable {
 		}
 	}
 
-	public void updateNbHeureEmployeJour(SaisieJournaliere saisie, Double tempsEmployeJour) {
+	public void updateNbHeuresJour(SaisieJournaliere saisie, Double tempsEmployeJour) {
 
-		String key = saisie.getEmploye() + saisie.getDateSaisie().toString();
-		this.nbreHeureEmployeJour.put(key, tempsEmployeJour);
+		String key = saisie.getDateSaisie().toString();
+		this.nbreHeuresJour.put(key, tempsEmployeJour);
 
 	}
 }

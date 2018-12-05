@@ -2,6 +2,7 @@ package fr.deboissieu.calculassmat.bl.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
@@ -44,12 +45,12 @@ public class CalculBloImpl implements CalculBlo {
 	FileStorageService fileStorageService;
 
 	@Override
-	public SyntheseGarde calculerSyntheseGardeFromFilename(int mois, int annee, String filename)
+	public Collection<SyntheseGarde> calculerSyntheseGardeFromFilename(int mois, int annee, String filename)
 			throws Exception {
 
 		Workbook workbook = openWorkbook(filename);
 
-		SyntheseGarde syntheseGarde = new SyntheseGarde(mois, annee);
+		Collection<SyntheseGarde> syntheseGarde = new ArrayList<>();
 		Exception exception = null;
 
 		try {
@@ -59,7 +60,9 @@ public class CalculBloImpl implements CalculBlo {
 
 			syntheseGarde = syntheseBlo.calculerFraisMensuels(donneesSaisies, mois, annee,
 					mapParamEnfants);
-			archivesBlo.archiverTraitement(donneesSaisies, syntheseGarde, mois, annee, mapParamEnfants);
+			// FIXME : archivage
+			// archivesBlo.archiverTraitement(donneesSaisies, syntheseGarde, mois, annee,
+			// mapParamEnfants);
 		} catch (Exception e) {
 			logger.error("Impossible de traiter le fichier : {}", e);
 			exception = e;

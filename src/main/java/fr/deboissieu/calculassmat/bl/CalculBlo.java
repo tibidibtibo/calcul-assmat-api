@@ -1,10 +1,12 @@
 package fr.deboissieu.calculassmat.bl;
 
+import java.util.Collection;
+
 import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
 public interface CalculBlo {
 
-	SyntheseGarde calculerSyntheseGardeFromFilename(int mois, int annee, String filename)
+	Collection<SyntheseGarde> calculerSyntheseGardeFromFilename(int mois, int annee, String filename)
 			throws Exception;
 
 }
