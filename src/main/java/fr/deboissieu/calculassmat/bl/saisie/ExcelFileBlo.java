@@ -1,4 +1,4 @@
-package fr.deboissieu.calculassmat.bl;
+package fr.deboissieu.calculassmat.bl.saisie;
 
 import java.io.File;
 import java.io.IOException;

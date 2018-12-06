@@ -1,4 +1,4 @@
-package fr.deboissieu.calculassmat.bl.impl;
+package fr.deboissieu.calculassmat.bl.saisie.impl;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +16,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.stereotype.Component;
 
-import fr.deboissieu.calculassmat.bl.ExcelFileBlo;
+import fr.deboissieu.calculassmat.bl.saisie.ExcelFileBlo;
 import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
 import fr.deboissieu.calculassmat.commons.excelfile.ExcelFileRowMapper;
 import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;

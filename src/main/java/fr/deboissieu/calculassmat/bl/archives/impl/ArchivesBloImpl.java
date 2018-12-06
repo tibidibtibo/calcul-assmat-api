@@ -1,4 +1,4 @@
-package fr.deboissieu.calculassmat.bl.impl;
+package fr.deboissieu.calculassmat.bl.archives.impl;
 
 import java.util.Collection;
 import java.util.Date;
@@ -9,8 +9,8 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
-import fr.deboissieu.calculassmat.bl.ArchivesBlo;
-import fr.deboissieu.calculassmat.bl.ValidationBlo;
+import fr.deboissieu.calculassmat.bl.archives.ArchivesBlo;
+import fr.deboissieu.calculassmat.bl.validation.ValidationBlo;
 import fr.deboissieu.calculassmat.dl.ArchivesRepository;
 import fr.deboissieu.calculassmat.model.archives.Archive;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;

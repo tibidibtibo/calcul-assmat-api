@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.deboissieu.calculassmat.bl.ParametrageBlo;
+import fr.deboissieu.calculassmat.bl.parametrage.ParametrageBlo;
 import fr.deboissieu.calculassmat.commons.exceptions.ValidationExceptionsEnum;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmployeDto;

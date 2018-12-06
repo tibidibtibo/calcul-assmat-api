@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.deboissieu.calculassmat.bl.ArchivesBlo;
+import fr.deboissieu.calculassmat.bl.archives.ArchivesBlo;
 import fr.deboissieu.calculassmat.configuration.LogCall;
 import fr.deboissieu.calculassmat.model.archives.Archive;
 

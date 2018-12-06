@@ -1,4 +1,4 @@
-package fr.deboissieu.calculassmat.bl.impl;
+package fr.deboissieu.calculassmat.bl.synthese.impl;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,11 +14,11 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Component;
 
-import fr.deboissieu.calculassmat.bl.ArchivesBlo;
-import fr.deboissieu.calculassmat.bl.CalculBlo;
-import fr.deboissieu.calculassmat.bl.ExcelFileBlo;
-import fr.deboissieu.calculassmat.bl.ParametrageBlo;
-import fr.deboissieu.calculassmat.bl.SyntheseBlo;
+import fr.deboissieu.calculassmat.bl.archives.ArchivesBlo;
+import fr.deboissieu.calculassmat.bl.parametrage.ParametrageBlo;
+import fr.deboissieu.calculassmat.bl.saisie.ExcelFileBlo;
+import fr.deboissieu.calculassmat.bl.synthese.CalculBlo;
+import fr.deboissieu.calculassmat.bl.synthese.SyntheseBlo;
 import fr.deboissieu.calculassmat.commons.filestorage.FileStorageService;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;

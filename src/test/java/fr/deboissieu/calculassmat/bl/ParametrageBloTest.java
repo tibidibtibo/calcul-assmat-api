@@ -20,7 +20,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import fr.deboissieu.calculassmat.TestUtils;
-import fr.deboissieu.calculassmat.bl.impl.ParametrageBloImpl;
+import fr.deboissieu.calculassmat.bl.parametrage.ParametrageBlo;
+import fr.deboissieu.calculassmat.bl.parametrage.impl.ParametrageBloImpl;
 import fr.deboissieu.calculassmat.dl.ParamEmployeRepository;
 import fr.deboissieu.calculassmat.dl.ParamEnfantRepository;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;

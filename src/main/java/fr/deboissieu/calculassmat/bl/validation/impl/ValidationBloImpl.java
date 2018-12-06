@@ -1,4 +1,4 @@
-package fr.deboissieu.calculassmat.bl.impl;
+package fr.deboissieu.calculassmat.bl.validation.impl;
 
 import java.util.Collection;
 import java.util.Map;
@@ -11,8 +11,8 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import fr.deboissieu.calculassmat.bl.ParametrageBlo;
-import fr.deboissieu.calculassmat.bl.ValidationBlo;
+import fr.deboissieu.calculassmat.bl.parametrage.ParametrageBlo;
+import fr.deboissieu.calculassmat.bl.validation.ValidationBlo;
 import fr.deboissieu.calculassmat.commons.exceptions.ValidationExceptionsEnum;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;

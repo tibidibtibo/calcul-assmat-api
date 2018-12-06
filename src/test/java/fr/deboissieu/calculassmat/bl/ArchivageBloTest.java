@@ -19,7 +19,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import fr.deboissieu.calculassmat.bl.impl.ArchivesBloImpl;
+import fr.deboissieu.calculassmat.bl.archives.ArchivesBlo;
+import fr.deboissieu.calculassmat.bl.archives.impl.ArchivesBloImpl;
+import fr.deboissieu.calculassmat.bl.validation.ValidationBlo;
 import fr.deboissieu.calculassmat.dl.ArchivesRepository;
 import fr.deboissieu.calculassmat.model.archives.Archive;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;

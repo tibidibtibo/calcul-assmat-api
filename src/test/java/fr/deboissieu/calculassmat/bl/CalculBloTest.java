@@ -25,7 +25,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import fr.deboissieu.calculassmat.TestUtils;
-import fr.deboissieu.calculassmat.bl.impl.CalculBloImpl;
+import fr.deboissieu.calculassmat.bl.archives.ArchivesBlo;
+import fr.deboissieu.calculassmat.bl.parametrage.ParametrageBlo;
+import fr.deboissieu.calculassmat.bl.saisie.ExcelFileBlo;
+import fr.deboissieu.calculassmat.bl.synthese.CalculBlo;
+import fr.deboissieu.calculassmat.bl.synthese.SyntheseBlo;
+import fr.deboissieu.calculassmat.bl.synthese.impl.CalculBloImpl;
 import fr.deboissieu.calculassmat.commons.filestorage.FileStorageService;
 import fr.deboissieu.calculassmat.commons.mocks.ResourceMock;
 import fr.deboissieu.calculassmat.commons.mocks.WorkbookMock;

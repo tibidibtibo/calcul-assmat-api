@@ -1,4 +1,4 @@
-package fr.deboissieu.calculassmat.bl.impl;
+package fr.deboissieu.calculassmat.bl.synthese.impl;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -15,9 +15,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import fr.deboissieu.calculassmat.bl.ParametrageBlo;
-import fr.deboissieu.calculassmat.bl.SyntheseBlo;
-import fr.deboissieu.calculassmat.bl.ValidationBlo;
+import fr.deboissieu.calculassmat.bl.parametrage.ParametrageBlo;
+import fr.deboissieu.calculassmat.bl.synthese.SyntheseBlo;
+import fr.deboissieu.calculassmat.bl.validation.ValidationBlo;
 import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
 import fr.deboissieu.calculassmat.commons.exceptions.TechniqueExceptionEnum;
 import fr.deboissieu.calculassmat.commons.mathsutils.MathsUtils;

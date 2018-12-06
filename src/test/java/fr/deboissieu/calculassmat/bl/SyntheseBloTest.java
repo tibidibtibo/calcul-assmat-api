@@ -19,8 +19,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import fr.deboissieu.calculassmat.TestUtils;
-import fr.deboissieu.calculassmat.bl.impl.SyntheseBloImpl;
-import fr.deboissieu.calculassmat.bl.impl.ValidationBloImpl;
+import fr.deboissieu.calculassmat.bl.parametrage.ParametrageBlo;
+import fr.deboissieu.calculassmat.bl.synthese.SyntheseBlo;
+import fr.deboissieu.calculassmat.bl.synthese.impl.SyntheseBloImpl;
+import fr.deboissieu.calculassmat.bl.validation.ValidationBlo;
+import fr.deboissieu.calculassmat.bl.validation.impl.ValidationBloImpl;
 import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;

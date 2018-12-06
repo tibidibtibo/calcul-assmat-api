@@ -1,4 +1,4 @@
-package fr.deboissieu.calculassmat.bl;
+package fr.deboissieu.calculassmat.bl.parametrage;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package fr.deboissieu.calculassmat.bl.impl;
+package fr.deboissieu.calculassmat.bl.parametrage.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import fr.deboissieu.calculassmat.bl.UserBlo;
+import fr.deboissieu.calculassmat.bl.parametrage.UserBlo;
 import fr.deboissieu.calculassmat.dl.UserRepository;
 import fr.deboissieu.calculassmat.model.authentication.User;
 

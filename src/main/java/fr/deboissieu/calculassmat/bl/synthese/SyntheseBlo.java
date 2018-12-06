@@ -1,4 +1,4 @@
-package fr.deboissieu.calculassmat.bl;
+package fr.deboissieu.calculassmat.bl.synthese;
 
 import java.util.Collection;
 import java.util.Map;

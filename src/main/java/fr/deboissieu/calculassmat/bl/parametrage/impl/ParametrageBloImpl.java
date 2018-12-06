@@ -1,4 +1,4 @@
-package fr.deboissieu.calculassmat.bl.impl;
+package fr.deboissieu.calculassmat.bl.parametrage.impl;
 
 import java.util.Collection;
 import java.util.List;
@@ -12,7 +12,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 
-import fr.deboissieu.calculassmat.bl.ParametrageBlo;
+import fr.deboissieu.calculassmat.bl.parametrage.ParametrageBlo;
 import fr.deboissieu.calculassmat.dl.ParamEmployeRepository;
 import fr.deboissieu.calculassmat.dl.ParamEnfantRepository;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;

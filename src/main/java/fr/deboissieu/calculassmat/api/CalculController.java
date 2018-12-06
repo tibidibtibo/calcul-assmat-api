@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import fr.deboissieu.calculassmat.bl.CalculBlo;
-import fr.deboissieu.calculassmat.bl.ValidationBlo;
+import fr.deboissieu.calculassmat.bl.synthese.CalculBlo;
+import fr.deboissieu.calculassmat.bl.validation.ValidationBlo;
 import fr.deboissieu.calculassmat.commons.filestorage.FileStorageService;
 import fr.deboissieu.calculassmat.configuration.LogCall;
 import fr.deboissieu.calculassmat.model.synthese.ResultatCalcul;
