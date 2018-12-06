@@ -68,7 +68,7 @@ public class ArchivageBloTest {
 		saisie2.setNbArEcole(7);
 		saisie.add(saisie2);
 
-		SyntheseGarde synthese = new SyntheseGarde(9, 2018);
+		SyntheseGarde synthese = new SyntheseGarde(9, 2018, "employe");
 		synthese.setMontantPaiementMensuel(1000d);
 
 		ParametrageEmploye paramEmploye = new ParametrageEmploye();

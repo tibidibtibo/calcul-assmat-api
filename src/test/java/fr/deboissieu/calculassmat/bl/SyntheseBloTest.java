@@ -66,7 +66,7 @@ public class SyntheseBloTest {
 		ParametrageEmploye paramEmploye = TestUtils.getParametrageEmploye();
 		Map<String, ParametrageEnfant> mapParamEnfant = getMapParamEnfant1();
 
-		doReturn(paramEmploye).when(parametrageBloMock).findEmployeParId(Mockito.anyString());
+		doReturn(paramEmploye).when(parametrageBloMock).findEmployeParNom(Mockito.anyString());
 		doReturn(mapParamEnfant).when(parametrageBloMock).findAllParamsEnfants();
 
 		Collection<SaisieJournaliere> donneesSaisies = new ArrayList<>();
@@ -99,10 +99,10 @@ public class SyntheseBloTest {
 		assertThat(synthese.getSalaire().getSalaireNetHeuresComplementaires()).isEqualTo(7.97d);
 		assertThat(synthese.getSalaire().getCongesPayes()).isEqualTo(25.8d);
 		assertThat(synthese.getSalaire().getSalaireNetTotal()).isEqualTo(283.77d);
-		assertThat(synthese.getSalaire().getSalaireMensuel(synthese.getIndemnites())).isEqualTo(292.28d);
+		assertThat(synthese.getSalaire().getSalaireMensuel(synthese.getIndemnites())).isEqualTo(295.28d);
 
 		assertThat(synthese.getIndemnites()).isNotNull();
-		assertThat(synthese.getIndemnites().getIndemnitesEntretien()).isEqualTo(3d);
+		assertThat(synthese.getIndemnites().getIndemnitesEntretien()).isEqualTo(6d);
 		assertThat(synthese.getIndemnites().getIndemnitesKm()).isEqualTo(3.11d);
 		assertThat(synthese.getIndemnites().getIndemnitesRepas()).isEqualTo(2.4d);
 
@@ -115,7 +115,7 @@ public class SyntheseBloTest {
 		ParametrageEmploye paramEmploye = TestUtils.getParametrageEmploye();
 		Map<String, ParametrageEnfant> mapParamEnfant = getMapParamEnfant2();
 
-		doReturn(paramEmploye).when(parametrageBloMock).findEmployeParId(Mockito.anyString());
+		doReturn(paramEmploye).when(parametrageBloMock).findEmployeParNom(Mockito.anyString());
 		doReturn(mapParamEnfant).when(parametrageBloMock).findAllParamsEnfants();
 
 		Collection<SaisieJournaliere> donneesSaisies = new ArrayList<>();
@@ -154,10 +154,10 @@ public class SyntheseBloTest {
 		assertThat(synthese.getSalaire().getSalaireNetHeuresComplementaires()).isEqualTo(15.95d);
 		assertThat(synthese.getSalaire().getCongesPayes()).isEqualTo(12.0d);
 		assertThat(synthese.getSalaire().getSalaireNetTotal()).isEqualTo(131.95d);
-		assertThat(synthese.getSalaire().getSalaireMensuel(synthese.getIndemnites())).isEqualTo(156.16d);
+		assertThat(synthese.getSalaire().getSalaireMensuel(synthese.getIndemnites())).isEqualTo(158.16d);
 
 		assertThat(synthese.getIndemnites()).isNotNull();
-		assertThat(synthese.getIndemnites().getIndemnitesEntretien()).isEqualTo(6d);
+		assertThat(synthese.getIndemnites().getIndemnitesEntretien()).isEqualTo(8d);
 		assertThat(synthese.getIndemnites().getIndemnitesKm()).isEqualTo(14.11d);
 		assertThat(synthese.getIndemnites().getIndemnitesRepas()).isEqualTo(4.1d);
 
@@ -172,7 +172,7 @@ public class SyntheseBloTest {
 		mapParamEnfant.putAll(getMapParamEnfant1());
 		mapParamEnfant.putAll(getMapParamEnfant2());
 
-		doReturn(paramEmploye).when(parametrageBloMock).findEmployeParId(Mockito.anyString());
+		doReturn(paramEmploye).when(parametrageBloMock).findEmployeParNom(Mockito.anyString());
 		doReturn(mapParamEnfant).when(parametrageBloMock).findAllParamsEnfants();
 
 		Collection<SaisieJournaliere> donneesSaisies = new ArrayList<>();
@@ -224,10 +224,10 @@ public class SyntheseBloTest {
 		assertThat(synthese.getSalaire().getSalaireNetHeuresComplementaires()).isEqualTo(31.18d);
 		assertThat(synthese.getSalaire().getCongesPayes()).isEqualTo(38.52d);
 		assertThat(synthese.getSalaire().getSalaireNetTotal()).isEqualTo(423.7d);
-		assertThat(synthese.getSalaire().getSalaireMensuel(synthese.getIndemnites())).isEqualTo(460.73);
+		assertThat(synthese.getSalaire().getSalaireMensuel(synthese.getIndemnites())).isEqualTo(458.23);
 
 		assertThat(synthese.getIndemnites()).isNotNull();
-		assertThat(synthese.getIndemnites().getIndemnitesEntretien()).isEqualTo(10.5d);
+		assertThat(synthese.getIndemnites().getIndemnitesEntretien()).isEqualTo(8d);
 		assertThat(synthese.getIndemnites().getIndemnitesKm()).isEqualTo(20.33d);
 		assertThat(synthese.getIndemnites().getIndemnitesRepas()).isEqualTo(6.2d);
 

@@ -47,7 +47,7 @@ public class TestUtils {
 		employe.setTauxHoraireComplementaireNet(2.90d);
 		employe.setTauxCongesPayes(0.10d);
 		employe.setIndemnitesKm(0.84d);
-		employe.setIndemnitesEntretien(new IndemnitesEntretien(8d, 2.90d, 3.10d));
+		employe.setIndemnitesEntretien(new IndemnitesEntretien(8d, 2d, 3d));
 		employe.setFraisDejeuner(1d);
 		employe.setFraisGouter(0.7d);
 		employe.setNom("maternelle");

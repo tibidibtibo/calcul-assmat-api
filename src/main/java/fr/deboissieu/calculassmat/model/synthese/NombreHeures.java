@@ -77,6 +77,7 @@ public class NombreHeures implements Serializable {
 			for (ParametrageEnfant param : mapParamEnfants.values()) {
 				this.heuresNormalesMensualisees += param.getHeuresNormalesMensualisees();
 			}
+			this.heuresNormalesMensualisees = MathsUtils.roundTo2Digits(this.heuresNormalesMensualisees);
 		}
 	}
 

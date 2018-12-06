@@ -1,7 +1,5 @@
 package fr.deboissieu.calculassmat.api;
 
-import java.util.Collection;
-
 import javax.annotation.Resource;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,7 +14,7 @@ import fr.deboissieu.calculassmat.bl.CalculBlo;
 import fr.deboissieu.calculassmat.bl.ValidationBlo;
 import fr.deboissieu.calculassmat.commons.filestorage.FileStorageService;
 import fr.deboissieu.calculassmat.configuration.LogCall;
-import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
+import fr.deboissieu.calculassmat.model.synthese.ResultatCalcul;
 
 @RestController
 @RequestMapping("/calcul")
@@ -35,14 +33,15 @@ public class CalculController {
 	@LogCall
 	@RequestMapping(produces = "application/json", method = {
 			RequestMethod.POST }, value = "/file/{annee}/{mois}")
-	public Collection<SyntheseGarde> calculerFichier(@RequestParam("fichier") MultipartFile multipartFile,
+	public ResultatCalcul calculerFichier(@RequestParam("fichier") MultipartFile multipartFile,
 			@PathVariable("annee") String annee, @PathVariable("mois") String mois) throws Exception {
 
 		String fileName = fileStorageService.storeFile(multipartFile);
 
-		int numeroMois = validationBlo.validerPathParamCalculMoisAnnee(mois);
-		int numeroAnnee = validationBlo.validerPathParamCalculMoisAnnee(annee);
+		Integer numeroMois = validationBlo.validerPathParamCalculMoisAnnee(mois);
+		Integer numeroAnnee = validationBlo.validerPathParamCalculMoisAnnee(annee);
 
-		return calculBlo.calculerSyntheseGardeFromFilename(numeroMois, numeroAnnee, fileName);
+		return new ResultatCalcul(numeroMois.toString(), numeroAnnee.toString(),
+				calculBlo.calculerSyntheseGardeFromFilename(numeroMois, numeroAnnee, fileName));
 	}
 }

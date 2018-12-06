@@ -41,4 +41,8 @@ public class ParametrageEmploye implements Serializable {
 
 	private Double tauxCongesPayes;
 
+	public String getPrenomNom() {
+		return this.prenom + " " + this.nom;
+	}
+
 }

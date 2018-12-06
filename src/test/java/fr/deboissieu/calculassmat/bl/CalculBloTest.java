@@ -2,7 +2,7 @@ package fr.deboissieu.calculassmat.bl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -109,7 +109,7 @@ public class CalculBloTest {
 		Mockito.doReturn(resource).when(fileStorageServiceMock).loadFileAsResource(Mockito.anyString());
 
 		Collection<SyntheseGarde> syntheses = new ArrayList<>();
-		SyntheseGarde synthese = new SyntheseGarde(9, 2018);
+		SyntheseGarde synthese = new SyntheseGarde(9, 2018, "employe");
 		syntheses.add(synthese);
 		Mockito.doReturn(syntheses).when(syntheseBloMock).calculerFraisMensuels(Mockito.anyCollection(),
 				Mockito.anyInt(), Mockito.anyInt(), Mockito.any(Map.class));

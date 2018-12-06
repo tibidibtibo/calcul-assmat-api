@@ -2,13 +2,9 @@ package fr.deboissieu.calculassmat.model.synthese;
 
 import java.io.Serializable;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 public class SyntheseGarde implements Serializable {
@@ -29,9 +25,12 @@ public class SyntheseGarde implements Serializable {
 
 	private Double montantPaiementMensuel;
 
-	public SyntheseGarde(int mois, int annee) {
+	private String nomEmploye;
+
+	public SyntheseGarde(int mois, int annee, String nomEmploye) {
 		this.mois = Integer.toString(mois);
 		this.annee = Integer.toString(annee);
+		this.nomEmploye = nomEmploye;
 	}
 
 	public void calculerPaiementMensuel() {

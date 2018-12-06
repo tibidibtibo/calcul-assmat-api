@@ -168,7 +168,7 @@ public class ValidationBloTest {
 		String expectedMessage = "Données invalides pour l'archivage";
 
 		try {
-			validationBlo.validerAvantArchivage(null, new SyntheseGarde(9, 2018));
+			validationBlo.validerAvantArchivage(null, new SyntheseGarde(9, 2018, "employe"));
 			fail();
 		} catch (ValidationException ve) {
 			assertThat(ve.getMessage())
@@ -176,7 +176,7 @@ public class ValidationBloTest {
 		}
 
 		try {
-			validationBlo.validerAvantArchivage(new ArrayList<>(), new SyntheseGarde(9, 2018));
+			validationBlo.validerAvantArchivage(new ArrayList<>(), new SyntheseGarde(9, 2018, "employe"));
 			fail();
 		} catch (ValidationException ve) {
 			assertThat(ve.getMessage())

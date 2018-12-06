@@ -53,9 +53,11 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		Collection<SyntheseGarde> syntheses = new ArrayList<>();
 
 		for (Map.Entry<ParametrageEmploye, Collection<SaisieJournaliere>> entry : mapEmployeSaisie.entrySet()) {
+
 			Collection<SaisieJournaliere> saisieEmploye = entry.getValue();
 			ParametrageEmploye employe = entry.getKey();
-			SyntheseGarde synthese = new SyntheseGarde(mois, annee);
+			String nomEmploye = employe.getPrenomNom();
+			SyntheseGarde synthese = new SyntheseGarde(mois, annee, nomEmploye);
 
 			validationBlo.validerAvantCalcul(saisieEmploye, mapParamEnfants);
 
