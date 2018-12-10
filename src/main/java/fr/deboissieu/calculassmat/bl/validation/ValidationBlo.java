@@ -5,6 +5,7 @@ import java.util.Map;
 
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
+import fr.deboissieu.calculassmat.model.saisie.SaisieRequest;
 import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
 public interface ValidationBlo {
@@ -47,4 +48,11 @@ public interface ValidationBlo {
 	 *            synthese
 	 */
 	void validerAvantArchivage(Collection<SaisieJournaliere> saisie, SyntheseGarde synthese);
+
+	/**
+	 * Validation de saisies à enregistrer
+	 * 
+	 * @param saisie
+	 */
+	void validerSaisie(SaisieRequest saisie);
 }

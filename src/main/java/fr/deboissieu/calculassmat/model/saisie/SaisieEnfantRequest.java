@@ -3,6 +3,8 @@ package fr.deboissieu.calculassmat.model.saisie;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +14,10 @@ public class SaisieEnfantRequest implements Serializable {
 
 	private static final long serialVersionUID = -3964371014259791586L;
 
+	@NotNull
+	private String enfant;
+
+	@NotNull
 	private String employe;
 
 	private Integer autreKm;
@@ -24,7 +30,9 @@ public class SaisieEnfantRequest implements Serializable {
 
 	private Boolean saisie;
 
+	@NotNull
 	private Date heureArrivee;
 
+	@NotNull
 	private Date heureDepart;
 }

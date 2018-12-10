@@ -1,10 +1,16 @@
 package fr.deboissieu.calculassmat.bl.validation.impl;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
+import javax.validation.ConstraintViolation;
 import javax.validation.ValidationException;
+import javax.validation.Validator;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -17,10 +23,14 @@ import fr.deboissieu.calculassmat.commons.exceptions.ValidationExceptionsEnum;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
+import fr.deboissieu.calculassmat.model.saisie.SaisieRequest;
 import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
 @Component
 public class ValidationBloImpl implements ValidationBlo {
+
+	@Resource
+	Validator validator;
 
 	@Resource
 	ParametrageBlo parametrageBlo;
@@ -66,6 +76,25 @@ public class ValidationBloImpl implements ValidationBlo {
 		if (CollectionUtils.isEmpty(saisie) || synthese == null) {
 			throw new ValidationException(ValidationExceptionsEnum.V102.toString());
 		}
+	}
+
+	@Override
+	public void validerSaisie(SaisieRequest saisie) {
+		Set<ConstraintViolation<SaisieRequest>> violations = validator.validate(saisie);
+		if (saisie != null && CollectionUtils.isEmpty(violations)) {
+			saisie.getSaisie().stream().forEach(s -> {
+				if (StringUtils.isBlank(s.getEmploye()) || s.getEnfant() == null
+						|| (s.getHeureArrivee() == null && s.getHeureDepart() == null)) {
+					throw new ValidationException(ValidationExceptionsEnum.V005.toString());
+				}
+			});
+		} else if (CollectionUtils.isNotEmpty(violations)) {
+			List<String> listeViolations = violations.stream().collect(Collectors.toMap(keyMapper, valueMapper)violation -> {
+				return violation.getMessage();
+			});
+			throw new ValidationException(ValidationExceptionsEnum.V005.toString(strViolations, new Exception()));
+		}
+		throw new ValidationException(ValidationExceptionsEnum.V005.toString());
 	}
 
 }

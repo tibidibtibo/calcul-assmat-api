@@ -9,6 +9,7 @@ public enum ValidationExceptionsEnum {
 	V002("V-002", "Paramètre d'entrée invalide. Usage : nom de l'employé."),
 	V003("V-003", "Employé inconnu."),
 	V004("V-004", "Impossible de récupérer l'employé."),
+	V005("V-005", "Saisie incorrecte"),
 
 	V101("V-101", "Impossible de charger le paramétrage."),
 	V102("V-102", "Données invalides pour l'archivage."),
