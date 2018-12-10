@@ -26,10 +26,10 @@ public class SaisieController {
 	@LogCall
 	@RequestMapping(produces = "application/json", method = {
 			RequestMethod.POST })
-	public void enregistreSaisie(SaisieRequest saisie) throws Exception {
+	public void enregistrerSaisie(SaisieRequest request) throws Exception {
 
-		validationBlo.validerSaisie(saisie);
-		saisieBlo.enregistrerSaisie(saisie);
+		validationBlo.validerSaisie(request);
+		saisieBlo.enregistrerSaisie(request);
 
 	}
 

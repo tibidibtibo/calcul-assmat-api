@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -89,12 +88,17 @@ public class ValidationBloImpl implements ValidationBlo {
 				}
 			});
 		} else if (CollectionUtils.isNotEmpty(violations)) {
-			List<String> listeViolations = violations.stream().collect(Collectors.toMap(keyMapper, valueMapper)violation -> {
-				return violation.getMessage();
-			});
-			throw new ValidationException(ValidationExceptionsEnum.V005.toString(strViolations, new Exception()));
+			String listeViolations = violationsToString(violations);
+			throw new ValidationException(ValidationExceptionsEnum.V005.toString(listeViolations, new Exception()));
 		}
 		throw new ValidationException(ValidationExceptionsEnum.V005.toString());
+	}
+
+	private String violationsToString(Set<ConstraintViolation<SaisieRequest>> violations) {
+		List<String> listeViolations = violations.stream()
+				.map(ConstraintViolation::getMessage)
+				.collect(Collectors.toList());
+		return StringUtils.join(listeViolations, " | ");
 	}
 
 }
