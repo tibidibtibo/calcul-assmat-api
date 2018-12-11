@@ -35,4 +35,10 @@ public class SaisieEnfantRequest implements Serializable {
 
 	@NotNull
 	private Date heureDepart;
+
+	public static SaisieJournaliere toSaisieJournaliere(SaisieEnfantRequest saisieRequest) {
+		SaisieJournaliere saisie = new SaisieJournaliere();
+		// TODO : mapping
+		return saisie;
+	}
 }

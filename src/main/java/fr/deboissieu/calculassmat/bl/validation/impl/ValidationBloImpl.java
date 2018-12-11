@@ -90,8 +90,9 @@ public class ValidationBloImpl implements ValidationBlo {
 		} else if (CollectionUtils.isNotEmpty(violations)) {
 			String listeViolations = violationsToString(violations);
 			throw new ValidationException(ValidationExceptionsEnum.V005.toString(listeViolations, new Exception()));
+		} else {
+			throw new ValidationException(ValidationExceptionsEnum.V005.toString());
 		}
-		throw new ValidationException(ValidationExceptionsEnum.V005.toString());
 	}
 
 	private String violationsToString(Set<ConstraintViolation<SaisieRequest>> violations) {

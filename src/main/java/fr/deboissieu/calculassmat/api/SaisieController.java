@@ -3,6 +3,7 @@ package fr.deboissieu.calculassmat.api;
 import javax.annotation.Resource;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,7 +27,7 @@ public class SaisieController {
 	@LogCall
 	@RequestMapping(produces = "application/json", method = {
 			RequestMethod.POST })
-	public void enregistrerSaisie(SaisieRequest request) throws Exception {
+	public void enregistrerSaisie(@RequestBody SaisieRequest request) throws Exception {
 
 		validationBlo.validerSaisie(request);
 		saisieBlo.enregistrerSaisie(request);
