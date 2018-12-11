@@ -25,5 +25,5 @@ public class SaisieRequest implements Serializable {
 	@Size(min = 1)
 	@Valid
 	@JsonProperty("saisie")
-	private Collection<SaisieEnfantRequest> saisie;
+	private Collection<SaisieEnfantDto> saisie;
 }
