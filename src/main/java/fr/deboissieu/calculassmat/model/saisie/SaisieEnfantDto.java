@@ -1,6 +1,8 @@
 package fr.deboissieu.calculassmat.model.saisie;
 
 import java.io.Serializable;
+import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 
 import javax.validation.constraints.NotNull;
@@ -47,7 +49,8 @@ public class SaisieEnfantDto implements Serializable {
 		Saisie saisie = new Saisie();
 		saisie.setEmployeId(new ObjectId(saisieRequest.getEmploye()));
 		saisie.setEnfantId(new ObjectId(saisieRequest.getEnfant()));
-		saisie.setDateSaisie(saisieRequest.getDateSaisie());
+		saisie.setDateSaisie(
+				org.apache.commons.lang3.time.DateUtils.truncate(saisieRequest.getDateSaisie(), Calendar.DATE));
 		saisie.setHeureArrivee(saisieRequest.getHeureArrivee());
 		saisie.setHeureDepart(saisieRequest.getHeureDepart());
 		saisie.setNbArEcole(saisieRequest.getNbArEcole());
@@ -70,5 +73,12 @@ public class SaisieEnfantDto implements Serializable {
 		saisieEnfantDto.setNbDejeuner(saisie.getNbDejeuners());
 		saisieEnfantDto.setNbGouter(saisie.getNbGouters());
 		return saisieEnfantDto;
+	}
+
+	public static Collection<SaisieEnfantDto> toSaisieEnfantDto(Collection<Saisie> saisies) {
+		// return saisies.stream().map(saisie -> {
+		// return toSaisieEnfantDto(saisie);
+		// }).to;
+		// TODO
 	}
 }
