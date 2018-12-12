@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
@@ -76,9 +77,8 @@ public class SaisieEnfantDto implements Serializable {
 	}
 
 	public static Collection<SaisieEnfantDto> toSaisieEnfantDto(Collection<Saisie> saisies) {
-		// return saisies.stream().map(saisie -> {
-		// return toSaisieEnfantDto(saisie);
-		// }).to;
-		// TODO
+		return saisies.stream()
+				.map(SaisieEnfantDto::toSaisieEnfantDto)
+				.collect(Collectors.toList());
 	}
 }

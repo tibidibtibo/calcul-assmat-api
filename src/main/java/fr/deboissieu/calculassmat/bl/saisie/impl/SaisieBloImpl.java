@@ -29,7 +29,7 @@ public class SaisieBloImpl implements SaisieBlo {
 	@Override
 	public Collection<SaisieEnfantDto> findSaisiesByMonth(Integer month, Integer year) {
 
-		Date startDate = DateUtils.setDate(month, year);
+		Date startDate = DateUtils.getDate(year, month, 1);
 		Date stopDate = DateUtils.toMaxMonth(month, year);
 		return SaisieEnfantDto.toSaisieEnfantDto(saisieRepository.findSaisieBetween(startDate, stopDate));
 

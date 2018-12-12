@@ -11,7 +11,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
@@ -140,21 +139,9 @@ public class DateUtils {
 	 * @return
 	 */
 	public static Date toMaxMonth(Integer month, Integer year) {
-		Date date = setDate(month, year);
-		date = org.apache.commons.lang3.time.DateUtils.addMonths(date, 1);
-		date = org.apache.commons.lang3.time.DateUtils.addMilliseconds(date, -1);
-		return date;
+
+		LocalDate monthEnd = LocalDate.of(year, month, 1).plusMonths(1).withDayOfMonth(1);
+		return Date.from(monthEnd.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 	}
 
-	/**
-	 * Date à MM/YYYY
-	 * 
-	 * @param month
-	 * @param year
-	 * @return
-	 */
-	public static Date setDate(Integer month, Integer year) {
-		Date date = new GregorianCalendar(year, month, 0).getTime();
-		return date;
-	}
 }
