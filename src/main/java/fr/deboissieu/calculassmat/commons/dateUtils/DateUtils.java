@@ -145,7 +145,15 @@ public class DateUtils {
 	}
 
 	public static Date getDateTime(Date dateSaisie, Date heureArrivee) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(dateSaisie);
+		Date dateTime = new Date();
 		// TODO Auto-generated method stub
+		// FIXME
+		// :
+		// set
+		// date
+		// !
 		return null;
 	}
 
