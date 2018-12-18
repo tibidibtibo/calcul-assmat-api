@@ -144,17 +144,20 @@ public class DateUtils {
 		return Date.from(monthEnd.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 	}
 
-	public static Date getDateTime(Date dateSaisie, Date heureArrivee) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(dateSaisie);
-		Date dateTime = new Date();
-		// TODO Auto-generated method stub
-		// FIXME
-		// :
-		// set
-		// date
-		// !
-		return null;
+	public static Date getDateTime(Date dateSaisie, Date heure) {
+
+		Calendar calDate = Calendar.getInstance();
+		calDate.setTime(dateSaisie);
+
+		Calendar calHour = Calendar.getInstance();
+		calHour.setTime(heure);
+
+		calDate.set(Calendar.HOUR_OF_DAY, calHour.get(Calendar.HOUR_OF_DAY));
+		calDate.set(Calendar.MINUTE, calHour.get(Calendar.MINUTE));
+		calDate.set(Calendar.SECOND, calHour.get(Calendar.SECOND));
+		calDate.set(Calendar.MILLISECOND, calHour.get(Calendar.MILLISECOND));
+
+		return calDate.getTime();
 	}
 
 }
