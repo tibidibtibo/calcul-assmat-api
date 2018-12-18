@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 
 import org.bson.types.ObjectId;
 
+import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -52,8 +53,8 @@ public class SaisieEnfantDto implements Serializable {
 		saisie.setEnfantId(new ObjectId(saisieRequest.getEnfant()));
 		saisie.setDateSaisie(
 				org.apache.commons.lang3.time.DateUtils.truncate(saisieRequest.getDateSaisie(), Calendar.DATE));
-		saisie.setHeureArrivee(saisieRequest.getHeureArrivee());
-		saisie.setHeureDepart(saisieRequest.getHeureDepart());
+		saisie.setHeureArrivee(DateUtils.getDateTime(saisieRequest.getDateSaisie(), saisieRequest.getHeureArrivee()));
+		saisie.setHeureDepart(DateUtils.getDateTime(saisieRequest.getDateSaisie(), saisieRequest.getHeureDepart()));
 		saisie.setNbArEcole(saisieRequest.getNbArEcole());
 		saisie.setAutresDeplacementKm(saisieRequest.getAutreKm());
 		saisie.setNbDejeuners(saisieRequest.getNbDejeuner());

@@ -144,4 +144,9 @@ public class DateUtils {
 		return Date.from(monthEnd.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 	}
 
+	public static Date getDateTime(Date dateSaisie, Date heureArrivee) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
