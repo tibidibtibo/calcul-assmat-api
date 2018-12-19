@@ -1,7 +1,5 @@
 package fr.deboissieu.calculassmat.bl.synthese.impl;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -10,7 +8,6 @@ import javax.annotation.Resource;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +16,6 @@ import fr.deboissieu.calculassmat.bl.parametrage.ParametrageBlo;
 import fr.deboissieu.calculassmat.bl.saisie.ExcelFileBlo;
 import fr.deboissieu.calculassmat.bl.synthese.CalculBlo;
 import fr.deboissieu.calculassmat.bl.synthese.SyntheseBlo;
-import fr.deboissieu.calculassmat.commons.filestorage.FileStorageService;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
 import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
@@ -41,20 +37,17 @@ public class CalculBloImpl implements CalculBlo {
 	@Resource
 	ParametrageBlo parametrageBlo;
 
-	@Resource
-	FileStorageService fileStorageService;
-
 	@Override
 	public Collection<SyntheseGarde> calculerSyntheseGardeFromFilename(int mois, int annee, String filename)
 			throws Exception {
 
-		Workbook workbook = openWorkbook(filename);
+		Workbook workbook = excelFileBlo.openWorkbook(filename);
 
 		Collection<SyntheseGarde> syntheseGarde = new ArrayList<>();
 		Exception exception = null;
 
 		try {
-			Collection<SaisieJournaliere> donneesSaisies = excelFileBlo.extractDataFromWorkbook(workbook, mois);
+			Collection<SaisieJournaliere> donneesSaisies = excelFileBlo.extractDataFromWorkbook(workbook, mois, annee);
 
 			Map<String, ParametrageEnfant> mapParamEnfants = parametrageBlo.findAllParamsEnfants();
 
@@ -74,17 +67,6 @@ public class CalculBloImpl implements CalculBlo {
 			throw exception;
 		}
 		return syntheseGarde;
-	}
-
-	private Workbook openWorkbook(String filename) throws IOException, InvalidFormatException {
-		try {
-			org.springframework.core.io.Resource fileResource = fileStorageService.loadFileAsResource(filename);
-			File file = fileResource.getFile();
-			return excelFileBlo.openFileAsWorkbook(file);
-		} catch (Exception e) {
-			logger.error("Impossible de traiter le fichier : {}", e);
-			throw e;
-		}
 	}
 
 }

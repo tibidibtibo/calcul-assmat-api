@@ -1,6 +1,9 @@
 package fr.deboissieu.calculassmat.bl.saisie;
 
+import java.io.IOException;
 import java.util.Collection;
+
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 import fr.deboissieu.calculassmat.model.saisie.SaisieEnfantDto;
 import fr.deboissieu.calculassmat.model.saisie.SaisieRequest;
@@ -24,4 +27,16 @@ public interface SaisieBlo {
 	 * @return Collection<SaisieEnfantDto>
 	 */
 	Collection<SaisieEnfantDto> findSaisiesByMonth(Integer month, Integer year);
+
+	/**
+	 * Importe les saisies à partir d'un fichier Excel
+	 * 
+	 * @param numeroMois
+	 * @param numeroAnnee
+	 * @param fileName
+	 * @throws IOException
+	 * @throws InvalidFormatException
+	 */
+	void importerFichierSaisie(Integer numeroMois, Integer numeroAnnee, String fileName)
+			throws InvalidFormatException, IOException;
 }

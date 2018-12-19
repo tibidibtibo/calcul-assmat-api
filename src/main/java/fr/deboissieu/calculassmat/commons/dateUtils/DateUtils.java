@@ -38,6 +38,19 @@ public class DateUtils {
 	}
 
 	/**
+	 * Extraction de l'année
+	 * 
+	 * @param Date
+	 *            date
+	 * @return {@link Integer} année
+	 */
+	public static Integer getYearNumber(Date date) {
+		LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		int year = localDate.getYear();
+		return year;
+	}
+
+	/**
 	 * To string
 	 * 
 	 * @param date
@@ -139,7 +152,6 @@ public class DateUtils {
 	 * @return
 	 */
 	public static Date toMaxMonth(Integer month, Integer year) {
-
 		LocalDate monthEnd = LocalDate.of(year, month, 1).plusMonths(1).withDayOfMonth(1);
 		return Date.from(monthEnd.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 	}
@@ -158,6 +170,22 @@ public class DateUtils {
 		calDate.set(Calendar.MILLISECOND, calHour.get(Calendar.MILLISECOND));
 
 		return calDate.getTime();
+	}
+
+	public static Date fromLocalDate(LocalDate localDate) {
+		return Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+	}
+
+	public static LocalDate fromDate(Date date) {
+		return Instant.ofEpochMilli(date.getTime())
+				.atZone(ZoneId.systemDefault())
+				.toLocalDate();
+	}
+
+	public static Date fromLocalTimeAndDate(LocalTime localTime, Date date) {
+		Instant instant = localTime.atDate(fromDate(date)).atZone(ZoneId.systemDefault())
+				.toInstant();
+		return Date.from(instant);
 	}
 
 }

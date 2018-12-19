@@ -2,7 +2,7 @@ package fr.deboissieu.calculassmat.bl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -109,6 +109,7 @@ public class CalculBloTest {
 		Mockito.doReturn(new WorkbookMock()).when(excelFileBloMock).openFileAsWorkbook(null);
 		Mockito.doReturn(Arrays.asList(new WorkbookMock())).when(excelFileBloMock).extractDataFromWorkbook(
 				Mockito.any(Workbook.class),
+				Mockito.anyInt(),
 				Mockito.anyInt());
 		org.springframework.core.io.Resource resource = new ResourceMock();
 		Mockito.doReturn(resource).when(fileStorageServiceMock).loadFileAsResource(Mockito.anyString());
@@ -131,6 +132,7 @@ public class CalculBloTest {
 			throws EncryptedDocumentException, InvalidFormatException, IOException {
 		Mockito.doReturn(Arrays.asList(new WorkbookMock())).when(excelFileBloMock).extractDataFromWorkbook(
 				Mockito.any(Workbook.class),
+				Mockito.anyInt(),
 				Mockito.anyInt());
 		org.springframework.core.io.Resource resource = new ResourceMock();
 		Mockito.doReturn(resource).when(fileStorageServiceMock).loadFileAsResource(Mockito.anyString());
