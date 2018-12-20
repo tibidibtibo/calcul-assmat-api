@@ -43,6 +43,12 @@ public class SaisieController {
 	}
 
 	@LogCall
+	@RequestMapping(produces = "application/json", method = { RequestMethod.DELETE }, path = "/{identifiant}")
+	public void supprimerSaisie(@PathVariable String identifiant) throws Exception {
+		saisieBlo.supprimerSaisie(identifiant);
+	}
+
+	@LogCall
 	@RequestMapping(produces = "application/json", method = { RequestMethod.GET }, path = "/{year}/{month}")
 	public Collection<SaisieEnfantDto> findSaisieMonthYear(@PathVariable String month, @PathVariable String year)
 			throws Exception {

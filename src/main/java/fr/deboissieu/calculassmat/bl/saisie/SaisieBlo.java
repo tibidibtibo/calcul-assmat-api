@@ -39,4 +39,11 @@ public interface SaisieBlo {
 	 */
 	void importerFichierSaisie(Integer numeroMois, Integer numeroAnnee, String fileName)
 			throws InvalidFormatException, IOException;
+
+	/**
+	 * Suppression d'une saisie
+	 * 
+	 * @param identifiant
+	 */
+	void supprimerSaisie(String identifiant);
 }

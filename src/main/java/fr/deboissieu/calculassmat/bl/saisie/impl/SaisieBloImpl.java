@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -11,6 +12,7 @@ import javax.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 
 import fr.deboissieu.calculassmat.bl.parametrage.ParametrageBlo;
@@ -53,6 +55,7 @@ public class SaisieBloImpl implements SaisieBlo {
 
 	}
 
+	// FIXME : tester cette méthode
 	@Override
 	public void importerFichierSaisie(Integer numeroMois, Integer numeroAnnee, String fileName)
 			throws InvalidFormatException, IOException {
@@ -90,31 +93,11 @@ public class SaisieBloImpl implements SaisieBlo {
 
 					Saisie saisie = new Saisie();
 
-					// Param enfant
-					ParametrageEnfant paramEnfant = mapParamEnfants.get(saisieJourn.getEnfant());
-					saisie.setEnfantId(paramEnfant.get_id());
+					// Paramétrage
+					lierParametrage(mapParamEnfants, paramsEmployes, saisieJourn, saisie);
 
-					// Param employé
-					ParametrageEmploye paramEmploye = paramsEmployes.stream()
-							.filter(param -> {
-								return StringUtils.equals(param.getNom(), saisieJourn.getEmploye());
-							})
-							.findFirst().get();
-					saisie.setEmployeId(paramEmploye.get_id());
-
-					// Dates / heures
-					saisie.setDateSaisie(saisieJourn.getDateSaisie());
-					if (StringUtils.isNotBlank(saisieJourn.getHeureArrivee())) {
-						Date heureArrivee = DateUtils.fromLocalTimeAndDate(
-								DateUtils.toLocalTime(saisieJourn.getHeureArrivee()), saisieJourn.getDateSaisie());
-						saisie.setHeureArrivee(heureArrivee);
-					}
-					if (StringUtils.isNotBlank(saisieJourn.getHeureDepart())) {
-						Date heureDepart = DateUtils.fromLocalTimeAndDate(
-								DateUtils.toLocalTime(saisieJourn.getHeureDepart()),
-								saisieJourn.getDateSaisie());
-						saisie.setHeureDepart(heureDepart);
-					}
+					// Dates et heures
+					calculerDateHeures(saisieJourn, saisie);
 
 					// Autres données
 					saisie.setAutresDeplacementKm(saisieJourn.getAutresDeplacementKm());
@@ -123,6 +106,48 @@ public class SaisieBloImpl implements SaisieBlo {
 					saisie.setNbGouters(saisieJourn.getNbGouters());
 					return saisie;
 				}).collect(Collectors.toList());
+	}
+
+	private void calculerDateHeures(SaisieJournaliere saisieJourn, Saisie saisie) {
+
+		// Date
+		saisie.setDateSaisie(saisieJourn.getDateSaisie());
+
+		// Heures
+		if (StringUtils.isNotBlank(saisieJourn.getHeureArrivee())) {
+			Date heureArrivee = DateUtils.fromLocalTimeAndDate(
+					DateUtils.toLocalTime(saisieJourn.getHeureArrivee()), saisieJourn.getDateSaisie());
+			saisie.setHeureArrivee(heureArrivee);
+		}
+		if (StringUtils.isNotBlank(saisieJourn.getHeureDepart())) {
+			Date heureDepart = DateUtils.fromLocalTimeAndDate(
+					DateUtils.toLocalTime(saisieJourn.getHeureDepart()),
+					saisieJourn.getDateSaisie());
+			saisie.setHeureDepart(heureDepart);
+		}
+	}
+
+	private void lierParametrage(Map<String, ParametrageEnfant> mapParamEnfants,
+			Collection<ParametrageEmploye> paramsEmployes, SaisieJournaliere saisieJourn, Saisie saisie) {
+
+		// Param enfant
+		ParametrageEnfant paramEnfant = mapParamEnfants.get(saisieJourn.getEnfant());
+		saisie.setEnfantId(paramEnfant.get_id());
+
+		// Param employé
+		Optional<ParametrageEmploye> paramEmploye = paramsEmployes.stream()
+				.filter(param -> {
+					return StringUtils.equals(param.getNom(), saisieJourn.getEmploye());
+				})
+				.findFirst();
+		saisie.setEmployeId((paramEmploye.isPresent()) ? paramEmploye.get().get_id() : null);
+	}
+
+	@Override
+	public void supprimerSaisie(String identifiant) {
+		if (StringUtils.isNotBlank(identifiant)) {
+			saisieRepository.deleteById(new ObjectId(identifiant));
+		}
 	}
 
 }
