@@ -1,11 +1,16 @@
 package fr.deboissieu.calculassmat.bl;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections4.IterableUtils;
+import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +23,7 @@ import fr.deboissieu.calculassmat.bl.parametrage.ParametrageBlo;
 import fr.deboissieu.calculassmat.bl.saisie.ExcelFileBlo;
 import fr.deboissieu.calculassmat.bl.saisie.SaisieBlo;
 import fr.deboissieu.calculassmat.bl.saisie.impl.SaisieBloImpl;
+import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
 import fr.deboissieu.calculassmat.dl.SaisieRepository;
 import fr.deboissieu.calculassmat.model.saisie.Saisie;
 import fr.deboissieu.calculassmat.model.saisie.SaisieEnfantDto;
@@ -57,8 +63,27 @@ public class SaisieBloTest {
 
 	@Test
 	public void devraitRechercherLaSaisieParMoisAnnee() {
-		// Collection<SaisieEnfantDto> findSaisiesByMonth(Integer month, Integer year);
-		// TODO
+
+		// Arrange
+		Collection<Saisie> saisiesToReturn = new ArrayList<>();
+		Saisie saisie1 = new Saisie();
+		saisie1.set_id(new ObjectId("5baff2462efb71c0790b6e55"));
+		saisie1.setEnfantId(new ObjectId("abcff2462efb71c0790b6e55"));
+		saisie1.setEmployeId(new ObjectId("defff2462efb71c0790b6e55"));
+		saisiesToReturn.add(saisie1);
+		doReturn(saisiesToReturn).when(saisieRepositoryMock).findSaisieBetween(Mockito.any(Date.class),
+				Mockito.any(Date.class));
+
+		// Act
+		Collection<SaisieEnfantDto> saisies = saisieBlo.findSaisiesByMonth(12, 2019);
+
+		// Assert
+		assertThat(saisies).isNotEmpty().hasSize(1);
+		assertThat(IterableUtils.get(saisies, 0)).isNotNull();
+		assertThat(IterableUtils.get(saisies, 0).getId()).isEqualTo("5baff2462efb71c0790b6e55");
+
+		Mockito.verify(saisieRepositoryMock, times(1)).findSaisieBetween(DateUtils.getDate(2019, 12, 1),
+				DateUtils.getDate(2020, 1, 1));
 	}
 
 	@Test
