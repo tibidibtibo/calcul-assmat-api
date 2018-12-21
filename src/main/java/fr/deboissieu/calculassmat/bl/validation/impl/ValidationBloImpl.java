@@ -79,20 +79,29 @@ public class ValidationBloImpl implements ValidationBlo {
 
 	@Override
 	public void validerSaisie(SaisieRequest saisie) {
-		Set<ConstraintViolation<SaisieRequest>> violations = validator.validate(saisie);
-		if (saisie != null && CollectionUtils.isEmpty(violations)) {
-			saisie.getSaisie().stream().forEach(s -> {
-				if (StringUtils.isBlank(s.getEmploye()) || s.getEnfant() == null
-						|| (s.getHeureArrivee() == null && s.getHeureDepart() == null)) {
-					throw new ValidationException(ValidationExceptionsEnum.V005.toString());
-				}
-			});
-		} else if (CollectionUtils.isNotEmpty(violations)) {
-			String listeViolations = violationsToString(violations);
-			throw new ValidationException(ValidationExceptionsEnum.V005.toString(listeViolations, new Exception()));
-		} else {
+
+		// Validation de la requête (null ou vide)
+		if (saisie == null || saisie != null && CollectionUtils.isEmpty(saisie.getSaisie())) {
 			throw new ValidationException(ValidationExceptionsEnum.V005.toString());
 		}
+
+		// Validation primaire du contenu (objets obligatoires dans la requête)
+		Set<ConstraintViolation<SaisieRequest>> violations = validator.validate(saisie);
+		if (CollectionUtils.isNotEmpty(violations)) {
+			String listeViolations = violationsToString(violations);
+			throw new ValidationException(ValidationExceptionsEnum.V005.toString(listeViolations, new Exception()));
+		}
+
+		// Validation de la cohérence de saisie (au moins une heure saisie, employé,
+		// enfant...)
+		saisie.getSaisie().stream().forEach(s -> {
+			if (StringUtils.isBlank(s.getEmploye()) || s.getEnfant() == null
+					|| (s.getHeureArrivee() == null && s.getHeureDepart() == null)) {
+				throw new ValidationException(ValidationExceptionsEnum.V005.toString());
+			}
+		});
+
+		// Si on arrive là c'est ok !
 	}
 
 	private String violationsToString(Set<ConstraintViolation<SaisieRequest>> violations) {

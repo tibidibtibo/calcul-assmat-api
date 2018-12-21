@@ -1,7 +1,7 @@
 package fr.deboissieu.calculassmat.bl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.doReturn;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.validation.Validator;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.junit.Test;
@@ -50,6 +51,11 @@ public class SyntheseBloTest {
 		@Bean
 		ValidationBlo getValidationBlo() {
 			return new ValidationBloImpl();
+		}
+
+		@Bean
+		Validator getValidator() {
+			return Mockito.mock(Validator.class);
 		}
 	}
 

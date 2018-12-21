@@ -2,13 +2,15 @@ package fr.deboissieu.calculassmat.bl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 import javax.annotation.Resource;
 import javax.validation.ValidationException;
+import javax.validation.Validator;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +24,9 @@ import fr.deboissieu.calculassmat.bl.parametrage.ParametrageBlo;
 import fr.deboissieu.calculassmat.bl.validation.ValidationBlo;
 import fr.deboissieu.calculassmat.bl.validation.impl.ValidationBloImpl;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
+import fr.deboissieu.calculassmat.model.saisie.SaisieEnfantDto;
 import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
+import fr.deboissieu.calculassmat.model.saisie.SaisieRequest;
 import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
 @RunWith(SpringRunner.class)
@@ -40,6 +44,12 @@ public class ValidationBloTest {
 		ParametrageBlo getParametrageBlo() {
 			return Mockito.mock(ParametrageBlo.class);
 		}
+
+		@Bean
+		Validator getValidator() {
+			return Mockito.mock(Validator.class);
+		}
+
 	}
 
 	@Resource
@@ -193,6 +203,81 @@ public class ValidationBloTest {
 		} catch (ValidationException ve) {
 			assertThat(ve.getMessage())
 					.contains(expectedMessage);
+		}
+
+	}
+
+	@Test
+	public void devraitValiderLaRequeteDeCreationSaisie() {
+
+		String expectedMessage = "Saisie incorrecte";
+
+		// Requête nulle
+		try {
+			SaisieRequest saisie = new SaisieRequest();
+			validationBlo.validerSaisie(saisie);
+			fail();
+		} catch (ValidationException ve) {
+			assertThat(ve.getMessage())
+					.contains(expectedMessage);
+		}
+
+		// Requête vide
+		try {
+			SaisieRequest saisie = new SaisieRequest();
+			saisie.setSaisie(new ArrayList<>());
+			validationBlo.validerSaisie(saisie);
+			fail();
+		} catch (ValidationException ve) {
+			assertThat(ve.getMessage())
+					.contains(expectedMessage);
+		}
+
+		// Requête avec dateSaisie/enfant/employe nuls
+		try {
+			SaisieRequest saisie = new SaisieRequest();
+			Collection<SaisieEnfantDto> saisies = new ArrayList<>();
+			SaisieEnfantDto saisie1 = new SaisieEnfantDto();
+			saisies.add(saisie1);
+			saisie.setSaisie(saisies);
+			validationBlo.validerSaisie(saisie);
+			fail();
+		} catch (ValidationException ve) {
+			assertThat(ve.getMessage())
+					.contains(expectedMessage);
+		}
+
+		// Requête sans aucune heure
+		try {
+			SaisieRequest saisie = new SaisieRequest();
+			Collection<SaisieEnfantDto> saisies = new ArrayList<>();
+			SaisieEnfantDto saisie1 = new SaisieEnfantDto();
+			saisie1.setDateSaisie(new Date());
+			saisie1.setEmploye("employe");
+			saisie1.setEnfant("enfant");
+			saisies.add(saisie1);
+			saisie.setSaisie(saisies);
+			validationBlo.validerSaisie(saisie);
+			fail();
+		} catch (ValidationException ve) {
+			assertThat(ve.getMessage())
+					.contains(expectedMessage);
+		}
+
+		// Requête valide
+		try {
+			SaisieRequest saisie = new SaisieRequest();
+			Collection<SaisieEnfantDto> saisies = new ArrayList<>();
+			SaisieEnfantDto saisie1 = new SaisieEnfantDto();
+			saisie1.setDateSaisie(new Date());
+			saisie1.setEmploye("employe");
+			saisie1.setEnfant("enfant");
+			saisie1.setHeureDepart(new Date());
+			saisies.add(saisie1);
+			saisie.setSaisie(saisies);
+			validationBlo.validerSaisie(saisie);
+		} catch (ValidationException ve) {
+			fail();
 		}
 
 	}

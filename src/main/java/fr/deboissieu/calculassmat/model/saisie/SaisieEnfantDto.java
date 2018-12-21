@@ -41,10 +41,8 @@ public class SaisieEnfantDto implements Serializable {
 
 	private Boolean saisie;
 
-	@NotNull
 	private Date heureArrivee;
 
-	@NotNull
 	private Date heureDepart;
 
 	public static Saisie toSaisie(SaisieEnfantDto saisieRequest) {

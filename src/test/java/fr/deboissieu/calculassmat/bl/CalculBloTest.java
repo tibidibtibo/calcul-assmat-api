@@ -106,7 +106,7 @@ public class CalculBloTest {
 		doReturn(paramEmploye).when(parametrageBloMock).findEmployeParId(Mockito.anyString());
 		doReturn(mapParamEnfant).when(parametrageBloMock).findAllParamsEnfants();
 
-		Mockito.doReturn(new WorkbookMock()).when(excelFileBloMock).openFileAsWorkbook(null);
+		Mockito.doReturn(new WorkbookMock()).when(excelFileBloMock).openWorkbook(Mockito.anyString());
 		Mockito.doReturn(Arrays.asList(new WorkbookMock())).when(excelFileBloMock).extractDataFromWorkbook(
 				Mockito.any(Workbook.class),
 				Mockito.anyInt(),
