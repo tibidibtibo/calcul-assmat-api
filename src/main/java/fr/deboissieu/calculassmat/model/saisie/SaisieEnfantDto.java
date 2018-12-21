@@ -51,8 +51,13 @@ public class SaisieEnfantDto implements Serializable {
 		saisie.setEnfantId(new ObjectId(saisieRequest.getEnfant()));
 		saisie.setDateSaisie(
 				org.apache.commons.lang3.time.DateUtils.truncate(saisieRequest.getDateSaisie(), Calendar.DATE));
-		saisie.setHeureArrivee(DateUtils.getDateTime(saisieRequest.getDateSaisie(), saisieRequest.getHeureArrivee()));
-		saisie.setHeureDepart(DateUtils.getDateTime(saisieRequest.getDateSaisie(), saisieRequest.getHeureDepart()));
+		if (saisieRequest.getHeureArrivee() != null) {
+			saisie.setHeureArrivee(
+					DateUtils.getDateTime(saisieRequest.getDateSaisie(), saisieRequest.getHeureArrivee()));
+		}
+		if (saisieRequest.getHeureDepart() != null) {
+			saisie.setHeureDepart(DateUtils.getDateTime(saisieRequest.getDateSaisie(), saisieRequest.getHeureDepart()));
+		}
 		saisie.setNbArEcole(saisieRequest.getNbArEcole());
 		saisie.setAutresDeplacementKm(saisieRequest.getAutreKm());
 		saisie.setNbDejeuners(saisieRequest.getNbDejeuner());
