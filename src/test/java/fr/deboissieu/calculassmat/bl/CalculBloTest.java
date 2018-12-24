@@ -2,7 +2,6 @@ package fr.deboissieu.calculassmat.bl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -103,8 +102,8 @@ public class CalculBloTest {
 		ParametrageEmploye paramEmploye = TestUtils.getParametrageEmploye();
 		Map<String, ParametrageEnfant> mapParamEnfant = getMapParamEnfant2();
 
-		doReturn(paramEmploye).when(parametrageBloMock).findEmployeParId(Mockito.anyString());
-		doReturn(mapParamEnfant).when(parametrageBloMock).findAllParamsEnfants();
+		Mockito.doReturn(paramEmploye).when(parametrageBloMock).findEmployeParId(Mockito.anyString());
+		Mockito.doReturn(mapParamEnfant).when(parametrageBloMock).findAllParamsEnfants();
 
 		Mockito.doReturn(new WorkbookMock()).when(excelFileBloMock).openWorkbook(Mockito.anyString());
 		Mockito.doReturn(Arrays.asList(new WorkbookMock())).when(excelFileBloMock).extractDataFromWorkbook(

@@ -65,7 +65,7 @@ public class ValidationBloImpl implements ValidationBlo {
 		ParametrageEmploye employe = parametrageBlo.findEmployeParId(idEmploye);
 		if (employe == null) {
 			throw new ValidationException(
-					ValidationExceptionsEnum.V003.toString(idEmploye, new ValidationException()));
+					ValidationExceptionsEnum.V003.toString(idEmploye, null));
 		}
 		return idEmploye;
 	}

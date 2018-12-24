@@ -2,7 +2,7 @@ package fr.deboissieu.calculassmat.bl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -159,7 +159,7 @@ public class ValidationBloTest {
 	@Test
 	public void devraitValiderLeNomAvecRechercheEnBase() {
 
-		String expectedMessage = "Erreur V-003 : Employé inconnu. - Variable saisie : nom";
+		String expectedMessage = "Erreur V-003 : Employé inconnu. - Variable : nom";
 
 		doReturn(null).when(parametrageBloMock).findEmployeParId("nom");
 		try {

@@ -8,9 +8,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
+import javax.validation.ValidationException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
@@ -19,6 +21,7 @@ import fr.deboissieu.calculassmat.bl.parametrage.ParametrageBlo;
 import fr.deboissieu.calculassmat.bl.saisie.ExcelFileBlo;
 import fr.deboissieu.calculassmat.bl.saisie.SaisieBlo;
 import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
+import fr.deboissieu.calculassmat.commons.exceptions.ValidationExceptionsEnum;
 import fr.deboissieu.calculassmat.dl.SaisieRepository;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
@@ -29,6 +32,8 @@ import fr.deboissieu.calculassmat.model.saisie.SaisieRequest;
 
 @Component
 public class SaisieBloImpl implements SaisieBlo {
+
+	private static final Logger logger = LogManager.getLogger(SaisieBloImpl.class);
 
 	@Resource
 	SaisieRepository saisieRepository;
@@ -55,33 +60,33 @@ public class SaisieBloImpl implements SaisieBlo {
 
 	}
 
-	// FIXME : tester cette méthode
 	@Override
-	public void importerFichierSaisie(Integer numeroMois, Integer numeroAnnee, String fileName)
-			throws InvalidFormatException, IOException {
+	public void importerFichierSaisie(Integer numeroMois, Integer numeroAnnee, String fileName) throws IOException {
 
 		// Ouverture du fichier en tant que Workbook et extraction des saisies
 		Workbook workbook = excelFileBlo.openWorkbook(fileName);
 
-		try {
+		if (workbook != null) {
 
-			Collection<SaisieJournaliere> saisiesJournalieres = excelFileBlo.extractDataFromWorkbook(workbook,
-					numeroMois,
-					numeroAnnee);
+			try {
+				Collection<SaisieJournaliere> saisiesJournalieres = excelFileBlo.extractDataFromWorkbook(workbook,
+						numeroMois,
+						numeroAnnee);
 
-			// Consolidation des paramètrages et conversion en saisie entités
-			Map<String, ParametrageEnfant> mapParamEnfants = parametrageBlo.findAllParamsEnfants();
-			Collection<ParametrageEmploye> paramsEmployes = parametrageBlo.findAllEmployes();
-			Collection<Saisie> saisies = consoliderSaisiesJournalieres(saisiesJournalieres, mapParamEnfants,
-					paramsEmployes);
+				// Consolidation des paramètrages et conversion en saisie entités
+				Map<String, ParametrageEnfant> mapParamEnfants = parametrageBlo.findAllParamsEnfants();
+				Collection<ParametrageEmploye> paramsEmployes = parametrageBlo.findAllEmployes();
+				Collection<Saisie> saisies = consoliderSaisiesJournalieres(saisiesJournalieres, mapParamEnfants,
+						paramsEmployes);
 
-			// Save
-			saisieRepository.saveAll(saisies);
-		} catch (Exception e) {
-			throw e;
-		} finally {
-			// Close workbook
-			workbook.close();
+				// Save
+				saisieRepository.saveAll(saisies);
+			} catch (Exception e) {
+				logger.error("Impossible d'importer le fichier ! Erreur : ");
+				e.printStackTrace();
+			} finally {
+				workbook.close();
+			}
 		}
 
 	}
@@ -132,7 +137,11 @@ public class SaisieBloImpl implements SaisieBlo {
 
 		// Param enfant
 		ParametrageEnfant paramEnfant = mapParamEnfants.get(saisieJourn.getEnfant());
-		saisie.setEnfantId(paramEnfant.get_id());
+		if (paramEnfant != null) {
+			saisie.setEnfantId(paramEnfant.get_id());
+		} else {
+			throw new ValidationException(ValidationExceptionsEnum.V006.toString(saisieJourn.getEnfant(), null));
+		}
 
 		// Param employé
 		Optional<ParametrageEmploye> paramEmploye = paramsEmployes.stream()
@@ -140,7 +149,11 @@ public class SaisieBloImpl implements SaisieBlo {
 					return StringUtils.equals(param.getNom(), saisieJourn.getEmploye());
 				})
 				.findFirst();
-		saisie.setEmployeId((paramEmploye.isPresent()) ? paramEmploye.get().get_id() : null);
+		if (paramEmploye != null) {
+			saisie.setEmployeId((paramEmploye.isPresent()) ? paramEmploye.get().get_id() : null);
+		} else {
+			throw new ValidationException(ValidationExceptionsEnum.V004.toString(saisieJourn.getEmploye(), null));
+		}
 	}
 
 	@Override

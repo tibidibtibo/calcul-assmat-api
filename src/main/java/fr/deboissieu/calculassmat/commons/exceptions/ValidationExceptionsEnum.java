@@ -8,8 +8,9 @@ public enum ValidationExceptionsEnum {
 	V001("V-001", "Paramètre d'entrée invalide. Usage : année valide et mois de 1 à 12."),
 	V002("V-002", "Paramètre d'entrée invalide. Usage : nom de l'employé."),
 	V003("V-003", "Employé inconnu."),
-	V004("V-004", "Impossible de récupérer l'employé."),
+	V004("V-004", "Impossible de récupérer l'employé dans le paramétage."),
 	V005("V-005", "Saisie incorrecte"),
+	V006("V-006", "Impossible de récupérer l'enfant dans le paramétrage."),
 
 	V101("V-101", "Impossible de charger le paramétrage."),
 	V102("V-102", "Données invalides pour l'archivage."),
@@ -28,8 +29,8 @@ public enum ValidationExceptionsEnum {
 		this.message = message;
 	}
 
-	public String toString(String pathParam, Exception exception) {
-		return "Erreur " + this.code + " : " + this.message + " - Variable saisie : " + pathParam + " / " + exception;
+	public String toString(String variable, Exception exception) {
+		return "Erreur " + this.code + " : " + this.message + " - Variable : " + variable + " / " + exception;
 	}
 
 	public String toString() {

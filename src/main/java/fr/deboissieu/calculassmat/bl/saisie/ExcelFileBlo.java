@@ -36,8 +36,6 @@ public interface ExcelFileBlo {
 	 * 
 	 * @param fileName
 	 * @return
-	 * @throws InvalidFormatException
-	 * @throws IOException
 	 */
-	Workbook openWorkbook(String fileName) throws IOException, InvalidFormatException;
+	Workbook openWorkbook(String fileName);
 }

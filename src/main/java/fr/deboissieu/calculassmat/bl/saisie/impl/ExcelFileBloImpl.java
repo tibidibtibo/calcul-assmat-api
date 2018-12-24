@@ -72,14 +72,14 @@ public class ExcelFileBloImpl implements ExcelFileBlo {
 	}
 
 	@Override
-	public Workbook openWorkbook(String filename) throws IOException, InvalidFormatException {
+	public Workbook openWorkbook(String filename) {
 		try {
 			org.springframework.core.io.Resource fileResource = fileStorageService.loadFileAsResource(filename);
 			File file = fileResource.getFile();
 			return openFileAsWorkbook(file);
 		} catch (Exception e) {
 			logger.error("Impossible de traiter le fichier : {}", e);
-			throw e;
+			return null;
 		}
 	}
 }
