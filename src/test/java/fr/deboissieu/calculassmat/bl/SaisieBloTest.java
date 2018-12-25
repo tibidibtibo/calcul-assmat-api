@@ -1,7 +1,9 @@
 package fr.deboissieu.calculassmat.bl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -14,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.validation.ValidationException;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -22,6 +25,7 @@ import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
@@ -35,7 +39,11 @@ import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
 import fr.deboissieu.calculassmat.commons.filestorage.FileStorageService;
 import fr.deboissieu.calculassmat.commons.mocks.ResourceMock;
 import fr.deboissieu.calculassmat.commons.mocks.WorkbookMock;
+import fr.deboissieu.calculassmat.dl.CertificationRepository;
 import fr.deboissieu.calculassmat.dl.SaisieRepository;
+import fr.deboissieu.calculassmat.model.certification.Certification;
+import fr.deboissieu.calculassmat.model.certification.CertificationRequest;
+import fr.deboissieu.calculassmat.model.certification.SaisieCertification;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.saisie.Saisie;
@@ -52,6 +60,9 @@ public class SaisieBloTest {
 
 	@Resource
 	SaisieRepository saisieRepositoryMock;
+
+	@Resource
+	CertificationRepository certifRepositoryMock;
 
 	@Resource
 	ExcelFileBlo excelFileBloMock;
@@ -163,11 +174,71 @@ public class SaisieBloTest {
 
 	}
 
+	@Test
+	public void devraitCertifierLeMois() {
+
+		// Arrange
+		CertificationRequest requete = new CertificationRequest();
+		Collection<SaisieCertification> saisies = new ArrayList<>();
+		SaisieCertification saisie1 = new SaisieCertification();
+		saisie1.setId("abc");
+		saisies.add(saisie1);
+		requete.setSaisies(saisies);
+
+		// Act
+		saisieBlo.certifier(requete, 12, 2018);
+
+		// Assert
+		verify(certifRepositoryMock, times(1)).findByMonth(12, 2018);
+		ArgumentCaptor<Certification> certifArgCaptor = ArgumentCaptor.forClass(Certification.class);
+		verify(certifRepositoryMock, times(1)).save(certifArgCaptor.capture());
+		assertThat(certifArgCaptor.getValue()).isNotNull();
+		assertThat(certifArgCaptor.getValue().getMonth()).isEqualTo(12);
+		assertThat(certifArgCaptor.getValue().getYear()).isEqualTo(2018);
+		assertThat(certifArgCaptor.getValue().getSaisies()).isNotEmpty().hasSize(1);
+		assertThat(certifArgCaptor.getValue().getSaisies()).extracting("id").containsExactly("abc");
+
+	}
+
+	@Test
+	public void neDevraitPasCertifierLeMois() {
+
+		// Arrange
+		CertificationRequest requete = new CertificationRequest();
+		Collection<SaisieCertification> saisies = new ArrayList<>();
+		SaisieCertification saisie1 = new SaisieCertification();
+		saisie1.setId("abc");
+		saisies.add(saisie1);
+		requete.setSaisies(saisies);
+		doReturn(new Certification()).when(certifRepositoryMock).findByMonth(12, 2018);
+
+		// Act
+		try {
+			saisieBlo.certifier(requete, 12, 2018);
+			fail();
+		} catch (ValidationException ve) {
+			// Assert
+			assertThat(ve.getMessage())
+					.contains("Erreur V-012 : Certification déjà créée ! - 12/2018");
+
+		}
+
+		// Assert
+		verify(certifRepositoryMock, times(1)).findByMonth(12, 2018);
+		verify(certifRepositoryMock, never()).save(Mockito.any(Certification.class));
+
+	}
+
 	public static class Config {
 
 		@Bean
 		SaisieBlo getSaisieBlo() {
 			return new SaisieBloImpl();
+		}
+
+		@Bean
+		CertificationRepository getCertificationRepository() {
+			return Mockito.mock(CertificationRepository.class);
 		}
 
 		@Bean

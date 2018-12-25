@@ -19,6 +19,8 @@ import org.springframework.stereotype.Component;
 import fr.deboissieu.calculassmat.bl.parametrage.ParametrageBlo;
 import fr.deboissieu.calculassmat.bl.validation.ValidationBlo;
 import fr.deboissieu.calculassmat.commons.exceptions.ValidationExceptionsEnum;
+import fr.deboissieu.calculassmat.model.certification.CertificationRequest;
+import fr.deboissieu.calculassmat.model.certification.SaisieCertification;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
@@ -65,7 +67,7 @@ public class ValidationBloImpl implements ValidationBlo {
 		ParametrageEmploye employe = parametrageBlo.findEmployeParId(idEmploye);
 		if (employe == null) {
 			throw new ValidationException(
-					ValidationExceptionsEnum.V003.toString(idEmploye, null));
+					ValidationExceptionsEnum.V003.toString(idEmploye));
 		}
 		return idEmploye;
 	}
@@ -89,7 +91,7 @@ public class ValidationBloImpl implements ValidationBlo {
 		Set<ConstraintViolation<SaisieRequest>> violations = validator.validate(saisie);
 		if (CollectionUtils.isNotEmpty(violations)) {
 			String listeViolations = violationsToString(violations);
-			throw new ValidationException(ValidationExceptionsEnum.V005.toString(listeViolations, new Exception()));
+			throw new ValidationException(ValidationExceptionsEnum.V005.toString(listeViolations));
 		}
 
 		// Validation de la cohérence de saisie (au moins une heure saisie, employé,
@@ -109,6 +111,32 @@ public class ValidationBloImpl implements ValidationBlo {
 				.map(ConstraintViolation::getMessage)
 				.collect(Collectors.toList());
 		return StringUtils.join(listeViolations, " | ");
+	}
+
+	private String certifViolationsToString(Set<ConstraintViolation<CertificationRequest>> violations) {
+		List<String> listeViolations = violations.stream()
+				.map(ConstraintViolation::getMessage)
+				.collect(Collectors.toList());
+		return StringUtils.join(listeViolations, " | ");
+	}
+
+	@Override
+	public void validerCertification(CertificationRequest request) {
+
+		if (request == null || (request != null && CollectionUtils.isEmpty(request.getSaisies()))) {
+			throw new ValidationException(ValidationExceptionsEnum.V010.toString());
+		}
+		Set<ConstraintViolation<CertificationRequest>> violations = validator.validate(request);
+		if (CollectionUtils.isNotEmpty(violations)) {
+			String listeViolations = certifViolationsToString(violations);
+			throw new ValidationException(ValidationExceptionsEnum.V011.toString(listeViolations));
+		}
+
+		for (SaisieCertification saisie : request.getSaisies()) {
+			if (StringUtils.isBlank(saisie.getId())) {
+				throw new ValidationException(ValidationExceptionsEnum.V011.toString("ID saisie nul.", null));
+			}
+		}
 	}
 
 }

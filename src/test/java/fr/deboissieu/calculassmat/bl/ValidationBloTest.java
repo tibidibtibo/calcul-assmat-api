@@ -23,6 +23,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import fr.deboissieu.calculassmat.bl.parametrage.ParametrageBlo;
 import fr.deboissieu.calculassmat.bl.validation.ValidationBlo;
 import fr.deboissieu.calculassmat.bl.validation.impl.ValidationBloImpl;
+import fr.deboissieu.calculassmat.model.certification.CertificationRequest;
+import fr.deboissieu.calculassmat.model.certification.SaisieCertification;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.saisie.SaisieEnfantDto;
 import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
@@ -277,6 +279,65 @@ public class ValidationBloTest {
 			saisie.setSaisie(saisies);
 			validationBlo.validerSaisie(saisie);
 		} catch (ValidationException ve) {
+			fail();
+		}
+
+	}
+
+	@Test
+	public void devraitValiderLaRequeteDeCertification() {
+
+		String expectedMessageVideNull = "Certification invalide : requête nulle ou vide !";
+		String expectedMessageInvalide = "Certification invalide : saisie inconnue.";
+
+		// Requete vide
+		try {
+			CertificationRequest requete = new CertificationRequest();
+			validationBlo.validerCertification(requete);
+			fail();
+		} catch (ValidationException ve) {
+			assertThat(ve.getMessage())
+					.contains(expectedMessageVideNull);
+		}
+
+		// Requete nulle
+		try {
+			CertificationRequest requete = null;
+			validationBlo.validerCertification(requete);
+			fail();
+		} catch (ValidationException ve) {
+			assertThat(ve.getMessage())
+					.contains(expectedMessageVideNull);
+		}
+
+		// Requete invalide
+		try {
+			CertificationRequest requete = new CertificationRequest();
+			Collection<SaisieCertification> saisies = new ArrayList<>();
+			SaisieCertification saisie1 = new SaisieCertification();
+			saisie1.setId(null);
+			saisies.add(saisie1);
+			requete.setSaisies(saisies);
+
+			validationBlo.validerCertification(requete);
+			fail();
+		} catch (ValidationException ve) {
+			assertThat(ve.getMessage())
+					.contains(expectedMessageInvalide);
+		}
+
+		// Requete valide
+		try {
+			CertificationRequest requete = new CertificationRequest();
+			Collection<SaisieCertification> saisies = new ArrayList<>();
+			SaisieCertification saisie1 = new SaisieCertification();
+			saisie1.setId("abc");
+			saisies.add(saisie1);
+			requete.setSaisies(saisies);
+
+			validationBlo.validerCertification(requete);
+
+		} catch (Exception e) {
 			fail();
 		}
 

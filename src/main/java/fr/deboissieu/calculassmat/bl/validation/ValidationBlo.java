@@ -3,6 +3,7 @@ package fr.deboissieu.calculassmat.bl.validation;
 import java.util.Collection;
 import java.util.Map;
 
+import fr.deboissieu.calculassmat.model.certification.CertificationRequest;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
 import fr.deboissieu.calculassmat.model.saisie.SaisieRequest;
@@ -55,4 +56,11 @@ public interface ValidationBlo {
 	 * @param saisie
 	 */
 	void validerSaisie(SaisieRequest saisie);
+
+	/**
+	 * Valider la requête de certification
+	 * 
+	 * @param request
+	 */
+	void validerCertification(CertificationRequest request);
 }

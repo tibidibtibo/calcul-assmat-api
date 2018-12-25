@@ -17,6 +17,7 @@ import fr.deboissieu.calculassmat.bl.saisie.SaisieBlo;
 import fr.deboissieu.calculassmat.bl.validation.ValidationBlo;
 import fr.deboissieu.calculassmat.commons.filestorage.FileStorageService;
 import fr.deboissieu.calculassmat.configuration.LogCall;
+import fr.deboissieu.calculassmat.model.certification.CertificationRequest;
 import fr.deboissieu.calculassmat.model.saisie.SaisieEnfantDto;
 import fr.deboissieu.calculassmat.model.saisie.SaisieRequest;
 
@@ -55,6 +56,18 @@ public class SaisieController {
 		Integer mois = validationBlo.validerPathParamCalculMoisAnnee(month);
 		Integer annee = validationBlo.validerPathParamCalculMoisAnnee(year);
 		return saisieBlo.findSaisiesByMonth(mois, annee);
+	}
+
+	@LogCall
+	@RequestMapping(produces = "application/json", method = {
+			RequestMethod.POST }, path = "/certification/{year}/{month}")
+	public void certifier(@PathVariable String month, @PathVariable String year,
+			@RequestBody CertificationRequest request)
+			throws Exception {
+		Integer mois = validationBlo.validerPathParamCalculMoisAnnee(month);
+		Integer annee = validationBlo.validerPathParamCalculMoisAnnee(year);
+		validationBlo.validerCertification(request);
+		saisieBlo.certifier(request, mois, annee);
 	}
 
 	@LogCall

@@ -22,7 +22,10 @@ import fr.deboissieu.calculassmat.bl.saisie.ExcelFileBlo;
 import fr.deboissieu.calculassmat.bl.saisie.SaisieBlo;
 import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
 import fr.deboissieu.calculassmat.commons.exceptions.ValidationExceptionsEnum;
+import fr.deboissieu.calculassmat.dl.CertificationRepository;
 import fr.deboissieu.calculassmat.dl.SaisieRepository;
+import fr.deboissieu.calculassmat.model.certification.Certification;
+import fr.deboissieu.calculassmat.model.certification.CertificationRequest;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.saisie.Saisie;
@@ -43,6 +46,9 @@ public class SaisieBloImpl implements SaisieBlo {
 
 	@Resource
 	ParametrageBlo parametrageBlo;
+
+	@Resource
+	CertificationRepository certificationRepository;
 
 	@Override
 	public void enregistrerSaisie(SaisieRequest saisie) {
@@ -140,7 +146,7 @@ public class SaisieBloImpl implements SaisieBlo {
 		if (paramEnfant != null) {
 			saisie.setEnfantId(paramEnfant.get_id());
 		} else {
-			throw new ValidationException(ValidationExceptionsEnum.V006.toString(saisieJourn.getEnfant(), null));
+			throw new ValidationException(ValidationExceptionsEnum.V006.toString(saisieJourn.getEnfant()));
 		}
 
 		// Param employé
@@ -161,6 +167,23 @@ public class SaisieBloImpl implements SaisieBlo {
 		if (StringUtils.isNotBlank(identifiant)) {
 			saisieRepository.deleteById(new ObjectId(identifiant));
 		}
+	}
+
+	@Override
+	public void certifier(CertificationRequest request, Integer month, Integer year) {
+
+		Certification certification = new Certification();
+		certification.setMonth(month);
+		certification.setYear(year);
+		certification.setSaisies(request.getSaisies());
+
+		// Vérification existence certification
+		Certification certifExistante = certificationRepository.findByMonth(month, year);
+		if (certifExistante != null) {
+			throw new ValidationException(ValidationExceptionsEnum.V012.toString(month + "/" + year));
+		}
+
+		certificationRepository.save(certification);
 	}
 
 }

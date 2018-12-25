@@ -12,6 +12,10 @@ public enum ValidationExceptionsEnum {
 	V005("V-005", "Saisie incorrecte"),
 	V006("V-006", "Impossible de récupérer l'enfant dans le paramétrage."),
 
+	V010("V-010", "Certification invalide : requête nulle ou vide !"),
+	V011("V-011", "Certification invalide : saisie inconnue."),
+	V012("V-012", "Certification déjà créée !"),
+
 	V101("V-101", "Impossible de charger le paramétrage."),
 	V102("V-102", "Données invalides pour l'archivage."),
 	V103("V-103", "Aucunes données pour le mois sélectionné.");
@@ -31,6 +35,10 @@ public enum ValidationExceptionsEnum {
 
 	public String toString(String variable, Exception exception) {
 		return "Erreur " + this.code + " : " + this.message + " - Variable : " + variable + " / " + exception;
+	}
+
+	public String toString(String customMsg) {
+		return "Erreur " + this.code + " : " + this.message + " - " + customMsg;
 	}
 
 	public String toString() {
