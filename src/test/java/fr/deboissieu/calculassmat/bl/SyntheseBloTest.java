@@ -1,7 +1,7 @@
 package fr.deboissieu.calculassmat.bl;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,6 +12,8 @@ import javax.annotation.Resource;
 import javax.validation.Validator;
 
 import org.apache.commons.collections4.IterableUtils;
+import org.bson.types.ObjectId;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -26,9 +28,10 @@ import fr.deboissieu.calculassmat.bl.synthese.impl.SyntheseBloImpl;
 import fr.deboissieu.calculassmat.bl.validation.ValidationBlo;
 import fr.deboissieu.calculassmat.bl.validation.impl.ValidationBloImpl;
 import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
+import fr.deboissieu.calculassmat.dl.ParamEmployeRepository;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
-import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
+import fr.deboissieu.calculassmat.model.saisie.Saisie;
 import fr.deboissieu.calculassmat.model.synthese.NombreHeures;
 import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
@@ -46,6 +49,11 @@ public class SyntheseBloTest {
 		@Bean
 		ParametrageBlo getparametrageBlo() {
 			return Mockito.mock(ParametrageBlo.class);
+		}
+
+		@Bean
+		ParamEmployeRepository getParamEmployeRepository() {
+			return Mockito.mock(ParamEmployeRepository.class);
 		}
 
 		@Bean
@@ -68,27 +76,32 @@ public class SyntheseBloTest {
 	@Resource
 	ParametrageBlo parametrageBloMock;
 
+	@Resource
+	ParamEmployeRepository paramEmployeRepositoryMock;
+
+	@Before
+	public void before() {
+		Mockito.reset(parametrageBloMock, paramEmployeRepositoryMock);
+	}
+
 	@Test
 	public void devraitCalculerLesInformationsDeSynthesePourTempsPlein() {
 
 		// Arrange
-		ParametrageEmploye paramEmploye = TestUtils.getParametrageEmploye();
-		Map<String, ParametrageEnfant> mapParamEnfant = getMapParamEnfant1();
-
-		doReturn(paramEmploye).when(parametrageBloMock).findEmployeParNom(Mockito.anyString());
+		Map<ObjectId, ParametrageEnfant> mapParamEnfant = getMapParamEnfant1();
+		initEmployesMocks();
 		doReturn(mapParamEnfant).when(parametrageBloMock).findAllParamsEnfants();
 
-		Collection<SaisieJournaliere> donneesSaisies = new ArrayList<>();
+		Collection<Saisie> donneesSaisies = new ArrayList<>();
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 27),
-				"enfant1", "07:45", "17:30", 0, 3.7d, 0, 1, "employe1"));
+				"5baff2462efb71c0790b6e55", "07:45", "17:30", 0, 3.7d, 0, 1, "5baff2462efb71c0790b6e77"));
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 28),
-				"enfant1", "08:00", "18:00", 2, 0d, 1, 1, "employe1"));
+				"5baff2462efb71c0790b6e55", "08:00", "18:00", 2, 0d, 1, 1, "5baff2462efb71c0790b6e77"));
 
 		// Act
-		Collection<SyntheseGarde> syntheses = syntheseBlo.calculerFraisMensuels(donneesSaisies, 9, 2018,
-				mapParamEnfant);
+		Collection<SyntheseGarde> syntheses = syntheseBlo.calculerSynthese(donneesSaisies, 9, 2018);
 
 		// Assert
 		SyntheseGarde synthese = IterableUtils.get(syntheses, 0);
@@ -122,28 +135,27 @@ public class SyntheseBloTest {
 
 		// Arrange
 		ParametrageEmploye paramEmploye = TestUtils.getParametrageEmploye();
-		Map<String, ParametrageEnfant> mapParamEnfant = getMapParamEnfant2();
+		Map<ObjectId, ParametrageEnfant> mapParamEnfant = getMapParamEnfant2();
 
 		doReturn(paramEmploye).when(parametrageBloMock).findEmployeParNom(Mockito.anyString());
 		doReturn(mapParamEnfant).when(parametrageBloMock).findAllParamsEnfants();
 
-		Collection<SaisieJournaliere> donneesSaisies = new ArrayList<>();
+		Collection<Saisie> donneesSaisies = new ArrayList<>();
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 25),
-				"enfant2", "07:00", null, 1, 0d, 0, 0, "employe1")); // 1 hc
+				"5baff2462efb71c0790b6e66", "07:00", null, 1, 0d, 0, 0, "5baff2462efb71c0790b6e77")); // 1 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 26),
-				"enfant2", "15:00", "17:00", 0, 4d, 1, 1, "employe1")); // 2 hc
+				"5baff2462efb71c0790b6e66", "15:00", "17:00", 0, 4d, 1, 1, "5baff2462efb71c0790b6e77")); // 2 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 27),
-				"enfant2", null, "17:30", 1, 0d, 0, 1, "employe1")); // 0 hc
+				"5baff2462efb71c0790b6e66", null, "17:30", 1, 0d, 0, 1, "5baff2462efb71c0790b6e77")); // 0 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 28),
-				"enfant2", "08:00", "18:00", 2, 0d, 1, 1, "employe1")); // 1.5 hc
+				"5baff2462efb71c0790b6e66", "08:00", "18:00", 2, 0d, 1, 1, "5baff2462efb71c0790b6e77")); // 1.5 hc
 
 		// Act
-		Collection<SyntheseGarde> syntheses = syntheseBlo.calculerFraisMensuels(donneesSaisies, 9, 2018,
-				mapParamEnfant);
+		Collection<SyntheseGarde> syntheses = syntheseBlo.calculerSynthese(donneesSaisies, 9, 2018);
 
 		// Assert
 		SyntheseGarde synthese = IterableUtils.get(syntheses, 0);
@@ -177,43 +189,42 @@ public class SyntheseBloTest {
 
 		// Arrange
 		ParametrageEmploye paramEmploye = TestUtils.getParametrageEmploye();
-		Map<String, ParametrageEnfant> mapParamEnfant = new HashMap<>();
+		Map<ObjectId, ParametrageEnfant> mapParamEnfant = new HashMap<>();
 		mapParamEnfant.putAll(getMapParamEnfant1());
 		mapParamEnfant.putAll(getMapParamEnfant2());
 
 		doReturn(paramEmploye).when(parametrageBloMock).findEmployeParNom(Mockito.anyString());
 		doReturn(mapParamEnfant).when(parametrageBloMock).findAllParamsEnfants();
 
-		Collection<SaisieJournaliere> donneesSaisies = new ArrayList<>();
+		Collection<Saisie> donneesSaisies = new ArrayList<>();
 
 		// Enfant 1
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 25),
-				"enfant1", "07:00", "18:30", 0, 3.7d, 0, 1, "employe1")); // 2.5 hc
+				"5baff2462efb71c0790b6e55", "07:00", "18:30", 0, 3.7d, 0, 1, "5baff2462efb71c0790b6e77")); // 2.5 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 27),
-				"enfant1", "07:45", "17:30", 0, 3.7d, 0, 1, "employe1")); // 1.75 hc
+				"5baff2462efb71c0790b6e55", "07:45", "17:30", 0, 3.7d, 0, 1, "5baff2462efb71c0790b6e77")); // 1.75 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 28),
-				"enfant1", "08:00", "18:00", 0, 0d, 1, 1, "employe1")); // 1 hc
+				"5baff2462efb71c0790b6e55", "08:00", "18:00", 0, 0d, 1, 1, "5baff2462efb71c0790b6e77")); // 1 hc
 
 		// Enfant 2
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 25),
-				"enfant2", "07:00", null, 1, 0d, 0, 0, "employe1")); // 1 hc
+				"5baff2462efb71c0790b6e66", "07:00", null, 1, 0d, 0, 0, "5baff2462efb71c0790b6e77")); // 1 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 26),
-				"enfant2", "15:00", "17:00", 0, 4d, 0, 1, "employe1")); // 2 hc
+				"5baff2462efb71c0790b6e66", "15:00", "17:00", 0, 4d, 0, 1, "5baff2462efb71c0790b6e77")); // 2 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 27),
-				"enfant2", null, "17:30", 1, 0d, 0, 1, "employe1")); // 0 hc
+				"5baff2462efb71c0790b6e66", null, "17:30", 1, 0d, 0, 1, "5baff2462efb71c0790b6e77")); // 0 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 28),
-				"enfant2", "08:00", "18:00", 2, 0d, 1, 1, "employe1")); // 1.5 hc
+				"5baff2462efb71c0790b6e66", "08:00", "18:00", 2, 0d, 1, 1, "5baff2462efb71c0790b6e77")); // 1.5 hc
 
 		// Act
-		Collection<SyntheseGarde> syntheses = syntheseBlo.calculerFraisMensuels(donneesSaisies, 9, 2018,
-				mapParamEnfant);
+		Collection<SyntheseGarde> syntheses = syntheseBlo.calculerSynthese(donneesSaisies, 9, 2018);
 
 		// Assert
 		SyntheseGarde synthese = IterableUtils.get(syntheses, 0);
@@ -242,23 +253,25 @@ public class SyntheseBloTest {
 
 	}
 
-	public static Map<String, ParametrageEnfant> getMapParamEnfant1() {
-		Map<String, ParametrageEnfant> mapParamEnfants = new HashMap<>();
+	public static Map<ObjectId, ParametrageEnfant> getMapParamEnfant1() {
+		Map<ObjectId, ParametrageEnfant> mapParamEnfants = new HashMap<>();
 
-		ParametrageEnfant enfant1 = TestUtils.buildParametrageEnfant("enfant1", "TEMPS_PLEIN", 250d, 10.1d, 0d);
+		ParametrageEnfant enfant1 = TestUtils.buildParametrageEnfant("5baff2462efb71c0790b6e55", "TEMPS_PLEIN", 250d,
+				10.1d, 0d);
 		enfant1.setHeuresNormales(TestUtils.getHeuresNormales(9d, 9d, 0d, 8d, 9d, 0d, 0d));
-		mapParamEnfants.put(enfant1.getNom(), enfant1);
+		mapParamEnfants.put(new ObjectId("5baff2462efb71c0790b6e55"), enfant1);
 
 		return mapParamEnfants;
 	}
 
-	public static Map<String, ParametrageEnfant> getMapParamEnfant2() {
-		Map<String, ParametrageEnfant> mapParamEnfants = new HashMap<>();
+	public static Map<ObjectId, ParametrageEnfant> getMapParamEnfant2() {
+		Map<ObjectId, ParametrageEnfant> mapParamEnfants = new HashMap<>();
 
-		ParametrageEnfant enfant2 = TestUtils.buildParametrageEnfant("enfant2", "PERISCOLAIRE", 104d, 2d, 3.2d);
+		ParametrageEnfant enfant2 = TestUtils.buildParametrageEnfant("5baff2462efb71c0790b6e66", "PERISCOLAIRE", 104d,
+				2d, 3.2d);
 		enfant2.setHeuresNormales(TestUtils.getHeuresNormales(2d, 1d, 0d, 2d, 1d, 0d, 0d));
 		enfant2.setHorairesEcole(TestUtils.getHorairesEcole());
-		mapParamEnfants.put(enfant2.getNom(), enfant2);
+		mapParamEnfants.put(new ObjectId("5baff2462efb71c0790b6e66"), enfant2);
 
 		return mapParamEnfants;
 	}
@@ -267,35 +280,35 @@ public class SyntheseBloTest {
 	public void devraitCalculerLesHoraires() {
 
 		// Arrange
-		Map<String, ParametrageEnfant> mapParamEnfant = new HashMap<>();
+		Map<ObjectId, ParametrageEnfant> mapParamEnfant = new HashMap<>();
 		mapParamEnfant.putAll(getMapParamEnfant1());
 		mapParamEnfant.putAll(getMapParamEnfant2());
 
-		Collection<SaisieJournaliere> donneesSaisies = new ArrayList<>();
+		Collection<Saisie> donneesSaisies = new ArrayList<>();
 		// Enfant 1
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 25),
-				"enfant1", "07:00", "18:30", 0, 3.7d, 0, 1, "employe1")); // 2.5 hc
+				"5baff2462efb71c0790b6e55", "07:00", "18:30", 0, 3.7d, 0, 1, "5baff2462efb71c0790b6e77")); // 2.5 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 27),
-				"enfant1", "07:45", "17:30", 0, 3.7d, 0, 1, "employe1")); // 1.75 hc
+				"5baff2462efb71c0790b6e55", "07:45", "17:30", 0, 3.7d, 0, 1, "5baff2462efb71c0790b6e77")); // 1.75 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 28),
-				"enfant1", "08:00", "18:00", 0, 0d, 1, 1, "employe1")); // 1 hc
+				"5baff2462efb71c0790b6e55", "08:00", "18:00", 0, 0d, 1, 1, "5baff2462efb71c0790b6e77")); // 1 hc
 
 		// Enfant 2
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 25),
-				"enfant2", "07:00", null, 1, 0d, 0, 0, "employe1")); // 1 hc
+				"5baff2462efb71c0790b6e66", "07:00", null, 1, 0d, 0, 0, "5baff2462efb71c0790b6e77")); // 1 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 26),
-				"enfant2", "15:00", "17:00", 0, 4d, 1, 1, "employe1")); // 2 hc
+				"5baff2462efb71c0790b6e66", "15:00", "17:00", 0, 4d, 1, 1, "5baff2462efb71c0790b6e77")); // 2 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 27),
-				"enfant2", null, "17:30", 1, 0d, 0, 1, "employe1")); // 0 hc
+				"5baff2462efb71c0790b6e66", null, "17:30", 1, 0d, 0, 1, "5baff2462efb71c0790b6e77")); // 0 hc
 		donneesSaisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 28),
-				"enfant2", "08:00", "18:00", 2, 0d, 1, 1, "employe1")); // 1.5 hc
+				"5baff2462efb71c0790b6e66", "08:00", "18:00", 2, 0d, 1, 1, "5baff2462efb71c0790b6e77")); // 1.5 hc
 
 		// Act
 		NombreHeures nbHeures = syntheseBloImpl.calculerNbHeures(donneesSaisies, mapParamEnfant);
@@ -307,6 +320,18 @@ public class SyntheseBloTest {
 		assertThat(nbHeures.getHeuresNormalesReelles()).isEqualTo(30d);
 		assertThat(nbHeures.getHeuresReelles()).isEqualTo(39.75d);
 
+	}
+
+	private void initEmployesMocks() {
+		Mockito.reset(paramEmployeRepositoryMock);
+
+		ParametrageEmploye paramEmploye1 = new ParametrageEmploye();
+		paramEmploye1.setNom("employe1");
+		doReturn(paramEmploye1).when(paramEmployeRepositoryMock).findBy_id(new ObjectId("5baff2462efb71c0790b6e77"));
+
+		ParametrageEmploye paramEmploye2 = new ParametrageEmploye();
+		paramEmploye2.setNom("employe2");
+		doReturn(paramEmploye2).when(paramEmployeRepositoryMock).findBy_id(new ObjectId("5baff2462efb71c0790b6e88"));
 	}
 
 }

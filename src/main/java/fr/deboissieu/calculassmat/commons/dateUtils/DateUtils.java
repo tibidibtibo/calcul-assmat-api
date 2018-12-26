@@ -1,6 +1,7 @@
 package fr.deboissieu.calculassmat.commons.dateUtils;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.Duration;
@@ -61,6 +62,21 @@ public class DateUtils {
 	}
 
 	/**
+	 * Parse hour
+	 * 
+	 * @param heure
+	 * @return
+	 */
+	public static Date parseHeure(String heure) {
+		try {
+			return org.apache.commons.lang3.time.DateUtils.parseDate(heure, TIME_FORMAT_PATTERN);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/**
 	 * Formatte la date selon les paramètres
 	 * 
 	 * @param date
@@ -87,6 +103,19 @@ public class DateUtils {
 			return null;
 		}
 		return LocalTime.parse(timeStr, DateTimeFormatter.ofPattern(TIME_FORMAT_PATTERN));
+	}
+
+	/**
+	 * Texte to LocalTime
+	 * 
+	 * @param timeStr
+	 * @return {@link LocalTime} heure locale
+	 */
+	public static LocalTime dateToLocalTime(Date dateTime) {
+
+		Instant instant = dateTime.toInstant();
+		LocalTime localTime = instant.atZone(ZoneId.systemDefault()).toLocalTime();
+		return localTime;
 	}
 
 	/**

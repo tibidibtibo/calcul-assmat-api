@@ -8,7 +8,7 @@ import org.apache.commons.collections4.MapUtils;
 
 import fr.deboissieu.calculassmat.commons.mathsutils.MathsUtils;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
-import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
+import fr.deboissieu.calculassmat.model.saisie.Saisie;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -81,7 +81,7 @@ public class NombreHeures implements Serializable {
 		}
 	}
 
-	public void updateNbHeuresJour(SaisieJournaliere saisie, Double tempsEmployeJour) {
+	public void updateNbHeuresJour(Saisie saisie, Double tempsEmployeJour) {
 
 		String key = saisie.getDateSaisie().toString();
 		this.nbreHeuresJour.put(key, tempsEmployeJour);

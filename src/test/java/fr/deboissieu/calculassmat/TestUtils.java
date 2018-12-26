@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
+import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
 import fr.deboissieu.calculassmat.model.parametrage.HeuresNormale;
 import fr.deboissieu.calculassmat.model.parametrage.HorairesEcole;
 import fr.deboissieu.calculassmat.model.parametrage.HorairesJournaliersEcole;
 import fr.deboissieu.calculassmat.model.parametrage.IndemnitesEntretien;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
-import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
+import fr.deboissieu.calculassmat.model.saisie.Saisie;
 
 public class TestUtils {
 
@@ -27,18 +30,18 @@ public class TestUtils {
 		return paramEnfant;
 	}
 
-	public static SaisieJournaliere buildSaisie(Date dateSaisie, String prenom, String heureArrivee, String heureDepart,
+	public static Saisie buildSaisie(Date dateSaisie, String prenom, String heureArrivee, String heureDepart,
 			Integer nbArEcole, Double autresDeplacementKm, Integer nbDejeuners, Integer nbGouters, String employe) {
-		SaisieJournaliere saisie = new SaisieJournaliere();
+		Saisie saisie = new Saisie();
 		saisie.setDateSaisie(dateSaisie);
-		saisie.setEnfant(prenom);
-		saisie.setHeureArrivee(heureArrivee);
-		saisie.setHeureDepart(heureDepart);
+		saisie.setEnfantId(new ObjectId(prenom));
+		saisie.setEmployeId(new ObjectId(employe));
+		saisie.setHeureArrivee(DateUtils.parseHeure(heureArrivee));
+		saisie.setHeureDepart(DateUtils.parseHeure(heureDepart));
 		saisie.setNbArEcole(nbArEcole);
 		saisie.setAutresDeplacementKm(autresDeplacementKm);
 		saisie.setNbDejeuners(nbDejeuners);
 		saisie.setNbGouters(nbGouters);
-		saisie.setEmploye(employe);
 		return saisie;
 	}
 

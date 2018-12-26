@@ -7,6 +7,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,4 +27,5 @@ public class Certification implements Serializable {
 
 	private Collection<SaisieCertification> saisies;
 
+	private SyntheseGarde synthese;
 }

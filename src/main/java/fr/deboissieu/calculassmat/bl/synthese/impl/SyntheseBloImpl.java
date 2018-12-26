@@ -13,6 +13,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 
 import fr.deboissieu.calculassmat.bl.parametrage.ParametrageBlo;
@@ -21,11 +22,12 @@ import fr.deboissieu.calculassmat.bl.validation.ValidationBlo;
 import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
 import fr.deboissieu.calculassmat.commons.exceptions.TechniqueExceptionEnum;
 import fr.deboissieu.calculassmat.commons.mathsutils.MathsUtils;
+import fr.deboissieu.calculassmat.dl.ParamEmployeRepository;
 import fr.deboissieu.calculassmat.model.parametrage.HorairesEcole;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant.TypeGardeEnum;
-import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
+import fr.deboissieu.calculassmat.model.saisie.Saisie;
 import fr.deboissieu.calculassmat.model.synthese.Indemnites;
 import fr.deboissieu.calculassmat.model.synthese.NombreHeures;
 import fr.deboissieu.calculassmat.model.synthese.Salaire;
@@ -40,26 +42,27 @@ public class SyntheseBloImpl implements SyntheseBlo {
 	ParametrageBlo parametrageBlo;
 
 	@Resource
+	ParamEmployeRepository paramEmployeRepository;
+
+	@Resource
 	ValidationBlo validationBlo;
 
 	@Override
-	public Collection<SyntheseGarde> calculerFraisMensuels(Collection<SaisieJournaliere> donneesSaisies, int mois,
-			int annee, Map<String, ParametrageEnfant> mapParamEnfants) {
+	public Collection<SyntheseGarde> calculerSynthese(Collection<Saisie> donneesSaisies, int mois, int annee) {
 
-		Map<String, Collection<SaisieJournaliere>> saisieParEmploye = mapperParEmploye(donneesSaisies);
-		Map<ParametrageEmploye, Collection<SaisieJournaliere>> mapEmployeSaisie = consoliderParamEmploye(
+		// FIXME : revoir chargement paramétrage
+		Map<String, ParametrageEnfant> mapParamEnfants = parametrageBlo.findAllParamsEnfants();
+		Map<ObjectId, Collection<Saisie>> saisieParEmploye = mapperParEmployeId(donneesSaisies);
+		Map<ParametrageEmploye, Collection<Saisie>> mapEmployeSaisie = consoliderParamEmployeId(
 				saisieParEmploye);
 
 		Collection<SyntheseGarde> syntheses = new ArrayList<>();
 
-		for (Map.Entry<ParametrageEmploye, Collection<SaisieJournaliere>> entry : mapEmployeSaisie.entrySet()) {
-
-			Collection<SaisieJournaliere> saisieEmploye = entry.getValue();
+		for (Map.Entry<ParametrageEmploye, Collection<Saisie>> entry : mapEmployeSaisie.entrySet()) {
+			Collection<Saisie> saisieEmploye = entry.getValue();
 			ParametrageEmploye employe = entry.getKey();
 			String nomEmploye = employe.getPrenomNom();
 			SyntheseGarde synthese = new SyntheseGarde(mois, annee, nomEmploye);
-
-			validationBlo.validerAvantCalcul(saisieEmploye, mapParamEnfants);
 
 			synthese.setNbJoursTravailles(calculerJoursTravailles(saisieEmploye));
 
@@ -82,15 +85,14 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		}
 
 		return syntheses;
-
 	}
 
-	private Map<ParametrageEmploye, Collection<SaisieJournaliere>> consoliderParamEmploye(
-			Map<String, Collection<SaisieJournaliere>> saisieParEmploye) {
-		Map<ParametrageEmploye, Collection<SaisieJournaliere>> mapEmployeSaisie = new HashMap<>();
+	private Map<ParametrageEmploye, Collection<Saisie>> consoliderParamEmployeId(
+			Map<ObjectId, Collection<Saisie>> saisieParEmploye) {
+		Map<ParametrageEmploye, Collection<Saisie>> mapEmployeSaisie = new HashMap<>();
 		if (MapUtils.isNotEmpty(saisieParEmploye)) {
-			for (Map.Entry<String, Collection<SaisieJournaliere>> entry : saisieParEmploye.entrySet()) {
-				ParametrageEmploye parametrageEmploye = parametrageBlo.findEmployeParNom(entry.getKey());
+			for (Map.Entry<ObjectId, Collection<Saisie>> entry : saisieParEmploye.entrySet()) {
+				ParametrageEmploye parametrageEmploye = paramEmployeRepository.findBy_id(entry.getKey());
 				if (parametrageEmploye != null) {
 					mapEmployeSaisie.put(parametrageEmploye, entry.getValue());
 				}
@@ -99,23 +101,23 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		return mapEmployeSaisie;
 	}
 
-	private Map<String, Collection<SaisieJournaliere>> mapperParEmploye(Collection<SaisieJournaliere> donneesSaisies) {
-		Map<String, Collection<SaisieJournaliere>> saisieParEmploye = new HashMap<>();
+	private Map<ObjectId, Collection<Saisie>> mapperParEmployeId(Collection<Saisie> donneesSaisies) {
+		Map<ObjectId, Collection<Saisie>> saisieParEmploye = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(donneesSaisies)) {
-			for (SaisieJournaliere saisie : donneesSaisies) {
-				if (saisieParEmploye.get(saisie.getEmploye()) != null) {
-					saisieParEmploye.get(saisie.getEmploye()).add(saisie);
+			for (Saisie saisie : donneesSaisies) {
+				if (saisieParEmploye.get(saisie.getEmployeId()) != null) {
+					saisieParEmploye.get(saisie.getEmployeId()).add(saisie);
 				} else {
-					Collection<SaisieJournaliere> saisies = new ArrayList<>();
+					Collection<Saisie> saisies = new ArrayList<>();
 					saisies.add(saisie);
-					saisieParEmploye.put(saisie.getEmploye(), saisies);
+					saisieParEmploye.put(saisie.getEmployeId(), saisies);
 				}
 			}
 		}
 		return saisieParEmploye;
 	}
 
-	private Indemnites calculerIndemnites(Collection<SaisieJournaliere> donneesSaisies, ParametrageEmploye employe,
+	private Indemnites calculerIndemnites(Collection<Saisie> donneesSaisies, ParametrageEmploye employe,
 			NombreHeures nbHeures,
 			Map<String, ParametrageEnfant> mapParamEnfants) {
 		Indemnites indemnites = new Indemnites();
@@ -149,13 +151,13 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		return salaire;
 	}
 
-	private Double calculerIndemnitesKm(Collection<SaisieJournaliere> donneesSaisies,
+	private Double calculerIndemnitesKm(Collection<Saisie> donneesSaisies,
 			Map<String, ParametrageEnfant> mapParamEnfants, ParametrageEmploye employe) {
 		Double fraisKm = 0d;
 
 		if (CollectionUtils.isNotEmpty(donneesSaisies)) {
-			for (SaisieJournaliere saisie : donneesSaisies) {
-				ParametrageEnfant paramEnfant = mapParamEnfants.get(saisie.getEnfant());
+			for (Saisie saisie : donneesSaisies) {
+				ParametrageEnfant paramEnfant = mapParamEnfants.get(saisie.getEnfantId());
 				if (paramEnfant != null && paramEnfant.getArEcoleKm() != null && saisie.getNbArEcole() != null) {
 					fraisKm += saisie.getNbArEcole() * paramEnfant.getArEcoleKm() *
 							employe.getIndemnitesKm();
@@ -169,12 +171,12 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		return MathsUtils.roundTo2Digits(fraisKm);
 	}
 
-	private Double calculerIndemnitesRepas(Collection<SaisieJournaliere> donneesSaisies, ParametrageEmploye employe) {
+	private Double calculerIndemnitesRepas(Collection<Saisie> donneesSaisies, ParametrageEmploye employe) {
 
 		Double fraisRepas = 0d;
 
 		if (CollectionUtils.isNotEmpty(donneesSaisies)) {
-			for (SaisieJournaliere saisie : donneesSaisies) {
+			for (Saisie saisie : donneesSaisies) {
 				if (saisie.getNbDejeuners() != null) {
 					fraisRepas += saisie.getNbDejeuners() * employe.getFraisDejeuner();
 				}
@@ -215,7 +217,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 
 	}
 
-	public NombreHeures calculerNbHeures(Collection<SaisieJournaliere> donneesSaisies,
+	public NombreHeures calculerNbHeures(Collection<Saisie> donneesSaisies,
 			Map<String, ParametrageEnfant> mapParamEnfants) {
 
 		NombreHeures nbHeures = new NombreHeures();
@@ -223,14 +225,14 @@ public class SyntheseBloImpl implements SyntheseBlo {
 
 		if (CollectionUtils.isNotEmpty(donneesSaisies)) {
 
-			for (SaisieJournaliere saisie : donneesSaisies) {
+			for (Saisie saisie : donneesSaisies) {
 
 				Double tempsJour = 0d;
 
-				LocalTime heureArrivee = DateUtils.toLocalTime(saisie.getHeureArrivee());
-				LocalTime heureDepart = DateUtils.toLocalTime(saisie.getHeureDepart());
+				LocalTime heureArrivee = DateUtils.dateToLocalTime(saisie.getHeureArrivee());
+				LocalTime heureDepart = DateUtils.dateToLocalTime(saisie.getHeureDepart());
 
-				ParametrageEnfant paramEnfant = mapParamEnfants.get(saisie.getEnfant());
+				ParametrageEnfant paramEnfant = mapParamEnfants.get(saisie.getEnfantId());
 				// Récupération heures normales du jour
 				int jourSemaine = fr.deboissieu.calculassmat.commons.dateUtils.DateUtils
 						.getDayOfWeek(saisie.getDateSaisie());
@@ -256,7 +258,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		return nbHeures;
 	}
 
-	private Double calculerTempsPlein(NombreHeures nbHeures, SaisieJournaliere saisie, LocalTime heureArrivee,
+	private Double calculerTempsPlein(NombreHeures nbHeures, Saisie saisie, LocalTime heureArrivee,
 			LocalTime heureDepart, Double heuresNormalesRef) {
 		Double heuresGarde = 0d;
 		if (heureArrivee != null && heureDepart != null) {
@@ -266,13 +268,13 @@ public class SyntheseBloImpl implements SyntheseBlo {
 			nbHeures.addHeuresComplementaires(
 					calculerHeuresComplementaires(heuresGarde, heuresNormalesRef));
 		} else {
-			logger.error(TechniqueExceptionEnum.T001.getMessage(), saisie.getEnfant(),
+			logger.error(TechniqueExceptionEnum.T001.getMessage(), saisie.getEnfantId(),
 					saisie.getDateSaisie());
 		}
 		return heuresGarde;
 	}
 
-	private Double calculTempsPeriscolaire(NombreHeures nbHeures, SaisieJournaliere saisie,
+	private Double calculTempsPeriscolaire(NombreHeures nbHeures, Saisie saisie,
 			ParametrageEnfant paramEnfant,
 			LocalTime heureArrivee, LocalTime heureDepart, int jourSemaine, Double heuresNormalesRef) {
 		HorairesEcole horairesJournaliers = paramEnfant.getHorairesEcole(jourSemaine);
@@ -327,9 +329,9 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		return 0d;
 	}
 
-	private Integer calculerJoursTravailles(Collection<SaisieJournaliere> donneesSaisies) {
-		Map<String, SaisieJournaliere> mapJoursTravailles = new HashMap<>();
-		for (SaisieJournaliere saisie : donneesSaisies) {
+	private Integer calculerJoursTravailles(Collection<Saisie> donneesSaisies) {
+		Map<String, Saisie> mapJoursTravailles = new HashMap<>();
+		for (Saisie saisie : donneesSaisies) {
 			String key = DateUtils.formatDate(saisie.getDateSaisie(), DateUtils.DATE_FORMAT_PATTERN,
 					TimeZone.getDefault());
 			mapJoursTravailles.put(key, saisie);
