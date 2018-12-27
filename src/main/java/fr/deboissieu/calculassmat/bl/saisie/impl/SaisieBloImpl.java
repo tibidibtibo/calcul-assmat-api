@@ -17,15 +17,19 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Lists;
+
 import fr.deboissieu.calculassmat.bl.parametrage.ParametrageBlo;
 import fr.deboissieu.calculassmat.bl.saisie.ExcelFileBlo;
 import fr.deboissieu.calculassmat.bl.saisie.SaisieBlo;
+import fr.deboissieu.calculassmat.bl.synthese.SyntheseBlo;
 import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
 import fr.deboissieu.calculassmat.commons.exceptions.ValidationExceptionsEnum;
 import fr.deboissieu.calculassmat.dl.CertificationRepository;
 import fr.deboissieu.calculassmat.dl.SaisieRepository;
 import fr.deboissieu.calculassmat.model.certification.Certification;
 import fr.deboissieu.calculassmat.model.certification.CertificationRequest;
+import fr.deboissieu.calculassmat.model.certification.SaisieCertification;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.saisie.Saisie;
@@ -49,6 +53,9 @@ public class SaisieBloImpl implements SaisieBlo {
 
 	@Resource
 	CertificationRepository certificationRepository;
+
+	@Resource
+	SyntheseBlo syntheseBlo;
 
 	@Override
 	public void enregistrerSaisie(SaisieRequest saisie) {
@@ -80,7 +87,7 @@ public class SaisieBloImpl implements SaisieBlo {
 						numeroAnnee);
 
 				// Consolidation des paramètrages et conversion en saisie entités
-				Map<String, ParametrageEnfant> mapParamEnfants = parametrageBlo.findAllParamsEnfants();
+				Map<String, ParametrageEnfant> mapParamEnfants = parametrageBlo.getMapIdParamsEnfants();
 				Collection<ParametrageEmploye> paramsEmployes = parametrageBlo.findAllEmployes();
 				Collection<Saisie> saisies = consoliderSaisiesJournalieres(saisiesJournalieres, mapParamEnfants,
 						paramsEmployes);
@@ -183,7 +190,21 @@ public class SaisieBloImpl implements SaisieBlo {
 			throw new ValidationException(ValidationExceptionsEnum.V012.toString(month + "/" + year));
 		}
 
+		Collection<Saisie> saisies = fetchSaisies(request.getSaisies());
+		certification.setSyntheses(syntheseBlo.calculerSynthese(saisies, month, year));
+
 		certificationRepository.save(certification);
+	}
+
+	private Collection<Saisie> fetchSaisies(Collection<SaisieCertification> saisiesCertif) {
+
+		Collection<ObjectId> saisiesIds = saisiesCertif.stream()
+				.map(saisieCertif -> {
+					return new ObjectId(saisieCertif.getId());
+				})
+				.collect(Collectors.toList());
+		Iterable<Saisie> saisies = saisieRepository.findAllById(saisiesIds);
+		return Lists.newArrayList(saisies);
 	}
 
 }

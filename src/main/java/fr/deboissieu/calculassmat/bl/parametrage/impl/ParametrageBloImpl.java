@@ -28,13 +28,24 @@ public class ParametrageBloImpl implements ParametrageBlo {
 	@Resource
 	ParamEmployeRepository paramEmployeRepository;
 
-	public Map<String, ParametrageEnfant> findAllParamsEnfants() {
+	public Map<String, ParametrageEnfant> getMapIdParamsEnfants() {
 		Collection<ParametrageEnfant> paramsEnfant = paramEnfantRepository.findAll();
 		if (CollectionUtils.isNotEmpty(paramsEnfant)) {
 
 			return paramsEnfant
 					.stream()
 					.collect(Collectors.toMap(ParametrageEnfant::getNom, Function.identity()));
+		}
+		return null;
+	}
+
+	public Map<ObjectId, ParametrageEnfant> getMapObjectIdParamsEnfants() {
+		Collection<ParametrageEnfant> paramsEnfant = paramEnfantRepository.findAll();
+		if (CollectionUtils.isNotEmpty(paramsEnfant)) {
+
+			return paramsEnfant
+					.stream()
+					.collect(Collectors.toMap(ParametrageEnfant::get_id, Function.identity()));
 		}
 		return null;
 	}

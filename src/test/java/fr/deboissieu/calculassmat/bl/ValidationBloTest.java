@@ -161,7 +161,7 @@ public class ValidationBloTest {
 	@Test
 	public void devraitValiderLeNomAvecRechercheEnBase() {
 
-		String expectedMessage = "Erreur V-003 : Employé inconnu. - Variable : nom";
+		String expectedMessage = "Erreur V-003 : Employé inconnu. - nom";
 
 		doReturn(null).when(parametrageBloMock).findEmployeParId("nom");
 		try {

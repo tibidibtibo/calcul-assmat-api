@@ -68,12 +68,14 @@ public class DateUtils {
 	 * @return
 	 */
 	public static Date parseHeure(String heure) {
-		try {
-			return org.apache.commons.lang3.time.DateUtils.parseDate(heure, TIME_FORMAT_PATTERN);
-		} catch (ParseException e) {
-			e.printStackTrace();
-			return null;
+		if (StringUtils.isNotBlank(heure)) {
+			try {
+				return org.apache.commons.lang3.time.DateUtils.parseDate(heure, TIME_FORMAT_PATTERN);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
 		}
+		return null;
 	}
 
 	/**
@@ -112,10 +114,12 @@ public class DateUtils {
 	 * @return {@link LocalTime} heure locale
 	 */
 	public static LocalTime dateToLocalTime(Date dateTime) {
-
-		Instant instant = dateTime.toInstant();
-		LocalTime localTime = instant.atZone(ZoneId.systemDefault()).toLocalTime();
-		return localTime;
+		if (dateTime != null) {
+			Instant instant = dateTime.toInstant();
+			LocalTime localTime = instant.atZone(ZoneId.systemDefault()).toLocalTime();
+			return localTime;
+		}
+		return null;
 	}
 
 	/**

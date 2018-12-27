@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.bson.types.ObjectId;
+
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmployeDto;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
@@ -16,7 +18,15 @@ public interface ParametrageBlo {
 	 * @return {@link Map}<{@link String}, {@link ParametrageEnfant}> paramètres
 	 *         enfant par nom
 	 */
-	public Map<String, ParametrageEnfant> findAllParamsEnfants();
+	public Map<String, ParametrageEnfant> getMapIdParamsEnfants();
+
+	/**
+	 * Recherche les paramètres enfant et retourne une map par prénom
+	 * 
+	 * @return {@link Map}<{@link String}, {@link ParametrageEnfant}> paramètres
+	 *         enfant par nom
+	 */
+	public Map<ObjectId, ParametrageEnfant> getMapObjectIdParamsEnfants();
 
 	/**
 	 * Recherche le paramétrage employé par idEmploye

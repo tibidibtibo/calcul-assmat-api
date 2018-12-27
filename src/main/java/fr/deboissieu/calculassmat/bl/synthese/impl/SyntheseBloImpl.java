@@ -50,8 +50,8 @@ public class SyntheseBloImpl implements SyntheseBlo {
 	@Override
 	public Collection<SyntheseGarde> calculerSynthese(Collection<Saisie> donneesSaisies, int mois, int annee) {
 
-		// FIXME : revoir chargement paramétrage
-		Map<String, ParametrageEnfant> mapParamEnfants = parametrageBlo.findAllParamsEnfants();
+		Map<ObjectId, ParametrageEnfant> mapParamEnfants = parametrageBlo.getMapObjectIdParamsEnfants();
+
 		Map<ObjectId, Collection<Saisie>> saisieParEmploye = mapperParEmployeId(donneesSaisies);
 		Map<ParametrageEmploye, Collection<Saisie>> mapEmployeSaisie = consoliderParamEmployeId(
 				saisieParEmploye);
@@ -61,8 +61,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		for (Map.Entry<ParametrageEmploye, Collection<Saisie>> entry : mapEmployeSaisie.entrySet()) {
 			Collection<Saisie> saisieEmploye = entry.getValue();
 			ParametrageEmploye employe = entry.getKey();
-			String nomEmploye = employe.getPrenomNom();
-			SyntheseGarde synthese = new SyntheseGarde(mois, annee, nomEmploye);
+			SyntheseGarde synthese = new SyntheseGarde(mois, annee, employe.getPrenomNom());
 
 			synthese.setNbJoursTravailles(calculerJoursTravailles(saisieEmploye));
 
@@ -119,7 +118,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 
 	private Indemnites calculerIndemnites(Collection<Saisie> donneesSaisies, ParametrageEmploye employe,
 			NombreHeures nbHeures,
-			Map<String, ParametrageEnfant> mapParamEnfants) {
+			Map<ObjectId, ParametrageEnfant> mapParamEnfants) {
 		Indemnites indemnites = new Indemnites();
 		indemnites.setIndemnitesEntretien(calculerIndemnitesEntretien(employe, nbHeures));
 		indemnites.setIndemnitesRepas(calculerIndemnitesRepas(donneesSaisies, employe));
@@ -127,7 +126,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		return indemnites;
 	}
 
-	private Salaire calculerSalaire(ParametrageEmploye paramAssmat, Map<String, ParametrageEnfant> mapParamEnfants,
+	private Salaire calculerSalaire(ParametrageEmploye paramAssmat, Map<ObjectId, ParametrageEnfant> mapParamEnfants,
 			NombreHeures nbHeures) {
 
 		Salaire salaire = new Salaire();
@@ -152,7 +151,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 	}
 
 	private Double calculerIndemnitesKm(Collection<Saisie> donneesSaisies,
-			Map<String, ParametrageEnfant> mapParamEnfants, ParametrageEmploye employe) {
+			Map<ObjectId, ParametrageEnfant> mapParamEnfants, ParametrageEmploye employe) {
 		Double fraisKm = 0d;
 
 		if (CollectionUtils.isNotEmpty(donneesSaisies)) {
@@ -207,7 +206,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 				+ nbJourSup * employe.getIndemnitesEntretien().getIndemniteSup());
 	}
 
-	private Double calculerSalaireNetMensualise(Map<String, ParametrageEnfant> mapParamEnfants) {
+	private Double calculerSalaireNetMensualise(Map<ObjectId, ParametrageEnfant> mapParamEnfants) {
 
 		Double salaireNet = 0d;
 		for (ParametrageEnfant paramEnfant : mapParamEnfants.values()) {
@@ -218,7 +217,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 	}
 
 	public NombreHeures calculerNbHeures(Collection<Saisie> donneesSaisies,
-			Map<String, ParametrageEnfant> mapParamEnfants) {
+			Map<ObjectId, ParametrageEnfant> mapParamEnfants) {
 
 		NombreHeures nbHeures = new NombreHeures();
 		nbHeures.setHeuresNormalesMensualisees(mapParamEnfants);

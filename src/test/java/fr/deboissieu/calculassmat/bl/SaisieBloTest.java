@@ -35,6 +35,7 @@ import fr.deboissieu.calculassmat.bl.parametrage.ParametrageBlo;
 import fr.deboissieu.calculassmat.bl.saisie.ExcelFileBlo;
 import fr.deboissieu.calculassmat.bl.saisie.SaisieBlo;
 import fr.deboissieu.calculassmat.bl.saisie.impl.SaisieBloImpl;
+import fr.deboissieu.calculassmat.bl.synthese.SyntheseBlo;
 import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
 import fr.deboissieu.calculassmat.commons.filestorage.FileStorageService;
 import fr.deboissieu.calculassmat.commons.mocks.ResourceMock;
@@ -50,6 +51,7 @@ import fr.deboissieu.calculassmat.model.saisie.Saisie;
 import fr.deboissieu.calculassmat.model.saisie.SaisieEnfantDto;
 import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
 import fr.deboissieu.calculassmat.model.saisie.SaisieRequest;
+import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = { SaisieBloTest.Config.class })
@@ -65,6 +67,9 @@ public class SaisieBloTest {
 	CertificationRepository certifRepositoryMock;
 
 	@Resource
+	SyntheseBlo syntheseBloMock;
+
+	@Resource
 	ExcelFileBlo excelFileBloMock;
 
 	@Resource
@@ -76,8 +81,11 @@ public class SaisieBloTest {
 	@Before
 	public void before() {
 		Mockito.reset(saisieRepositoryMock);
+		Mockito.reset(certifRepositoryMock);
+		Mockito.reset(parametrageBloMock);
 		Mockito.reset(excelFileBloMock);
 		Mockito.reset(fileStorageServiceMock);
+		Mockito.reset(syntheseBloMock);
 	}
 
 	@Test
@@ -144,7 +152,7 @@ public class SaisieBloTest {
 		enfant.setNom("enfant");
 		Map<String, ParametrageEnfant> mapParamEnfant = new HashMap<>();
 		mapParamEnfant.put("enfant", enfant);
-		Mockito.doReturn(mapParamEnfant).when(parametrageBloMock).findAllParamsEnfants();
+		Mockito.doReturn(mapParamEnfant).when(parametrageBloMock).getMapIdParamsEnfants();
 		org.springframework.core.io.Resource resource = new ResourceMock();
 		Mockito.doReturn(resource).when(fileStorageServiceMock).loadFileAsResource(Mockito.anyString());
 
@@ -155,7 +163,7 @@ public class SaisieBloTest {
 		verify(workbookMock, times(1)).close();
 		verify(excelFileBloMock, times(1)).openWorkbook("path");
 		verify(excelFileBloMock, times(1)).extractDataFromWorkbook(workbookMock, 12, 2018);
-		verify(parametrageBloMock, times(1)).findAllParamsEnfants();
+		verify(parametrageBloMock, times(1)).getMapIdParamsEnfants();
 		verify(parametrageBloMock, times(1)).findAllEmployes();
 		verify(saisieRepositoryMock, times(1)).saveAll(Mockito.anyCollection());
 	}
@@ -180,10 +188,21 @@ public class SaisieBloTest {
 		// Arrange
 		CertificationRequest requete = new CertificationRequest();
 		Collection<SaisieCertification> saisies = new ArrayList<>();
-		SaisieCertification saisie1 = new SaisieCertification();
-		saisie1.setId("abc");
-		saisies.add(saisie1);
+		SaisieCertification saisieCertif1 = new SaisieCertification();
+		saisieCertif1.setId("5baff2462efb71c0790b6e11");
+		saisies.add(saisieCertif1);
 		requete.setSaisies(saisies);
+
+		Saisie saisie1 = new Saisie();
+		saisie1.set_id(new ObjectId("5baff2462efb71c0790b6e11"));
+		saisie1.setNbDejeuners(7);
+		doReturn(Arrays.asList(saisie1)).when(saisieRepositoryMock).findAllById(Mockito.anyCollection());
+
+		Collection<SyntheseGarde> syntheses = new ArrayList<>();
+		syntheses.add(new SyntheseGarde(12, 2018, "employe1"));
+		syntheses.add(new SyntheseGarde(11, 2018, "employe2"));
+		doReturn(syntheses).when(syntheseBloMock).calculerSynthese(Mockito.anyCollection(), Mockito.anyInt(),
+				Mockito.anyInt());
 
 		// Act
 		saisieBlo.certifier(requete, 12, 2018);
@@ -196,7 +215,13 @@ public class SaisieBloTest {
 		assertThat(certifArgCaptor.getValue().getMonth()).isEqualTo(12);
 		assertThat(certifArgCaptor.getValue().getYear()).isEqualTo(2018);
 		assertThat(certifArgCaptor.getValue().getSaisies()).isNotEmpty().hasSize(1);
-		assertThat(certifArgCaptor.getValue().getSaisies()).extracting("id").containsExactly("abc");
+		assertThat(certifArgCaptor.getValue().getSaisies()).extracting("id")
+				.containsExactly("5baff2462efb71c0790b6e11");
+		assertThat(certifArgCaptor.getValue().getSyntheses()).isNotEmpty().hasSize(2);
+		assertThat(certifArgCaptor.getValue().getSyntheses()).extracting("mois").containsOnly("12", "11");
+		assertThat(certifArgCaptor.getValue().getSyntheses()).extracting("annee").containsOnly("2018");
+		assertThat(certifArgCaptor.getValue().getSyntheses()).extracting("nomEmploye").containsOnly("employe1",
+				"employe2");
 
 	}
 
@@ -249,6 +274,11 @@ public class SaisieBloTest {
 		@Bean
 		ParametrageBlo getParametrageBlo() {
 			return Mockito.mock(ParametrageBlo.class);
+		}
+
+		@Bean
+		SyntheseBlo getSyntheseBlo() {
+			return Mockito.mock(SyntheseBlo.class);
 		}
 
 		@Bean

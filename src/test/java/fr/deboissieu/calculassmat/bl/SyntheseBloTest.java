@@ -29,6 +29,7 @@ import fr.deboissieu.calculassmat.bl.validation.ValidationBlo;
 import fr.deboissieu.calculassmat.bl.validation.impl.ValidationBloImpl;
 import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
 import fr.deboissieu.calculassmat.dl.ParamEmployeRepository;
+import fr.deboissieu.calculassmat.model.parametrage.IndemnitesEntretien;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.saisie.Saisie;
@@ -89,8 +90,8 @@ public class SyntheseBloTest {
 
 		// Arrange
 		Map<ObjectId, ParametrageEnfant> mapParamEnfant = getMapParamEnfant1();
+		doReturn(mapParamEnfant).when(parametrageBloMock).getMapObjectIdParamsEnfants();
 		initEmployesMocks();
-		doReturn(mapParamEnfant).when(parametrageBloMock).findAllParamsEnfants();
 
 		Collection<Saisie> donneesSaisies = new ArrayList<>();
 		donneesSaisies.add(TestUtils.buildSaisie(
@@ -134,11 +135,9 @@ public class SyntheseBloTest {
 	public void devraitCalculerLesInformationsDeSynthesePourPeriscolaire() {
 
 		// Arrange
-		ParametrageEmploye paramEmploye = TestUtils.getParametrageEmploye();
+		initEmployesMocks();
 		Map<ObjectId, ParametrageEnfant> mapParamEnfant = getMapParamEnfant2();
-
-		doReturn(paramEmploye).when(parametrageBloMock).findEmployeParNom(Mockito.anyString());
-		doReturn(mapParamEnfant).when(parametrageBloMock).findAllParamsEnfants();
+		doReturn(mapParamEnfant).when(parametrageBloMock).getMapObjectIdParamsEnfants();
 
 		Collection<Saisie> donneesSaisies = new ArrayList<>();
 		donneesSaisies.add(TestUtils.buildSaisie(
@@ -188,13 +187,11 @@ public class SyntheseBloTest {
 	public void devraitCalculerLesInformationsDeSynthesePourTempsPleinEtPeriscolaire() {
 
 		// Arrange
-		ParametrageEmploye paramEmploye = TestUtils.getParametrageEmploye();
+		initEmployesMocks();
 		Map<ObjectId, ParametrageEnfant> mapParamEnfant = new HashMap<>();
 		mapParamEnfant.putAll(getMapParamEnfant1());
 		mapParamEnfant.putAll(getMapParamEnfant2());
-
-		doReturn(paramEmploye).when(parametrageBloMock).findEmployeParNom(Mockito.anyString());
-		doReturn(mapParamEnfant).when(parametrageBloMock).findAllParamsEnfants();
+		doReturn(mapParamEnfant).when(parametrageBloMock).getMapObjectIdParamsEnfants();
 
 		Collection<Saisie> donneesSaisies = new ArrayList<>();
 
@@ -256,22 +253,26 @@ public class SyntheseBloTest {
 	public static Map<ObjectId, ParametrageEnfant> getMapParamEnfant1() {
 		Map<ObjectId, ParametrageEnfant> mapParamEnfants = new HashMap<>();
 
+		ObjectId objId = new ObjectId("5baff2462efb71c0790b6e55");
 		ParametrageEnfant enfant1 = TestUtils.buildParametrageEnfant("5baff2462efb71c0790b6e55", "TEMPS_PLEIN", 250d,
 				10.1d, 0d);
+		enfant1.set_id(objId);
 		enfant1.setHeuresNormales(TestUtils.getHeuresNormales(9d, 9d, 0d, 8d, 9d, 0d, 0d));
-		mapParamEnfants.put(new ObjectId("5baff2462efb71c0790b6e55"), enfant1);
+		mapParamEnfants.put(objId, enfant1);
 
 		return mapParamEnfants;
 	}
 
 	public static Map<ObjectId, ParametrageEnfant> getMapParamEnfant2() {
+		ObjectId objId = new ObjectId("5baff2462efb71c0790b6e66");
 		Map<ObjectId, ParametrageEnfant> mapParamEnfants = new HashMap<>();
 
 		ParametrageEnfant enfant2 = TestUtils.buildParametrageEnfant("5baff2462efb71c0790b6e66", "PERISCOLAIRE", 104d,
 				2d, 3.2d);
+		enfant2.set_id(objId);
 		enfant2.setHeuresNormales(TestUtils.getHeuresNormales(2d, 1d, 0d, 2d, 1d, 0d, 0d));
 		enfant2.setHorairesEcole(TestUtils.getHorairesEcole());
-		mapParamEnfants.put(new ObjectId("5baff2462efb71c0790b6e66"), enfant2);
+		mapParamEnfants.put(objId, enfant2);
 
 		return mapParamEnfants;
 	}
@@ -325,13 +326,29 @@ public class SyntheseBloTest {
 	private void initEmployesMocks() {
 		Mockito.reset(paramEmployeRepositoryMock);
 
-		ParametrageEmploye paramEmploye1 = new ParametrageEmploye();
-		paramEmploye1.setNom("employe1");
-		doReturn(paramEmploye1).when(paramEmployeRepositoryMock).findBy_id(new ObjectId("5baff2462efb71c0790b6e77"));
+		ObjectId idEmp1 = new ObjectId("5baff2462efb71c0790b6e77");
+		ParametrageEmploye paramEmploye1 = initParamEmploye("test", "employe1", idEmp1);
+		doReturn(paramEmploye1).when(paramEmployeRepositoryMock).findBy_id(idEmp1);
 
-		ParametrageEmploye paramEmploye2 = new ParametrageEmploye();
-		paramEmploye2.setNom("employe2");
-		doReturn(paramEmploye2).when(paramEmployeRepositoryMock).findBy_id(new ObjectId("5baff2462efb71c0790b6e88"));
+		ObjectId idEmp2 = new ObjectId("5baff2462efb71c0790b6e88");
+		ParametrageEmploye paramEmploye2 = initParamEmploye("test", "employe2", idEmp2);
+		doReturn(paramEmploye2).when(paramEmployeRepositoryMock).findBy_id(idEmp2);
+	}
+
+	private ParametrageEmploye initParamEmploye(String prenom, String nom, ObjectId id) {
+		ParametrageEmploye paramEmploye = new ParametrageEmploye();
+
+		paramEmploye.set_id(id);
+		paramEmploye.setPrenom(prenom);
+		paramEmploye.setNom(nom);
+		paramEmploye.setTauxHoraireComplementaireNet(2.90d);
+		paramEmploye.setTauxCongesPayes(0.10d);
+		paramEmploye.setIndemnitesKm(0.84d);
+		paramEmploye.setIndemnitesEntretien(new IndemnitesEntretien(8d, 2d, 3d));
+		paramEmploye.setFraisDejeuner(1d);
+		paramEmploye.setFraisGouter(0.7d);
+
+		return paramEmploye;
 	}
 
 }

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.collections4.MapUtils;
+import org.bson.types.ObjectId;
 
 import fr.deboissieu.calculassmat.commons.mathsutils.MathsUtils;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
@@ -69,7 +70,7 @@ public class NombreHeures implements Serializable {
 
 	}
 
-	public void setHeuresNormalesMensualisees(Map<String, ParametrageEnfant> mapParamEnfants) {
+	public void setHeuresNormalesMensualisees(Map<ObjectId, ParametrageEnfant> mapParamEnfants) {
 		if (MapUtils.isNotEmpty(mapParamEnfants)) {
 			if (this.heuresNormalesMensualisees == null) {
 				this.heuresNormalesMensualisees = 0d;

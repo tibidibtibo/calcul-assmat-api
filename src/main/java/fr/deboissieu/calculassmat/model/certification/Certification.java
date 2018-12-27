@@ -27,5 +27,5 @@ public class Certification implements Serializable {
 
 	private Collection<SaisieCertification> saisies;
 
-	private SyntheseGarde synthese;
+	private Collection<SyntheseGarde> syntheses;
 }
