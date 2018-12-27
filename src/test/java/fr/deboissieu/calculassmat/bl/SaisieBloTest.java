@@ -1,9 +1,7 @@
 package fr.deboissieu.calculassmat.bl;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -16,7 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
-import javax.validation.ValidationException;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -25,7 +22,6 @@ import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
@@ -42,16 +38,12 @@ import fr.deboissieu.calculassmat.commons.mocks.ResourceMock;
 import fr.deboissieu.calculassmat.commons.mocks.WorkbookMock;
 import fr.deboissieu.calculassmat.dl.CertificationRepository;
 import fr.deboissieu.calculassmat.dl.SaisieRepository;
-import fr.deboissieu.calculassmat.model.certification.Certification;
-import fr.deboissieu.calculassmat.model.certification.CertificationRequest;
-import fr.deboissieu.calculassmat.model.certification.SaisieCertification;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.saisie.Saisie;
 import fr.deboissieu.calculassmat.model.saisie.SaisieEnfantDto;
 import fr.deboissieu.calculassmat.model.saisie.SaisieJournaliere;
 import fr.deboissieu.calculassmat.model.saisie.SaisieRequest;
-import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = { SaisieBloTest.Config.class })
@@ -179,78 +171,6 @@ public class SaisieBloTest {
 
 		// Assert
 		Mockito.verify(saisieRepositoryMock, times(1)).deleteById(new ObjectId(identifiant));
-
-	}
-
-	@Test
-	public void devraitCertifierLeMois() {
-
-		// Arrange
-		CertificationRequest requete = new CertificationRequest();
-		Collection<SaisieCertification> saisies = new ArrayList<>();
-		SaisieCertification saisieCertif1 = new SaisieCertification();
-		saisieCertif1.setId("5baff2462efb71c0790b6e11");
-		saisies.add(saisieCertif1);
-		requete.setSaisies(saisies);
-
-		Saisie saisie1 = new Saisie();
-		saisie1.set_id(new ObjectId("5baff2462efb71c0790b6e11"));
-		saisie1.setNbDejeuners(7);
-		doReturn(Arrays.asList(saisie1)).when(saisieRepositoryMock).findAllById(Mockito.anyCollection());
-
-		Collection<SyntheseGarde> syntheses = new ArrayList<>();
-		syntheses.add(new SyntheseGarde(12, 2018, "employe1"));
-		syntheses.add(new SyntheseGarde(11, 2018, "employe2"));
-		doReturn(syntheses).when(syntheseBloMock).calculerSynthese(Mockito.anyCollection(), Mockito.anyInt(),
-				Mockito.anyInt());
-
-		// Act
-		saisieBlo.certifier(requete, 12, 2018);
-
-		// Assert
-		verify(certifRepositoryMock, times(1)).findByMonth(12, 2018);
-		ArgumentCaptor<Certification> certifArgCaptor = ArgumentCaptor.forClass(Certification.class);
-		verify(certifRepositoryMock, times(1)).save(certifArgCaptor.capture());
-		assertThat(certifArgCaptor.getValue()).isNotNull();
-		assertThat(certifArgCaptor.getValue().getMonth()).isEqualTo(12);
-		assertThat(certifArgCaptor.getValue().getYear()).isEqualTo(2018);
-		assertThat(certifArgCaptor.getValue().getSaisies()).isNotEmpty().hasSize(1);
-		assertThat(certifArgCaptor.getValue().getSaisies()).extracting("id")
-				.containsExactly("5baff2462efb71c0790b6e11");
-		assertThat(certifArgCaptor.getValue().getSyntheses()).isNotEmpty().hasSize(2);
-		assertThat(certifArgCaptor.getValue().getSyntheses()).extracting("mois").containsOnly("12", "11");
-		assertThat(certifArgCaptor.getValue().getSyntheses()).extracting("annee").containsOnly("2018");
-		assertThat(certifArgCaptor.getValue().getSyntheses()).extracting("nomEmploye").containsOnly("employe1",
-				"employe2");
-
-	}
-
-	@Test
-	public void neDevraitPasCertifierLeMois() {
-
-		// Arrange
-		CertificationRequest requete = new CertificationRequest();
-		Collection<SaisieCertification> saisies = new ArrayList<>();
-		SaisieCertification saisie1 = new SaisieCertification();
-		saisie1.setId("abc");
-		saisies.add(saisie1);
-		requete.setSaisies(saisies);
-		doReturn(new Certification()).when(certifRepositoryMock).findByMonth(12, 2018);
-
-		// Act
-		try {
-			saisieBlo.certifier(requete, 12, 2018);
-			fail();
-		} catch (ValidationException ve) {
-			// Assert
-			assertThat(ve.getMessage())
-					.contains("Erreur V-012 : Certification déjà créée ! - 12/2018");
-
-		}
-
-		// Assert
-		verify(certifRepositoryMock, times(1)).findByMonth(12, 2018);
-		verify(certifRepositoryMock, never()).save(Mockito.any(Certification.class));
 
 	}
 

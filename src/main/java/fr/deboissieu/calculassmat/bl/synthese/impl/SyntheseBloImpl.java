@@ -61,7 +61,8 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		for (Map.Entry<ParametrageEmploye, Collection<Saisie>> entry : mapEmployeSaisie.entrySet()) {
 			Collection<Saisie> saisieEmploye = entry.getValue();
 			ParametrageEmploye employe = entry.getKey();
-			SyntheseGarde synthese = new SyntheseGarde(mois, annee, employe.getPrenomNom());
+			SyntheseGarde synthese = new SyntheseGarde();
+			synthese.initSyntheseGarde(mois, annee, employe.getPrenomNom());
 
 			synthese.setNbJoursTravailles(calculerJoursTravailles(saisieEmploye));
 

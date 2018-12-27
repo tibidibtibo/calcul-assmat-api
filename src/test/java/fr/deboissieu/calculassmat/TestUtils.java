@@ -14,6 +14,7 @@ import fr.deboissieu.calculassmat.model.parametrage.IndemnitesEntretien;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.saisie.Saisie;
+import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
 public class TestUtils {
 
@@ -82,5 +83,11 @@ public class TestUtils {
 		horaires.add(new HorairesEcole(6, new HorairesJournaliersEcole()));
 		horaires.add(new HorairesEcole(7, new HorairesJournaliersEcole()));
 		return horaires;
+	}
+
+	public static SyntheseGarde buildSyntheseGarde(int month, int year, String employe) {
+		SyntheseGarde synthese = new SyntheseGarde();
+		synthese.initSyntheseGarde(month, year, employe);
+		return synthese;
 	}
 }

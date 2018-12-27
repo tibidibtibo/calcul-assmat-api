@@ -15,7 +15,7 @@ public class SyntheseGarde implements Serializable {
 
 	private String annee;
 
-	private int nbJoursTravailles;
+	private Integer nbJoursTravailles;
 
 	private NombreHeures nombreHeures;
 
@@ -27,7 +27,7 @@ public class SyntheseGarde implements Serializable {
 
 	private String nomEmploye;
 
-	public SyntheseGarde(int mois, int annee, String nomEmploye) {
+	public void initSyntheseGarde(int mois, int annee, String nomEmploye) {
 		this.mois = Integer.toString(mois);
 		this.annee = Integer.toString(annee);
 		this.nomEmploye = nomEmploye;

@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
-import fr.deboissieu.calculassmat.model.certification.CertificationRequest;
 import fr.deboissieu.calculassmat.model.saisie.SaisieEnfantDto;
 import fr.deboissieu.calculassmat.model.saisie.SaisieRequest;
 
@@ -48,12 +47,4 @@ public interface SaisieBlo {
 	 */
 	void supprimerSaisie(String identifiant);
 
-	/**
-	 * Certification
-	 * 
-	 * @param request
-	 * @param mois
-	 * @param annee
-	 */
-	void certifier(CertificationRequest request, Integer mois, Integer annee);
 }
