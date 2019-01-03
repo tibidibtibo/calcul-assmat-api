@@ -50,17 +50,16 @@ public class SyntheseBloImpl implements SyntheseBlo {
 	@Override
 	public Collection<SyntheseGarde> calculerSynthese(Collection<Saisie> donneesSaisies, int mois, int annee) {
 
+		Map<ParametrageEmploye, Collection<Saisie>> mapEmployeSaisie = mapperParParametrageEmploye(donneesSaisies);
 		Map<ObjectId, ParametrageEnfant> mapParamEnfants = parametrageBlo.getMapObjectIdParamsEnfants();
-
-		Map<ObjectId, Collection<Saisie>> saisieParEmploye = mapperParEmployeId(donneesSaisies);
-		Map<ParametrageEmploye, Collection<Saisie>> mapEmployeSaisie = consoliderParamEmployeId(
-				saisieParEmploye);
 
 		Collection<SyntheseGarde> syntheses = new ArrayList<>();
 
 		for (Map.Entry<ParametrageEmploye, Collection<Saisie>> entry : mapEmployeSaisie.entrySet()) {
+
 			Collection<Saisie> saisieEmploye = entry.getValue();
 			ParametrageEmploye employe = entry.getKey();
+
 			SyntheseGarde synthese = new SyntheseGarde();
 			synthese.initSyntheseGarde(mois, annee, employe.getPrenomNom());
 
@@ -85,6 +84,13 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		}
 
 		return syntheses;
+	}
+
+	private Map<ParametrageEmploye, Collection<Saisie>> mapperParParametrageEmploye(Collection<Saisie> donneesSaisies) {
+		Map<ObjectId, Collection<Saisie>> saisieParEmploye = mapperParEmployeId(donneesSaisies);
+		Map<ParametrageEmploye, Collection<Saisie>> mapEmployeSaisie = consoliderParamEmployeId(
+				saisieParEmploye);
+		return mapEmployeSaisie;
 	}
 
 	private Map<ParametrageEmploye, Collection<Saisie>> consoliderParamEmployeId(

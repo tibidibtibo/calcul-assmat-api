@@ -28,6 +28,9 @@ public class ParametrageBloImpl implements ParametrageBlo {
 	@Resource
 	ParamEmployeRepository paramEmployeRepository;
 
+	// ------------------- //
+	// ----- ENFANTS ----- //
+	// ------------------- //
 	public Map<String, ParametrageEnfant> getMapIdParamsEnfants() {
 		Collection<ParametrageEnfant> paramsEnfant = paramEnfantRepository.findAll();
 		if (CollectionUtils.isNotEmpty(paramsEnfant)) {
@@ -51,6 +54,14 @@ public class ParametrageBloImpl implements ParametrageBlo {
 	}
 
 	@Override
+	public Collection<ParametrageEnfant> getAllEnfants() {
+		return paramEnfantRepository.findAll();
+	}
+
+	// ---------------------//
+	// ----- EMPLOYES ----- //
+	// -------------------- //
+	@Override
 	public ParametrageEmploye findEmployeParId(String idEmploye) {
 		ObjectId objectIdEmploye = new ObjectId(idEmploye);
 		return paramEmployeRepository.findBy_id(objectIdEmploye);
@@ -67,11 +78,6 @@ public class ParametrageBloImpl implements ParametrageBlo {
 	}
 
 	@Override
-	public Collection<ParametrageEnfant> getAllEnfants() {
-		return paramEnfantRepository.findAll();
-	}
-
-	@Override
 	public void updateParamEmploye(ParametrageEmployeDto paramEmployeDto) {
 		ParametrageEmploye paramEmploye = ParametrageEmployeDto.from(paramEmployeDto);
 		paramEmployeRepository.save(paramEmploye);
@@ -79,6 +85,7 @@ public class ParametrageBloImpl implements ParametrageBlo {
 
 	@Override
 	public void deleteParamEmploye(String employeId) {
+		// FIXME : mettre à jour paramEnfant
 		paramEmployeRepository.deleteById(employeId);
 	}
 

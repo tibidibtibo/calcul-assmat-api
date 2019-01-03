@@ -21,21 +21,21 @@ public class ParametrageEnfant implements Serializable {
 	@Id
 	private ObjectId _id;
 
-	private List<ObjectId> employesIds;
-
 	private String nom;
 
 	private String typeGarde;
 
-	private Double salaireNetMensualise;
+	private List<EmployeInfo> employes;
 
+	// FIXME : à déplacer dans employeInfo
+	private List<ObjectId> employesIds;
+	private Double salaireNetMensualise;
 	private Double heuresNormalesMensualisees;
+	private List<HeuresNormale> heuresNormales;
 
 	private Double arEcoleKm;
 
 	private List<HorairesEcole> horairesEcole;
-
-	private List<HeuresNormale> heuresNormales;
 
 	/**
 	 * Valeurs de "typeGarde"
