@@ -27,15 +27,19 @@ public class ParametrageEnfant implements Serializable {
 
 	private List<EmployeInfo> employes;
 
-	// FIXME : à déplacer dans employeInfo
-	private List<ObjectId> employesIds;
-	private Double salaireNetMensualise;
-	private Double heuresNormalesMensualisees;
-	private List<HeuresNormale> heuresNormales;
-
-	private Double arEcoleKm;
-
 	private List<HorairesEcole> horairesEcole;
+
+	// FIXME : à déplacer dans employeInfo
+	@Deprecated
+	private List<ObjectId> employesIds;
+	@Deprecated
+	private Double salaireNetMensualise;
+	@Deprecated
+	private Double heuresNormalesMensualisees;
+	@Deprecated
+	private List<HeuresNormale> heuresNormales;
+	@Deprecated
+	private Double arEcoleKm;
 
 	/**
 	 * Valeurs de "typeGarde"
