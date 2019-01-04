@@ -33,40 +33,13 @@ import fr.deboissieu.calculassmat.model.parametrage.IndemnitesEntretien;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.saisie.Saisie;
+import fr.deboissieu.calculassmat.model.synthese.GroupeEmployeSaisies;
 import fr.deboissieu.calculassmat.model.synthese.NombreHeures;
 import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = { SyntheseBloTest.Config.class })
 public class SyntheseBloTest {
-
-	public static class Config {
-
-		@Bean
-		SyntheseBlo getSyntheseBlo() {
-			return new SyntheseBloImpl();
-		}
-
-		@Bean
-		ParametrageBlo getparametrageBlo() {
-			return Mockito.mock(ParametrageBlo.class);
-		}
-
-		@Bean
-		ParamEmployeRepository getParamEmployeRepository() {
-			return Mockito.mock(ParamEmployeRepository.class);
-		}
-
-		@Bean
-		ValidationBlo getValidationBlo() {
-			return new ValidationBloImpl();
-		}
-
-		@Bean
-		Validator getValidator() {
-			return Mockito.mock(Validator.class);
-		}
-	}
 
 	@Resource
 	SyntheseBlo syntheseBlo;
@@ -351,4 +324,64 @@ public class SyntheseBloTest {
 		return paramEmploye;
 	}
 
+	@Test
+	public void devraitGrouperLesSaisiesParEmploye() {
+		// Arrange
+		Collection<Saisie> saisies = new ArrayList<>();
+		saisies.add(TestUtils.buildSaisie(
+				DateUtils.getDate(2018, 9, 25),
+				"5baff2462efb71c0790b6e55", "07:00", "18:30", 0, 3.7d, 0, 1, "5baff2462efb71c0790b6e77")); // 2.5 hc
+		saisies.add(TestUtils.buildSaisie(
+				DateUtils.getDate(2018, 9, 27),
+				"5baff2462efb71c0790b6e66", "07:45", "17:30", 0, 3.7d, 0, 1, "5baff2462efb71c0790b6e77")); // 1.75 hc
+		saisies.add(TestUtils.buildSaisie(
+				DateUtils.getDate(2018, 9, 28),
+				"5baff2462efb71c0790b6e55", "08:00", "18:00", 0, 0d, 1, 1, "5baff2462efb71c0790b6e88"));
+
+		ParametrageEmploye employe1 = TestUtils.getParametrageEmploye();
+		employe1.setNom("employe1");
+		Mockito.doReturn(employe1).when(paramEmployeRepositoryMock)
+				.findBy_id(new ObjectId("5baff2462efb71c0790b6e77"));
+		ParametrageEmploye employe2 = TestUtils.getParametrageEmploye();
+		employe2.setNom("employe2");
+		Mockito.doReturn(employe2).when(paramEmployeRepositoryMock)
+				.findBy_id(new ObjectId("5baff2462efb71c0790b6e88"));
+
+		// Act
+		Collection<GroupeEmployeSaisies> groupes = syntheseBloImpl.groupByParamEmployes(saisies);
+
+		// Assert
+		assertThat(groupes).isNotEmpty().hasSize(2);
+		assertThat(groupes).extracting("paramEmploye.nom").contains("employe1", "employe2");
+
+		// TODO : etoffer le TU
+	}
+
+	public static class Config {
+
+		@Bean
+		SyntheseBlo getSyntheseBlo() {
+			return new SyntheseBloImpl();
+		}
+
+		@Bean
+		ParametrageBlo getparametrageBlo() {
+			return Mockito.mock(ParametrageBlo.class);
+		}
+
+		@Bean
+		ParamEmployeRepository getParamEmployeRepository() {
+			return Mockito.mock(ParamEmployeRepository.class);
+		}
+
+		@Bean
+		ValidationBlo getValidationBlo() {
+			return new ValidationBloImpl();
+		}
+
+		@Bean
+		Validator getValidator() {
+			return Mockito.mock(Validator.class);
+		}
+	}
 }

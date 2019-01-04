@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
@@ -28,6 +29,7 @@ import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant.TypeGardeEnum;
 import fr.deboissieu.calculassmat.model.saisie.Saisie;
+import fr.deboissieu.calculassmat.model.synthese.GroupeEmployeSaisies;
 import fr.deboissieu.calculassmat.model.synthese.Indemnites;
 import fr.deboissieu.calculassmat.model.synthese.NombreHeures;
 import fr.deboissieu.calculassmat.model.synthese.Salaire;
@@ -50,8 +52,8 @@ public class SyntheseBloImpl implements SyntheseBlo {
 	@Override
 	public Collection<SyntheseGarde> calculerSynthese(Collection<Saisie> donneesSaisies, int mois, int annee) {
 
-		Map<ParametrageEmploye, Collection<Saisie>> mapEmployeSaisie = mapperParParametrageEmploye(donneesSaisies);
 		Map<ObjectId, ParametrageEnfant> mapParamEnfants = parametrageBlo.getMapObjectIdParamsEnfants();
+		Map<ParametrageEmploye, Collection<Saisie>> mapEmployeSaisie = mapperParParametrageEmploye(donneesSaisies);
 
 		Collection<SyntheseGarde> syntheses = new ArrayList<>();
 
@@ -93,6 +95,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		return mapEmployeSaisie;
 	}
 
+	@Deprecated
 	private Map<ParametrageEmploye, Collection<Saisie>> consoliderParamEmployeId(
 			Map<ObjectId, Collection<Saisie>> saisieParEmploye) {
 		Map<ParametrageEmploye, Collection<Saisie>> mapEmployeSaisie = new HashMap<>();
@@ -107,6 +110,30 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		return mapEmployeSaisie;
 	}
 
+	/**
+	 * FIXME : utiliser cette méthode
+	 * 
+	 * @param donneesSaisies
+	 * @return
+	 */
+	public Collection<GroupeEmployeSaisies> groupByParamEmployes(Collection<Saisie> donneesSaisies) {
+		if (CollectionUtils.isNotEmpty(donneesSaisies)) {
+			return donneesSaisies.stream()
+					.collect(Collectors.groupingBy(Saisie::getEmployeId))
+					.entrySet().stream()
+					.map(group -> {
+						GroupeEmployeSaisies groupEmployeSaisies = new GroupeEmployeSaisies();
+						ParametrageEmploye parametrageEmploye = paramEmployeRepository.findBy_id(group.getKey());
+						groupEmployeSaisies.setParamEmploye(parametrageEmploye);
+						groupEmployeSaisies.setSaisies(group.getValue());
+						return groupEmployeSaisies;
+					})
+					.collect(Collectors.toList());
+		}
+		return new ArrayList<>();
+	}
+
+	@Deprecated
 	private Map<ObjectId, Collection<Saisie>> mapperParEmployeId(Collection<Saisie> donneesSaisies) {
 		Map<ObjectId, Collection<Saisie>> saisieParEmploye = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(donneesSaisies)) {
