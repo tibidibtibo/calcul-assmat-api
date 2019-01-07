@@ -284,8 +284,9 @@ public class SyntheseBloTest {
 				DateUtils.getDate(2018, 9, 28),
 				"5baff2462efb71c0790b6e66", "08:00", "18:00", 2, 0d, 1, 1, "5baff2462efb71c0790b6e77")); // 1.5 hc
 
-		// Act
-		NombreHeures nbHeures = syntheseBloImpl.calculerNbHeures(donneesSaisies, mapParamEnfant);
+		// Act // TODO : corriger param employé
+		NombreHeures nbHeures = syntheseBloImpl.calculerNbHeures(donneesSaisies, new ParametrageEmploye(),
+				mapParamEnfant);
 
 		// Assert
 		assertThat(nbHeures).isNotNull();
@@ -327,25 +328,33 @@ public class SyntheseBloTest {
 	@Test
 	public void devraitGrouperLesSaisiesParEmploye() {
 		// Arrange
+		String strIdEmploye1 = "5baff2462efb71c0790b6e77";
+		ObjectId idEmploye1 = new ObjectId(strIdEmploye1);
+		String strIdEmploye2 = "5baff2462efb71c0790b6e88";
+		ObjectId idEmploye2 = new ObjectId(strIdEmploye2);
+
+		String strIdEnfant1 = "5baff2462efb71c0790b6e55";
+		ObjectId idEnfant1 = new ObjectId(strIdEnfant1);
+		String strIdEnfant2 = "5baff2462efb71c0790b6e55";
+		ObjectId idEnfant2 = new ObjectId(strIdEnfant2);
+
 		Collection<Saisie> saisies = new ArrayList<>();
 		saisies.add(TestUtils.buildSaisie(
-				DateUtils.getDate(2018, 9, 25),
-				"5baff2462efb71c0790b6e55", "07:00", "18:30", 0, 3.7d, 0, 1, "5baff2462efb71c0790b6e77")); // 2.5 hc
+				DateUtils.getDate(2018, 9, 25), strIdEnfant2, "07:00", "18:30", 0, 3.7d, 0, 1, strIdEmploye1)); // 2.5
+																												// hc
 		saisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 27),
-				"5baff2462efb71c0790b6e66", "07:45", "17:30", 0, 3.7d, 0, 1, "5baff2462efb71c0790b6e77")); // 1.75 hc
+				strIdEnfant2, "07:45", "17:30", 0, 3.7d, 0, 1, strIdEmploye1)); // 1.75 hc
 		saisies.add(TestUtils.buildSaisie(
 				DateUtils.getDate(2018, 9, 28),
-				"5baff2462efb71c0790b6e55", "08:00", "18:00", 0, 0d, 1, 1, "5baff2462efb71c0790b6e88"));
+				strIdEnfant1, "08:00", "18:00", 0, 0d, 1, 1, strIdEmploye2));
 
-		ParametrageEmploye employe1 = TestUtils.getParametrageEmploye();
-		employe1.setNom("employe1");
+		ParametrageEmploye employe1 = TestUtils.getParametrageEmploye("employe1", idEmploye1);
 		Mockito.doReturn(employe1).when(paramEmployeRepositoryMock)
-				.findBy_id(new ObjectId("5baff2462efb71c0790b6e77"));
-		ParametrageEmploye employe2 = TestUtils.getParametrageEmploye();
-		employe2.setNom("employe2");
+				.findBy_id(idEmploye1);
+		ParametrageEmploye employe2 = TestUtils.getParametrageEmploye("employe2", idEmploye2);
 		Mockito.doReturn(employe2).when(paramEmployeRepositoryMock)
-				.findBy_id(new ObjectId("5baff2462efb71c0790b6e88"));
+				.findBy_id(idEmploye2);
 
 		// Act
 		Collection<GroupeEmployeSaisies> groupes = syntheseBloImpl.groupByParamEmployes(saisies);
@@ -354,7 +363,20 @@ public class SyntheseBloTest {
 		assertThat(groupes).isNotEmpty().hasSize(2);
 		assertThat(groupes).extracting("paramEmploye.nom").contains("employe1", "employe2");
 
-		// TODO : etoffer le TU
+		GroupeEmployeSaisies groupeEmp1 = groupes.stream()
+				.filter(group -> group.getParamEmploye().get_id().equals(idEmploye1))
+				.findAny().orElse(null);
+		assertThat(groupeEmp1).isNotNull();
+		assertThat(groupeEmp1.getSaisies()).isNotEmpty().hasSize(2);
+		assertThat(groupeEmp1.getSaisies()).extracting("enfantId").containsOnly(idEnfant1, idEnfant2);
+
+		GroupeEmployeSaisies groupeEmp2 = groupes.stream()
+				.filter(group -> group.getParamEmploye().get_id().equals(idEmploye2))
+				.findAny().orElse(null);
+		assertThat(groupeEmp2).isNotNull();
+		assertThat(groupeEmp2.getSaisies()).isNotEmpty().hasSize(1);
+		assertThat(groupeEmp2.getSaisies()).extracting("enfantId").containsExactly(idEnfant1);
+
 	}
 
 	public static class Config {

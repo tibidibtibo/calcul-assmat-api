@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -63,8 +64,9 @@ public class ParametrageEnfant implements Serializable {
 		}
 	}
 
-	public Double getHeuresNormales(final Integer jourSemaine) {
-		HeuresNormale heuresTrouvees = this.heuresNormales
+	public Double getHeuresNormales(final Integer jourSemaine, ParametrageEmploye paramEmploye) {
+		EmployeInfo employeInfo = this.findEmploye(paramEmploye.get_id());
+		HeuresNormale heuresTrouvees = employeInfo.getHeuresNormales()
 				.stream()
 				.filter(entry -> jourSemaine.equals(entry.getJour()))
 				.findFirst()
@@ -83,6 +85,15 @@ public class ParametrageEnfant implements Serializable {
 
 	public String getNom() {
 		return this.nom;
+	}
+
+	public EmployeInfo findEmploye(ObjectId employeId) {
+		if (CollectionUtils.isNotEmpty(this.employes)) {
+			return this.employes.stream()
+					.filter(employe -> employeId.equals(employe.getEmployeId()))
+					.findAny().orElse(null);
+		}
+		return null;
 	}
 
 }

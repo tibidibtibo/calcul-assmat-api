@@ -46,7 +46,7 @@ public class TestUtils {
 		return saisie;
 	}
 
-	public static ParametrageEmploye getParametrageEmploye() {
+	public static ParametrageEmploye getParametrageEmploye(String nom, ObjectId identifiant) {
 		ParametrageEmploye employe = new ParametrageEmploye();
 		employe.setTauxHoraireComplementaireNet(2.90d);
 		employe.setTauxCongesPayes(0.10d);
@@ -54,8 +54,9 @@ public class TestUtils {
 		employe.setIndemnitesEntretien(new IndemnitesEntretien(8d, 2d, 3d));
 		employe.setFraisDejeuner(1d);
 		employe.setFraisGouter(0.7d);
-		employe.setNom("maternelle");
+		employe.setNom(nom);
 		employe.setPrenom("assistante");
+		employe.set_id(identifiant);
 		return employe;
 	}
 

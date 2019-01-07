@@ -1,13 +1,17 @@
 package fr.deboissieu.calculassmat.model.synthese;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.bson.types.ObjectId;
 
 import fr.deboissieu.calculassmat.commons.mathsutils.MathsUtils;
+import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
 import fr.deboissieu.calculassmat.model.saisie.Saisie;
 import lombok.Getter;
@@ -70,14 +74,25 @@ public class NombreHeures implements Serializable {
 
 	}
 
-	public void setHeuresNormalesMensualisees(Map<ObjectId, ParametrageEnfant> mapParamEnfants) {
+	public void setHeuresNormalesMensualisees(Map<ObjectId, ParametrageEnfant> mapParamEnfants,
+			ParametrageEmploye employe) {
 		if (MapUtils.isNotEmpty(mapParamEnfants)) {
+
 			if (this.heuresNormalesMensualisees == null) {
 				this.heuresNormalesMensualisees = 0d;
 			}
-			for (ParametrageEnfant param : mapParamEnfants.values()) {
-				this.heuresNormalesMensualisees += param.getHeuresNormalesMensualisees();
+
+			Collection<ParametrageEnfant> enfantGardes = mapParamEnfants.values().stream()
+					.filter(paramEnfant -> paramEnfant.findEmploye(employe.get_id()) != null)
+					.collect(Collectors.toList());
+
+			if (CollectionUtils.isNotEmpty(enfantGardes)) {
+				for (ParametrageEnfant enfant : enfantGardes) {
+					this.heuresNormalesMensualisees += enfant.findEmploye(employe.get_id())
+							.getHeuresNormalesMensualisees();
+				}
 			}
+
 			this.heuresNormalesMensualisees = MathsUtils.roundTo2Digits(this.heuresNormalesMensualisees);
 		}
 	}
