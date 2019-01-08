@@ -22,4 +22,12 @@ public interface CertificationBlo {
 	 * @param annee
 	 */
 	void certifier(CertificationRequest request, Integer mois, Integer annee);
+
+	/**
+	 * Suppression de la certification MM/YYYY
+	 * 
+	 * @param mois
+	 * @param annee
+	 */
+	void deleteCertificationByMonth(Integer mois, Integer annee);
 }

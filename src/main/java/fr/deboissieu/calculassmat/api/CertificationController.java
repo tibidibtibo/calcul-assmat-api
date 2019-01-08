@@ -39,6 +39,14 @@ public class CertificationController {
 	}
 
 	@LogCall
+	@RequestMapping(produces = "application/json", method = { RequestMethod.DELETE }, path = "/{year}/{month}")
+	public void deleteCertification(@PathVariable String month, @PathVariable String year) {
+		Integer mois = validationBlo.validerPathParamCalculMoisAnnee(month);
+		Integer annee = validationBlo.validerPathParamCalculMoisAnnee(year);
+		certificationBlo.deleteCertificationByMonth(mois, annee);
+	}
+
+	@LogCall
 	@RequestMapping(produces = "application/json", method = {
 			RequestMethod.POST }, path = "/{year}/{month}")
 	public void certifier(@PathVariable String month, @PathVariable String year,

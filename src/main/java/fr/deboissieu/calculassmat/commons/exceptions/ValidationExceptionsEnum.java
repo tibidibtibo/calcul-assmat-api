@@ -15,6 +15,7 @@ public enum ValidationExceptionsEnum {
 	V010("V-010", "Certification invalide : requête nulle ou vide !"),
 	V011("V-011", "Certification invalide : saisie inconnue."),
 	V012("V-012", "Certification déjà créée !"),
+	V013("V-013", "Certification introuvable !"),
 
 	V101("V-101", "Impossible de charger le paramétrage."),
 	V102("V-102", "Données invalides pour l'archivage."),

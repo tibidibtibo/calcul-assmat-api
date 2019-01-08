@@ -131,6 +131,48 @@ public class CertificationBloTest {
 
 	}
 
+	@Test
+	public void devraitSupprimerLaCertification() {
+
+		// Arrange
+		Certification certification = new Certification();
+		certification.set_id(new ObjectId("5baff2462efb71c0790b6e11"));
+		doReturn(certification).when(certifRepositoryMock).findByMonth(1, 2019);
+
+		// Act
+		certificationBlo.deleteCertificationByMonth(1, 2019);
+
+		// Assert
+		verify(certifRepositoryMock, times(1)).findByMonth(1, 2019);
+		ArgumentCaptor<Certification> certifArgCaptor = ArgumentCaptor.forClass(Certification.class);
+		verify(certifRepositoryMock, times(1)).delete(certifArgCaptor.capture());
+		assertThat(certifArgCaptor.getValue()).isNotNull();
+		assertThat(certifArgCaptor.getValue().get_id()).isEqualTo(new ObjectId("5baff2462efb71c0790b6e11"));
+
+	}
+
+	@Test(expected = ValidationException.class)
+	public void neDevraitPasSupprimerLaCertification() {
+
+		// Arrange
+		Certification certification = new Certification();
+		certification.set_id(new ObjectId("5baff2462efb71c0790b6e11"));
+		doReturn(null).when(certifRepositoryMock).findByMonth(1, 2019);
+
+		try {
+			// Act
+			certificationBlo.deleteCertificationByMonth(1, 2019);
+			fail();
+		} catch (ValidationException ve) {
+			// Assert
+			assertThat(ve.getMessage()).contains("Certification introuvable");
+			verify(certifRepositoryMock, times(1)).findByMonth(1, 2019);
+			verify(certifRepositoryMock, never()).delete(Mockito.any(Certification.class));
+			throw ve;
+		}
+
+	}
+
 	public static class Config {
 
 		@Bean

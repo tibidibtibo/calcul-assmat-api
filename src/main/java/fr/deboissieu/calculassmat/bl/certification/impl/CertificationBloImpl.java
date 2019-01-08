@@ -69,4 +69,14 @@ public class CertificationBloImpl implements CertificationBlo {
 		return Lists.newArrayList(saisies);
 	}
 
+	@Override
+	public void deleteCertificationByMonth(Integer mois, Integer annee) {
+		Certification certifExistante = certificationRepository.findByMonth(mois, annee);
+		if (certifExistante != null) {
+			certificationRepository.delete(certifExistante);
+		} else {
+			throw new ValidationException(ValidationExceptionsEnum.V013.toString("Date : " + mois + "/" + annee));
+		}
+	}
+
 }
