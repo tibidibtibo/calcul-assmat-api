@@ -193,6 +193,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		return MathsUtils.roundTo2Digits(fraisRepas);
 	}
 
+	// FIXME : calcul faux !
 	private Double calculerIndemnitesEntretien(ParametrageEmploye employe, NombreHeures nbHeures) {
 
 		Integer nbJourInf = 0;
