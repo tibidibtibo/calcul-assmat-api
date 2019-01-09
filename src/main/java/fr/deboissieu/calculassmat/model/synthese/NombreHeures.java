@@ -98,9 +98,12 @@ public class NombreHeures implements Serializable {
 	}
 
 	public void updateNbHeuresJour(Saisie saisie, Double tempsEmployeJour) {
-
 		String key = saisie.getDateSaisie().toString();
-		this.nbreHeuresJour.put(key, tempsEmployeJour);
+		if (this.nbreHeuresJour.get(key) != null) {
+			this.nbreHeuresJour.put(key, this.nbreHeuresJour.get(key) + tempsEmployeJour);
+		} else {
+			this.nbreHeuresJour.put(key, tempsEmployeJour);
+		}
 
 	}
 }
