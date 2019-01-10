@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 
-import fr.deboissieu.calculassmat.commons.IdentifiantUtils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,21 +18,13 @@ public class ParametrageEnfantDto implements Serializable {
 
 	private String id;
 
-	private List<String> employesIds;
+	private List<EmployeInfo> employes;
 
 	private String nom;
 
 	private String typeGarde;
 
-	private Double salaireNetMensualise;
-
-	private Double heuresNormalesMensualisees;
-
-	private Double arEcoleKm;
-
 	private List<HorairesEcole> horairesEcole;
-
-	private List<HeuresNormale> heuresNormales;
 
 	/**
 	 * Conversion listes
@@ -51,14 +42,10 @@ public class ParametrageEnfantDto implements Serializable {
 	public static ParametrageEnfantDto from(ParametrageEnfant paramEnfant) {
 		ParametrageEnfantDto paramEnfantDto = new ParametrageEnfantDto();
 		paramEnfantDto.setId(paramEnfant.get_id().toHexString());
-		paramEnfantDto.setEmployesIds(IdentifiantUtils.convertToHexIds(paramEnfant.getEmployesIds()));
+		paramEnfantDto.setEmployes(paramEnfant.getEmployes());
 		paramEnfantDto.setNom(paramEnfant.getNom());
 		paramEnfantDto.setTypeGarde(paramEnfant.getTypeGarde());
-		paramEnfantDto.setSalaireNetMensualise(paramEnfant.getSalaireNetMensualise());
-		paramEnfantDto.setHeuresNormalesMensualisees(paramEnfant.getHeuresNormalesMensualisees());
-		paramEnfantDto.setArEcoleKm(paramEnfant.getArEcoleKm());
 		paramEnfantDto.setHorairesEcole(paramEnfant.getHorairesEcole());
-		paramEnfantDto.setHeuresNormales(paramEnfant.getHeuresNormales());
 		return paramEnfantDto;
 	}
 }

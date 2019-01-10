@@ -1,7 +1,9 @@
 package fr.deboissieu.calculassmat.bl;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,9 +69,12 @@ public class ParametrageBloTest {
 	public void devraitExtraireLeParametrageEnfant() {
 
 		Collection<ParametrageEnfant> listeEnfants = new ArrayList<>();
-		ParametrageEnfant enfant1 = TestUtils.buildParametrageEnfant("enfant1", "type1", 0d, 0d, 0d);
-		ParametrageEnfant enfant2 = TestUtils.buildParametrageEnfant("enfant2", "type2", 0d, 4d, 0d);
-		ParametrageEnfant enfant3 = TestUtils.buildParametrageEnfant("enfant3", null, 0d, 2d, 0d);
+		ParametrageEnfant enfant1 = TestUtils.buildParametrageEnfant(TestUtils.objectIdEnfant1, "enfant1", "type1");
+		enfant1.setEmployes(Arrays.asList(TestUtils.buildEmployeInfo(TestUtils.objectIdEmploye1, 0d, 0d, 10d, null)));
+		ParametrageEnfant enfant2 = TestUtils.buildParametrageEnfant(TestUtils.objectIdEnfant2, "enfant2", "type2");
+		enfant2.setEmployes(Arrays.asList(TestUtils.buildEmployeInfo(TestUtils.objectIdEmploye2, 0d, 4d, 12d, null)));
+		ParametrageEnfant enfant3 = TestUtils.buildParametrageEnfant(TestUtils.objectIdEnfant3, "enfant3", null);
+		enfant3.setEmployes(Arrays.asList(TestUtils.buildEmployeInfo(TestUtils.objectIdEmploye1, 0d, 2d, 14d, null)));
 		listeEnfants.addAll(Arrays.asList(enfant1, enfant2, enfant3));
 		doReturn(listeEnfants).when(paramEnfantRepoMock).findAll();
 
@@ -78,7 +83,7 @@ public class ParametrageBloTest {
 		assertThat(mapParamEnfant).isNotEmpty().hasSize(3);
 		assertThat(mapParamEnfant.values()).extracting("nom").contains("enfant1", "enfant2", "enfant3");
 		assertThat(mapParamEnfant.values()).extracting("typeGarde").contains("type1", "type2", null);
-		assertThat(mapParamEnfant.values()).extracting("heuresNormalesMensualisees").contains(0d, 4d, 2d);
+		assertThat(mapParamEnfant.values()).extracting("employes").hasSize(3);
 
 		verify(paramEnfantRepoMock, times(1)).findAll();
 	}
