@@ -144,7 +144,7 @@ public class SaisieBloTest {
 		enfant.setNom("enfant");
 		Map<String, ParametrageEnfant> mapParamEnfant = new HashMap<>();
 		mapParamEnfant.put("enfant", enfant);
-		Mockito.doReturn(mapParamEnfant).when(parametrageBloMock).getMapIdParamsEnfants();
+		Mockito.doReturn(mapParamEnfant).when(parametrageBloMock).getMapNomParamsEnfants();
 		org.springframework.core.io.Resource resource = new ResourceMock();
 		Mockito.doReturn(resource).when(fileStorageServiceMock).loadFileAsResource(Mockito.anyString());
 
@@ -155,7 +155,7 @@ public class SaisieBloTest {
 		verify(workbookMock, times(1)).close();
 		verify(excelFileBloMock, times(1)).openWorkbook("path");
 		verify(excelFileBloMock, times(1)).extractDataFromWorkbook(workbookMock, 12, 2018);
-		verify(parametrageBloMock, times(1)).getMapIdParamsEnfants();
+		verify(parametrageBloMock, times(1)).getMapNomParamsEnfants();
 		verify(parametrageBloMock, times(1)).findAllEmployes();
 		verify(saisieRepositoryMock, times(1)).saveAll(Mockito.anyCollection());
 	}

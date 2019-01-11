@@ -19,15 +19,37 @@ public interface ParametrageBlo {
 	 * @return {@link Map}<{@link String}, {@link ParametrageEnfant}> paramètres
 	 *         enfant par nom
 	 */
-	public Map<String, ParametrageEnfant> getMapIdParamsEnfants();
+	Map<String, ParametrageEnfant> getMapNomParamsEnfants();
 
 	/**
-	 * Recherche les paramètres enfant et retourne une map par prénom
+	 * Recherche les paramètres enfant et retourne une map par id
 	 * 
 	 * @return {@link Map}<{@link String}, {@link ParametrageEnfant}> paramètres
 	 *         enfant par nom
 	 */
-	public Map<ObjectId, ParametrageEnfant> getMapObjectIdParamsEnfants();
+	Map<String, ParametrageEnfant> getMapIdParamsEnfants();
+
+	/**
+	 * Recherche tous les param employes et retourne une map id, valeur
+	 * 
+	 * @return
+	 */
+	Map<String, ParametrageEmploye> getMapIdParamsEmployes();
+
+	/**
+	 * Recherche les paramètres enfant et retourne une map par ObjectId
+	 * 
+	 * @return {@link Map}<{@link String}, {@link ParametrageEnfant}> paramètres
+	 *         enfant par nom
+	 */
+	Map<ObjectId, ParametrageEnfant> getMapObjectIdParamsEnfants();
+
+	/**
+	 * Recherche les paramètres employes et retourne une map par ObjectId
+	 * 
+	 * @return
+	 */
+	Map<ObjectId, ParametrageEmploye> getMapObjectIdParamsEmployes();
 
 	/**
 	 * Recherche le paramétrage employé par idEmploye
@@ -35,7 +57,7 @@ public interface ParametrageBlo {
 	 * @param string
 	 * @return {@link ParametrageEmploye}
 	 */
-	public ParametrageEmploye findEmployeParId(String idEmploye);
+	ParametrageEmploye findEmployeParId(String idEmploye);
 
 	/**
 	 * Recherche le paramétrage employé par nom
@@ -43,42 +65,42 @@ public interface ParametrageBlo {
 	 * @param nomEmploye
 	 * @return {@link ParametrageEmploye}
 	 */
-	public ParametrageEmploye findEmployeParNom(String nomEmploye);
+	ParametrageEmploye findEmployeParNom(String nomEmploye);
 
 	/**
 	 * Retourne la liste des employés
 	 * 
 	 * @return {@link List}<{@link ParametrageEmploye}>
 	 */
-	public List<ParametrageEmploye> findAllEmployes();
+	List<ParametrageEmploye> findAllEmployes();
 
 	/**
 	 * Recherche le paramétrage des employés
 	 * 
 	 * @return Liste de {@link ParametrageEmploye} paramétrage employé
 	 */
-	public Collection<ParametrageEmploye> getAllEmployes();
+	Collection<ParametrageEmploye> getAllEmployes();
 
 	/**
 	 * Recherche le paramétrage des enfants
 	 * 
 	 * @return Liste de {@link ParametrageEnfant} paramétrage enfant
 	 */
-	public Collection<ParametrageEnfant> getAllEnfants();
+	Collection<ParametrageEnfant> getAllEnfants();
 
 	/**
 	 * Update de l'objet {@link ParametrageEmploye}
 	 * 
 	 * @param paramEmploye
 	 */
-	public void updateParamEmploye(ParametrageEmployeDto paramEmployeDto);
+	void updateParamEmploye(ParametrageEmployeDto paramEmployeDto);
 
 	/**
 	 * Suppression du paramétrage
 	 * 
 	 * @param employeId
 	 */
-	public void deleteParamEmploye(String employeId);
+	void deleteParamEmploye(String employeId);
 
 	/**
 	 * Retourne le paramétrage Enfant avec les Employes consolidés avec le
@@ -86,5 +108,6 @@ public interface ParametrageBlo {
 	 * 
 	 * @return
 	 */
-	public Collection<ParametrageEnfantDto> getParametrageEnfantConsolide();
+	Collection<ParametrageEnfantDto> getParametrageEnfantConsolide();
+
 }

@@ -64,7 +64,10 @@ public class SaisieBloImpl implements SaisieBlo {
 
 		Date startDate = DateUtils.getDate(year, month, 1);
 		Date stopDate = DateUtils.toMaxMonth(month, year);
-		return SaisieEnfantDto.toSaisieEnfantDto(saisieRepository.findSaisieBetween(startDate, stopDate));
+		Map<String, ParametrageEnfant> paramsEnfant = parametrageBlo.getMapIdParamsEnfants();
+		Map<String, ParametrageEmploye> paramsEmploye = parametrageBlo.getMapIdParamsEmployes();
+		return SaisieEnfantDto.toSaisieEnfantDto(saisieRepository.findSaisieBetween(startDate, stopDate), paramsEnfant,
+				paramsEmploye);
 
 	}
 
@@ -82,7 +85,7 @@ public class SaisieBloImpl implements SaisieBlo {
 						numeroAnnee);
 
 				// Consolidation des paramètrages et conversion en saisie entités
-				Map<String, ParametrageEnfant> mapParamEnfants = parametrageBlo.getMapIdParamsEnfants();
+				Map<String, ParametrageEnfant> mapParamEnfants = parametrageBlo.getMapNomParamsEnfants();
 				Collection<ParametrageEmploye> paramsEmployes = parametrageBlo.findAllEmployes();
 				Collection<Saisie> saisies = consoliderSaisiesJournalieres(saisiesJournalieres, mapParamEnfants,
 						paramsEmployes);

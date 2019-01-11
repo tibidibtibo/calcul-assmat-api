@@ -1,6 +1,7 @@
 package fr.deboissieu.calculassmat.bl.parametrage.impl;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -32,7 +33,7 @@ public class ParametrageBloImpl implements ParametrageBlo {
 	// ------------------- //
 	// ----- ENFANTS ----- //
 	// ------------------- //
-	public Map<String, ParametrageEnfant> getMapIdParamsEnfants() {
+	public Map<String, ParametrageEnfant> getMapNomParamsEnfants() {
 		Collection<ParametrageEnfant> paramsEnfant = paramEnfantRepository.findAll();
 		if (CollectionUtils.isNotEmpty(paramsEnfant)) {
 
@@ -57,6 +58,25 @@ public class ParametrageBloImpl implements ParametrageBlo {
 	@Override
 	public Collection<ParametrageEnfant> getAllEnfants() {
 		return paramEnfantRepository.findAll();
+	}
+
+	@Override
+	public Collection<ParametrageEnfantDto> getParametrageEnfantConsolide() {
+		Collection<ParametrageEmploye> paramEmployes = this.getAllEmployes();
+		Collection<ParametrageEmployeDto> paramsEmployesDto = ParametrageEmployeDto.fromList(paramEmployes);
+		return ParametrageEnfantDto.from(this.getAllEnfants(), paramsEmployesDto);
+	}
+
+	@Override
+	public Map<String, ParametrageEnfant> getMapIdParamsEnfants() {
+		Collection<ParametrageEnfant> listeEnfants = this.getAllEnfants();
+		if (CollectionUtils.isNotEmpty(listeEnfants)) {
+			return listeEnfants.stream()
+					.collect(Collectors.toMap(entry -> {
+						return entry.get_id().toHexString();
+					}, Function.identity()));
+		}
+		return new HashMap<>();
 	}
 
 	// ---------------------//
@@ -96,9 +116,25 @@ public class ParametrageBloImpl implements ParametrageBlo {
 	}
 
 	@Override
-	public Collection<ParametrageEnfantDto> getParametrageEnfantConsolide() {
-		Collection<ParametrageEmploye> paramEmployes = this.getAllEmployes();
-		Collection<ParametrageEmployeDto> paramsEmployesDto = ParametrageEmployeDto.fromList(paramEmployes);
-		return ParametrageEnfantDto.from(this.getAllEnfants(), paramsEmployesDto);
+	public Map<String, ParametrageEmploye> getMapIdParamsEmployes() {
+		Collection<ParametrageEmploye> listeEmployes = this.findAllEmployes();
+		if (CollectionUtils.isNotEmpty(listeEmployes)) {
+			return listeEmployes.stream()
+					.collect(Collectors.toMap(entry -> {
+						return entry.get_id().toHexString();
+					}, Function.identity()));
+		}
+		return new HashMap<>();
 	}
+
+	@Override
+	public Map<ObjectId, ParametrageEmploye> getMapObjectIdParamsEmployes() {
+		Collection<ParametrageEmploye> listeEmployes = this.findAllEmployes();
+		if (CollectionUtils.isNotEmpty(listeEmployes)) {
+			return listeEmployes.stream()
+					.collect(Collectors.toMap(ParametrageEmploye::get_id, Function.identity()));
+		}
+		return new HashMap<>();
+	}
+
 }

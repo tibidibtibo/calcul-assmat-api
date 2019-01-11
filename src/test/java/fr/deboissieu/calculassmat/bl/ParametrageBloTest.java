@@ -78,7 +78,7 @@ public class ParametrageBloTest {
 		listeEnfants.addAll(Arrays.asList(enfant1, enfant2, enfant3));
 		doReturn(listeEnfants).when(paramEnfantRepoMock).findAll();
 
-		Map<String, ParametrageEnfant> mapParamEnfant = parametrageBlo.getMapIdParamsEnfants();
+		Map<String, ParametrageEnfant> mapParamEnfant = parametrageBlo.getMapNomParamsEnfants();
 
 		assertThat(mapParamEnfant).isNotEmpty().hasSize(3);
 		assertThat(mapParamEnfant.values()).extracting("nom").contains("enfant1", "enfant2", "enfant3");
@@ -93,7 +93,7 @@ public class ParametrageBloTest {
 
 		doReturn(null).when(paramEnfantRepoMock).findAll();
 
-		Map<String, ParametrageEnfant> mapParamEnfant = parametrageBlo.getMapIdParamsEnfants();
+		Map<String, ParametrageEnfant> mapParamEnfant = parametrageBlo.getMapNomParamsEnfants();
 
 		assertThat(mapParamEnfant).isNull();
 

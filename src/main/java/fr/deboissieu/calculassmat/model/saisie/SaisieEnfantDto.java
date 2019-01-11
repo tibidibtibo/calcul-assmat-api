@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
@@ -11,6 +12,10 @@ import javax.validation.constraints.NotNull;
 import org.bson.types.ObjectId;
 
 import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
+import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
+import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmployeDto;
+import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
+import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfantDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,8 +30,12 @@ public class SaisieEnfantDto implements Serializable {
 	@NotNull
 	private String enfant;
 
+	private ParametrageEnfantDto paramEnfant;
+
 	@NotNull
 	private String employe;
+
+	private ParametrageEmployeDto paramEmploye;
 
 	@NotNull
 	private Date dateSaisie;
@@ -65,11 +74,10 @@ public class SaisieEnfantDto implements Serializable {
 		return saisie;
 	}
 
-	public static SaisieEnfantDto toSaisieEnfantDto(Saisie saisie) {
+	public static SaisieEnfantDto toSaisieEnfantDto(Saisie saisie, ParametrageEnfantDto paramEnfant,
+			ParametrageEmployeDto paramEmploye) {
 		SaisieEnfantDto saisieEnfantDto = new SaisieEnfantDto();
 		saisieEnfantDto.setId(saisie.get_id().toHexString());
-		saisieEnfantDto.setEmploye(saisie.getEmployeId().toHexString());
-		saisieEnfantDto.setEnfant(saisie.getEnfantId().toHexString());
 		saisieEnfantDto.setDateSaisie(saisie.getDateSaisie());
 		saisieEnfantDto.setHeureArrivee(saisie.getHeureArrivee());
 		saisieEnfantDto.setHeureDepart(saisie.getHeureDepart());
@@ -77,12 +85,24 @@ public class SaisieEnfantDto implements Serializable {
 		saisieEnfantDto.setAutreKm(saisie.getAutresDeplacementKm());
 		saisieEnfantDto.setNbDejeuner(saisie.getNbDejeuners());
 		saisieEnfantDto.setNbGouter(saisie.getNbGouters());
+
+		saisieEnfantDto.setEmploye(saisie.getEmployeId().toHexString());
+		saisieEnfantDto.setParamEmploye(paramEmploye);
+		saisieEnfantDto.setEnfant(saisie.getEnfantId().toHexString());
+		saisieEnfantDto.setParamEnfant(paramEnfant);
 		return saisieEnfantDto;
 	}
 
-	public static Collection<SaisieEnfantDto> toSaisieEnfantDto(Collection<Saisie> saisies) {
+	public static Collection<SaisieEnfantDto> toSaisieEnfantDto(Collection<Saisie> saisies,
+			Map<String, ParametrageEnfant> paramsEnfant, Map<String, ParametrageEmploye> paramsEmploye) {
 		return saisies.stream()
-				.map(SaisieEnfantDto::toSaisieEnfantDto)
+				.map(saisie -> {
+					// TODO : à finir
+					return new SaisieEnfantDto();
+					// return toSaisieEnfantDto(saisie,
+					// ParametrageEnfantDto.from(paramsEnfant.get(saisie.getEnfantId()),
+					// paramsEmploye.get(saisie.getEmployeId()));
+				})
 				.collect(Collectors.toList());
 	}
 }
