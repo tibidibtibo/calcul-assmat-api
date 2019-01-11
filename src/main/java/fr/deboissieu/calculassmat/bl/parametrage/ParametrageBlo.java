@@ -9,6 +9,7 @@ import org.bson.types.ObjectId;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmployeDto;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
+import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfantDto;
 
 public interface ParametrageBlo {
 
@@ -56,7 +57,7 @@ public interface ParametrageBlo {
 	 * 
 	 * @return Liste de {@link ParametrageEmploye} paramétrage employé
 	 */
-	public List<ParametrageEmploye> getAllEmployes();
+	public Collection<ParametrageEmploye> getAllEmployes();
 
 	/**
 	 * Recherche le paramétrage des enfants
@@ -78,4 +79,12 @@ public interface ParametrageBlo {
 	 * @param employeId
 	 */
 	public void deleteParamEmploye(String employeId);
+
+	/**
+	 * Retourne le paramétrage Enfant avec les Employes consolidés avec le
+	 * Paramétrage Employé
+	 * 
+	 * @return
+	 */
+	public Collection<ParametrageEnfantDto> getParametrageEnfantConsolide();
 }

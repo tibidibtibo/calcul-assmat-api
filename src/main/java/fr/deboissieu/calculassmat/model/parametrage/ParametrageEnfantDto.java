@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -32,17 +33,21 @@ public class ParametrageEnfantDto implements Serializable {
 	 * @param allEnfants
 	 * @return
 	 */
-	public static Collection<ParametrageEnfantDto> from(Collection<ParametrageEnfant> allEnfants) {
+	public static Collection<ParametrageEnfantDto> from(Collection<ParametrageEnfant> allEnfants,
+			Collection<ParametrageEmployeDto> paramsEmployeDto) {
 		if (CollectionUtils.isNotEmpty(allEnfants)) {
-			return CollectionUtils.collect(allEnfants, ParametrageEnfantDto::from);
+			return allEnfants.stream()
+					.map(enfant -> from(enfant, paramsEmployeDto))
+					.collect(Collectors.toList());
 		}
 		return new ArrayList<>();
 	}
 
-	public static ParametrageEnfantDto from(ParametrageEnfant paramEnfant) {
+	public static ParametrageEnfantDto from(ParametrageEnfant paramEnfant,
+			Collection<ParametrageEmployeDto> paramsEmployeDto) {
 		ParametrageEnfantDto paramEnfantDto = new ParametrageEnfantDto();
 		paramEnfantDto.setId(paramEnfant.get_id().toHexString());
-		paramEnfantDto.setEmployes(EmployeInfoDto.from(paramEnfant.getEmployes()));
+		paramEnfantDto.setEmployes(EmployeInfoDto.from(paramEnfant.getEmployes(), paramsEmployeDto));
 		paramEnfantDto.setNom(paramEnfant.getNom());
 		paramEnfantDto.setTypeGarde(paramEnfant.getTypeGarde());
 		paramEnfantDto.setHorairesEcole(paramEnfant.getHorairesEcole());

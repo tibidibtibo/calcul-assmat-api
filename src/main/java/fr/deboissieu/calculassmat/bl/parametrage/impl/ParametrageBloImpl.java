@@ -18,6 +18,7 @@ import fr.deboissieu.calculassmat.dl.ParamEnfantRepository;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmployeDto;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
+import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfantDto;
 
 @Component
 public class ParametrageBloImpl implements ParametrageBlo {
@@ -92,5 +93,12 @@ public class ParametrageBloImpl implements ParametrageBlo {
 	@Override
 	public ParametrageEmploye findEmployeParNom(String nomEmploye) {
 		return paramEmployeRepository.findByNom(nomEmploye);
+	}
+
+	@Override
+	public Collection<ParametrageEnfantDto> getParametrageEnfantConsolide() {
+		Collection<ParametrageEmploye> paramEmployes = this.getAllEmployes();
+		Collection<ParametrageEmployeDto> paramsEmployesDto = ParametrageEmployeDto.fromList(paramEmployes);
+		return ParametrageEnfantDto.from(this.getAllEnfants(), paramsEmployesDto);
 	}
 }

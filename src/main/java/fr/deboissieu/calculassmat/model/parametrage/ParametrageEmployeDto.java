@@ -3,7 +3,6 @@ package fr.deboissieu.calculassmat.model.parametrage;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
@@ -95,7 +94,7 @@ public class ParametrageEmployeDto implements Serializable {
 	 * @param allEmployes
 	 * @return
 	 */
-	public static Collection<ParametrageEmployeDto> from(List<ParametrageEmploye> allEmployes) {
+	public static Collection<ParametrageEmployeDto> fromList(Collection<ParametrageEmploye> allEmployes) {
 		if (CollectionUtils.isNotEmpty(allEmployes)) {
 			return CollectionUtils.collect(allEmployes, ParametrageEmployeDto::from);
 		}

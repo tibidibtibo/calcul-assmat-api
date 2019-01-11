@@ -31,7 +31,7 @@ public class ParametrageController {
 
 	@RequestMapping(method = { RequestMethod.GET }, path = "/employes")
 	public Collection<ParametrageEmployeDto> getAllEmployes() {
-		return ParametrageEmployeDto.from(parametrageBlo.getAllEmployes());
+		return ParametrageEmployeDto.fromList(parametrageBlo.getAllEmployes());
 	}
 
 	@RequestMapping(method = { RequestMethod.DELETE }, path = "/employes/{id}")
@@ -56,7 +56,7 @@ public class ParametrageController {
 	// --------
 	@RequestMapping(method = { RequestMethod.GET }, path = "/enfants")
 	public Collection<ParametrageEnfantDto> getAllEnfants() {
-		return ParametrageEnfantDto.from(parametrageBlo.getAllEnfants());
+		return parametrageBlo.getParametrageEnfantConsolide();
 	}
 
 	@RequestMapping(method = { RequestMethod.DELETE }, path = "/enfants/{id}")
