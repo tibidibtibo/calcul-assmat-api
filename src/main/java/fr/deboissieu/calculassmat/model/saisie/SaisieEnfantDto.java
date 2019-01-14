@@ -95,14 +95,13 @@ public class SaisieEnfantDto implements Serializable {
 
 	public static Collection<SaisieEnfantDto> toSaisieEnfantDto(Collection<Saisie> saisies,
 			Map<String, ParametrageEnfant> paramsEnfant, Map<String, ParametrageEmploye> paramsEmploye) {
-		return saisies.stream()
-				.map(saisie -> {
-					// TODO : à finir
-					return new SaisieEnfantDto();
-					// return toSaisieEnfantDto(saisie,
-					// ParametrageEnfantDto.from(paramsEnfant.get(saisie.getEnfantId()),
-					// paramsEmploye.get(saisie.getEmployeId()));
-				})
-				.collect(Collectors.toList());
+		return saisies.stream().map(saisie -> {
+			ParametrageEnfantDto paramEnfantDto = ParametrageEnfantDto.from(
+					paramsEnfant.get(saisie.getEnfantId().toHexString()),
+					ParametrageEmployeDto.fromList(paramsEmploye.values()));
+			ParametrageEmployeDto paramEmployeDto = ParametrageEmployeDto
+					.from(paramsEmploye.get(saisie.getEmployeId().toHexString()));
+			return toSaisieEnfantDto(saisie, paramEnfantDto, paramEmployeDto);
+		}).collect(Collectors.toList());
 	}
 }
