@@ -109,6 +109,13 @@ public class SaisieBloTest {
 		saisiesToReturn.add(saisie1);
 		doReturn(saisiesToReturn).when(saisieRepositoryMock).findSaisieBetween(Mockito.any(Date.class),
 				Mockito.any(Date.class));
+		Map<String, ParametrageEnfant> mapParamEnfants = new HashMap<>();
+		ParametrageEnfant paramEnfant1 = new ParametrageEnfant();
+//		paramEnfant1.set_id(); // TODO : finit test
+		mapParamEnfants.put("abcff2462efb71c0790b6e55", paramEnfant1);
+		Map<String, ParametrageEmploye> mapParamEmployes = new HashMap<>();
+		doReturn(null).when(parametrageBloMock).getMapIdParamsEnfants();
+		doReturn(null).when(parametrageBloMock).getMapIdParamsEmployes();
 
 		// Act
 		Collection<SaisieEnfantDto> saisies = saisieBlo.findSaisiesByMonth(12, 2019);
@@ -133,10 +140,8 @@ public class SaisieBloTest {
 		saisie1.setEmploye("employe");
 		saisie1.setEnfant("enfant");
 		saisies.add(saisie1);
-		Mockito.doReturn(saisies).when(excelFileBloMock).extractDataFromWorkbook(
-				Mockito.any(Workbook.class),
-				Mockito.anyInt(),
-				Mockito.anyInt());
+		Mockito.doReturn(saisies).when(excelFileBloMock).extractDataFromWorkbook(Mockito.any(Workbook.class),
+				Mockito.anyInt(), Mockito.anyInt());
 		ParametrageEmploye employe = new ParametrageEmploye();
 		employe.setNom("employe");
 		Mockito.doReturn(Arrays.asList(employe)).when(parametrageBloMock).getAllEmployes();
