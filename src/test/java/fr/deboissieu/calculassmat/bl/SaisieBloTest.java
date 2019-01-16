@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import fr.deboissieu.calculassmat.TestUtils;
 import fr.deboissieu.calculassmat.bl.parametrage.ParametrageBlo;
 import fr.deboissieu.calculassmat.bl.saisie.ExcelFileBlo;
 import fr.deboissieu.calculassmat.bl.saisie.SaisieBlo;
@@ -104,18 +105,23 @@ public class SaisieBloTest {
 		Collection<Saisie> saisiesToReturn = new ArrayList<>();
 		Saisie saisie1 = new Saisie();
 		saisie1.set_id(new ObjectId("5baff2462efb71c0790b6e55"));
-		saisie1.setEnfantId(new ObjectId("abcff2462efb71c0790b6e55"));
-		saisie1.setEmployeId(new ObjectId("defff2462efb71c0790b6e55"));
+		saisie1.setEnfantId(TestUtils.objectIdEnfant1);
+		saisie1.setEmployeId(TestUtils.objectIdEmploye1);
 		saisiesToReturn.add(saisie1);
 		doReturn(saisiesToReturn).when(saisieRepositoryMock).findSaisieBetween(Mockito.any(Date.class),
 				Mockito.any(Date.class));
+
 		Map<String, ParametrageEnfant> mapParamEnfants = new HashMap<>();
 		ParametrageEnfant paramEnfant1 = new ParametrageEnfant();
-//		paramEnfant1.set_id(); // TODO : finit test
-		mapParamEnfants.put("abcff2462efb71c0790b6e55", paramEnfant1);
+		paramEnfant1.set_id(TestUtils.objectIdEnfant1);
+		mapParamEnfants.put(TestUtils.idEnfant1, paramEnfant1);
+		doReturn(mapParamEnfants).when(parametrageBloMock).getMapIdParamsEnfants();
+
 		Map<String, ParametrageEmploye> mapParamEmployes = new HashMap<>();
-		doReturn(null).when(parametrageBloMock).getMapIdParamsEnfants();
-		doReturn(null).when(parametrageBloMock).getMapIdParamsEmployes();
+		ParametrageEmploye paramEmp1 = new ParametrageEmploye();
+		paramEmp1.set_id(TestUtils.objectIdEmploye1);
+		mapParamEmployes.put(TestUtils.idEmploye1, paramEmp1);
+		doReturn(mapParamEmployes).when(parametrageBloMock).getMapIdParamsEmployes();
 
 		// Act
 		Collection<SaisieEnfantDto> saisies = saisieBlo.findSaisiesByMonth(12, 2019);
