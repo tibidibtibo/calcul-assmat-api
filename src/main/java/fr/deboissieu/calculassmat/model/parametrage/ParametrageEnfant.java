@@ -1,7 +1,6 @@
 package fr.deboissieu.calculassmat.model.parametrage;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -30,44 +29,16 @@ public class ParametrageEnfant implements Serializable {
 
 	private List<HorairesEcole> horairesEcole;
 
-	/**
-	 * Valeurs de "typeGarde"
-	 */
-	public enum TypeGardeEnum {
-		TEMPS_PLEIN("TEMPS_PLEIN"), PERISCOLAIRE("PERISCOLAIRE");
-
-		@Getter
-		@Setter
-		private String typeGarde;
-
-		TypeGardeEnum(String typeGarde) {
-			this.typeGarde = typeGarde;
-		}
-
-		public static TypeGardeEnum fromString(final String value) {
-			return Arrays.stream(values())
-					.filter(enumEntry -> enumEntry.typeGarde.equalsIgnoreCase(value))
-					.findFirst()
-					.orElse(null);
-		}
-	}
-
 	public Double getHeuresNormales(final Integer jourSemaine, ParametrageEmploye paramEmploye) {
 		EmployeInfo employeInfo = this.findEmploye(paramEmploye.get_id());
-		HeuresNormale heuresTrouvees = employeInfo.getHeuresNormales()
-				.stream()
-				.filter(entry -> jourSemaine.equals(entry.getJour()))
-				.findFirst()
-				.orElse(null);
+		HeuresNormale heuresTrouvees = employeInfo.getHeuresNormales().stream()
+				.filter(entry -> jourSemaine.equals(entry.getJour())).findFirst().orElse(null);
 		return (heuresTrouvees != null) ? heuresTrouvees.getHeures() : null;
 	}
 
 	public HorairesEcole getHorairesEcole(final Integer jourSemaine) {
-		HorairesEcole horaireTrouve = this.horairesEcole
-				.stream()
-				.filter(entry -> jourSemaine.equals(entry.getJour()))
-				.findFirst()
-				.orElse(null);
+		HorairesEcole horaireTrouve = this.horairesEcole.stream().filter(entry -> jourSemaine.equals(entry.getJour()))
+				.findFirst().orElse(null);
 		return horaireTrouve != null ? horaireTrouve : null;
 	}
 
@@ -77,9 +48,8 @@ public class ParametrageEnfant implements Serializable {
 
 	public EmployeInfo findEmploye(ObjectId employeId) {
 		if (CollectionUtils.isNotEmpty(this.employes)) {
-			return this.employes.stream()
-					.filter(employe -> employeId.equals(employe.getEmployeId()))
-					.findAny().orElse(null);
+			return this.employes.stream().filter(employe -> employeId.equals(employe.getEmployeId())).findAny()
+					.orElse(null);
 		}
 		return null;
 	}

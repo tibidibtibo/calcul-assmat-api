@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import fr.deboissieu.calculassmat.bl.parametrage.ParametrageBlo;
 import fr.deboissieu.calculassmat.bl.synthese.SyntheseBlo;
 import fr.deboissieu.calculassmat.bl.validation.ValidationBlo;
+import fr.deboissieu.calculassmat.commons.TypeGardeEnum;
 import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
 import fr.deboissieu.calculassmat.commons.exceptions.TechniqueExceptionEnum;
 import fr.deboissieu.calculassmat.commons.exceptions.ValidationExceptionsEnum;
@@ -30,7 +31,6 @@ import fr.deboissieu.calculassmat.model.parametrage.EmployeInfo;
 import fr.deboissieu.calculassmat.model.parametrage.HorairesEcole;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
-import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant.TypeGardeEnum;
 import fr.deboissieu.calculassmat.model.saisie.Saisie;
 import fr.deboissieu.calculassmat.model.synthese.GroupeEmployeSaisies;
 import fr.deboissieu.calculassmat.model.synthese.Indemnites;
@@ -59,35 +59,33 @@ public class SyntheseBloImpl implements SyntheseBlo {
 
 		Collection<GroupeEmployeSaisies> groupesEmployeSaisies = groupByParamEmployes(donneesSaisies);
 		if (CollectionUtils.isNotEmpty(groupesEmployeSaisies)) {
-			return groupesEmployeSaisies.stream()
-					.map(groupe -> {
+			return groupesEmployeSaisies.stream().map(groupe -> {
 
-						ParametrageEmploye employe = groupe.getParamEmploye();
-						Collection<Saisie> saisieEmploye = groupe.getSaisies();
+				ParametrageEmploye employe = groupe.getParamEmploye();
+				Collection<Saisie> saisieEmploye = groupe.getSaisies();
 
-						SyntheseGarde synthese = new SyntheseGarde();
-						synthese.initSyntheseGarde(mois, annee, employe.getPrenomNom());
+				SyntheseGarde synthese = new SyntheseGarde();
+				synthese.initSyntheseGarde(mois, annee, employe.getPrenomNom());
 
-						synthese.setNbJoursTravailles(calculerJoursTravailles(saisieEmploye));
+				synthese.setNbJoursTravailles(calculerJoursTravailles(saisieEmploye));
 
-						// Nombre d'heures
-						NombreHeures nbHeures = calculerNbHeures(saisieEmploye, employe, mapParamEnfants);
-						synthese.setNombreHeures(nbHeures);
+				// Nombre d'heures
+				NombreHeures nbHeures = calculerNbHeures(saisieEmploye, employe, mapParamEnfants);
+				synthese.setNombreHeures(nbHeures);
 
-						// Salaire
-						Salaire salaire = calculerSalaire(employe, mapParamEnfants, nbHeures);
-						synthese.setSalaire(salaire);
+				// Salaire
+				Salaire salaire = calculerSalaire(employe, mapParamEnfants, nbHeures);
+				synthese.setSalaire(salaire);
 
-						// Indemnites
-						Indemnites indemnites = calculerIndemnites(saisieEmploye, employe, nbHeures, mapParamEnfants);
-						synthese.setIndemnites(indemnites);
+				// Indemnites
+				Indemnites indemnites = calculerIndemnites(saisieEmploye, employe, nbHeures, mapParamEnfants);
+				synthese.setIndemnites(indemnites);
 
-						// Calcul du paiement total
-						synthese.calculerPaiementMensuel();
+				// Calcul du paiement total
+				synthese.calculerPaiementMensuel();
 
-						return synthese;
-					})
-					.collect(Collectors.toList());
+				return synthese;
+			}).collect(Collectors.toList());
 
 		}
 
@@ -103,24 +101,20 @@ public class SyntheseBloImpl implements SyntheseBlo {
 	 */
 	public Collection<GroupeEmployeSaisies> groupByParamEmployes(Collection<Saisie> donneesSaisies) {
 		if (CollectionUtils.isNotEmpty(donneesSaisies)) {
-			return donneesSaisies.stream()
-					.collect(Collectors.groupingBy(Saisie::getEmployeId))
-					.entrySet().stream()
+			return donneesSaisies.stream().collect(Collectors.groupingBy(Saisie::getEmployeId)).entrySet().stream()
 					.map(group -> {
 						GroupeEmployeSaisies groupEmployeSaisies = new GroupeEmployeSaisies();
 						ParametrageEmploye parametrageEmploye = paramEmployeRepository.findBy_id(group.getKey());
 						groupEmployeSaisies.setParamEmploye(parametrageEmploye);
 						groupEmployeSaisies.setSaisies(group.getValue());
 						return groupEmployeSaisies;
-					})
-					.collect(Collectors.toList());
+					}).collect(Collectors.toList());
 		}
 		return new ArrayList<>();
 	}
 
 	private Indemnites calculerIndemnites(Collection<Saisie> donneesSaisies, ParametrageEmploye employe,
-			NombreHeures nbHeures,
-			Map<ObjectId, ParametrageEnfant> mapParamEnfants) {
+			NombreHeures nbHeures, Map<ObjectId, ParametrageEnfant> mapParamEnfants) {
 		Indemnites indemnites = new Indemnites();
 		indemnites.setIndemnitesEntretien(calculerIndemnitesEntretien(employe, nbHeures));
 		indemnites.setIndemnitesRepas(calculerIndemnitesRepas(donneesSaisies, employe));
@@ -137,12 +131,12 @@ public class SyntheseBloImpl implements SyntheseBlo {
 		Double salaireMensualise = calculerSalaireNetMensualise(mapParamEnfants, paramEmploye);
 		salaire.setSalaireNetMensualise(salaireMensualise);
 
-		Double salaireHeuresComplementaires = MathsUtils.roundTo2Digits(nbHeures.getHeuresComplementaires()
-				* paramEmploye.getTauxHoraireComplementaireNet());
+		Double salaireHeuresComplementaires = MathsUtils
+				.roundTo2Digits(nbHeures.getHeuresComplementaires() * paramEmploye.getTauxHoraireComplementaireNet());
 		salaire.setSalaireNetHeuresComplementaires(salaireHeuresComplementaires);
 
-		Double congesPayes = MathsUtils.roundTo2Digits(
-				(salaireMensualise + salaireHeuresComplementaires) * paramEmploye.getTauxCongesPayes());
+		Double congesPayes = MathsUtils
+				.roundTo2Digits((salaireMensualise + salaireHeuresComplementaires) * paramEmploye.getTauxCongesPayes());
 		salaire.setCongesPayes(congesPayes);
 
 		Double salaireNetTotal = MathsUtils
@@ -162,8 +156,7 @@ public class SyntheseBloImpl implements SyntheseBlo {
 				if (paramEnfant != null && saisie.getNbArEcole() != null) {
 					EmployeInfo employeInfo = paramEnfant.findEmploye(employe.get_id());
 					if (employeInfo != null) {
-						fraisKm += saisie.getNbArEcole() * employeInfo.getArEcoleKm() *
-								employe.getIndemnitesKm();
+						fraisKm += saisie.getNbArEcole() * employeInfo.getArEcoleKm() * employe.getIndemnitesKm();
 					}
 				}
 				if (saisie.getAutresDeplacementKm() != null) {
@@ -233,8 +226,8 @@ public class SyntheseBloImpl implements SyntheseBlo {
 
 	}
 
-	public NombreHeures calculerNbHeures(Collection<Saisie> donneesSaisies,
-			ParametrageEmploye employe, Map<ObjectId, ParametrageEnfant> mapParamEnfants) {
+	public NombreHeures calculerNbHeures(Collection<Saisie> donneesSaisies, ParametrageEmploye employe,
+			Map<ObjectId, ParametrageEnfant> mapParamEnfants) {
 
 		NombreHeures nbHeures = new NombreHeures();
 		nbHeures.setHeuresNormalesMensualisees(mapParamEnfants, employe);
@@ -255,12 +248,10 @@ public class SyntheseBloImpl implements SyntheseBlo {
 				Double heuresNormalesRef = paramEnfant.getHeuresNormales(jourSemaine, employe);
 
 				if (TypeGardeEnum.valueOf(paramEnfant.getTypeGarde()).equals(TypeGardeEnum.PERISCOLAIRE)) {
-					tempsJour += calculTempsPeriscolaire(nbHeures, saisie, paramEnfant, heureArrivee,
-							heureDepart, jourSemaine,
-							heuresNormalesRef);
+					tempsJour += calculTempsPeriscolaire(nbHeures, saisie, paramEnfant, heureArrivee, heureDepart,
+							jourSemaine, heuresNormalesRef);
 				} else if (TypeGardeEnum.valueOf(paramEnfant.getTypeGarde()).equals(TypeGardeEnum.TEMPS_PLEIN)) {
-					tempsJour += calculerTempsPlein(nbHeures, saisie, heureArrivee, heureDepart,
-							heuresNormalesRef);
+					tempsJour += calculerTempsPlein(nbHeures, saisie, heureArrivee, heureDepart, heuresNormalesRef);
 				}
 
 				nbHeures.updateNbHeuresJour(saisie, tempsJour);
@@ -281,17 +272,14 @@ public class SyntheseBloImpl implements SyntheseBlo {
 			heuresGarde = DateUtils.diff(heureArrivee, heureDepart);
 			nbHeures.addHeuresReelles(heuresGarde);
 			nbHeures.addHeuresNormalesReelles(heuresNormalesRef);
-			nbHeures.addHeuresComplementaires(
-					calculerHeuresComplementaires(heuresGarde, heuresNormalesRef));
+			nbHeures.addHeuresComplementaires(calculerHeuresComplementaires(heuresGarde, heuresNormalesRef));
 		} else {
-			logger.error(TechniqueExceptionEnum.T001.getMessage(), saisie.getEnfantId(),
-					saisie.getDateSaisie());
+			logger.error(TechniqueExceptionEnum.T001.getMessage(), saisie.getEnfantId(), saisie.getDateSaisie());
 		}
 		return heuresGarde;
 	}
 
-	private Double calculTempsPeriscolaire(NombreHeures nbHeures, Saisie saisie,
-			ParametrageEnfant paramEnfant,
+	private Double calculTempsPeriscolaire(NombreHeures nbHeures, Saisie saisie, ParametrageEnfant paramEnfant,
 			LocalTime heureArrivee, LocalTime heureDepart, int jourSemaine, Double heuresNormalesRef) {
 		HorairesEcole horairesJournaliers = paramEnfant.getHorairesEcole(jourSemaine);
 
@@ -310,19 +298,16 @@ public class SyntheseBloImpl implements SyntheseBlo {
 				tempsJour += temps1;
 			}
 			if (heureDepart != null) {
-				Double temps2 = DateUtils
-						.diff(horairesJournaliers.getHorairesJournaliersEcole().getDepartAprem(),
-								heureDepart);
+				Double temps2 = DateUtils.diff(horairesJournaliers.getHorairesJournaliersEcole().getDepartAprem(),
+						heureDepart);
 				tempsJour += temps2;
 			}
 		}
 
 		// Calcul du temps de garde midi
-		if (!horairesJournaliers.jourSansEcole() && saisie.getNbDejeuners() != null
-				&& saisie.getNbDejeuners() > 0) {
-			Double tempMidi = DateUtils
-					.diff(horairesJournaliers.getHorairesJournaliersEcole().getDepartMatin(),
-							horairesJournaliers.getHorairesJournaliersEcole().getArriveeAprem());
+		if (!horairesJournaliers.jourSansEcole() && saisie.getNbDejeuners() != null && saisie.getNbDejeuners() > 0) {
+			Double tempMidi = DateUtils.diff(horairesJournaliers.getHorairesJournaliersEcole().getDepartMatin(),
+					horairesJournaliers.getHorairesJournaliersEcole().getArriveeAprem());
 			tempsJour += tempMidi;
 		}
 

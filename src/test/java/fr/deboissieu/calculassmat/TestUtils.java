@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.bson.types.ObjectId;
 
+import fr.deboissieu.calculassmat.commons.TypeGardeEnum;
 import fr.deboissieu.calculassmat.commons.dateUtils.DateUtils;
 import fr.deboissieu.calculassmat.model.parametrage.EmployeInfo;
 import fr.deboissieu.calculassmat.model.parametrage.HeuresNormale;
@@ -17,7 +18,6 @@ import fr.deboissieu.calculassmat.model.parametrage.HorairesJournaliersEcole;
 import fr.deboissieu.calculassmat.model.parametrage.IndemnitesEntretien;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant;
-import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfant.TypeGardeEnum;
 import fr.deboissieu.calculassmat.model.saisie.Saisie;
 import fr.deboissieu.calculassmat.model.synthese.SyntheseGarde;
 
@@ -77,8 +77,7 @@ public class TestUtils {
 	}
 
 	public static List<HeuresNormale> getHeuresNormales(Double lundi, Double mardi, Double mercredi, Double jeudi,
-			Double vendredi,
-			Double samedi, Double dimanche) {
+			Double vendredi, Double samedi, Double dimanche) {
 		List<HeuresNormale> heures = new ArrayList<>();
 		heures.add(new HeuresNormale(1, lundi));
 		heures.add(new HeuresNormale(2, mardi));
