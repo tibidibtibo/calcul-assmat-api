@@ -28,6 +28,8 @@
 		<apache.commons.collection.version>4.2</apache.commons.collection.version>
 		<gson.version>2.8.5</gson.version>
 		<swagger.version>2.8.0</swagger.version>
+		<jwt.version>0.6.0</jwt.version>
+		<mockito.version>2.22.0</mockito.version>
 	</properties>
 
 	<dependencies>
@@ -138,7 +140,7 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>2.22.0</version><!--$NO-MVN-MAN-VER$-->
+			<version>${mockito.version}</version><!--$NO-MVN-MAN-VER$-->
 			<scope>test</scope>
 		</dependency>
 
@@ -146,7 +148,7 @@
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt</artifactId>
-			<version>0.6.0</version>
+			<version>${jwt.version}</version>
 		</dependency>
 	</dependencies>
 
