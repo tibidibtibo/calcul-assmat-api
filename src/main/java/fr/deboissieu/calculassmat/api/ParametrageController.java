@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fr.deboissieu.calculassmat.bl.parametrage.ParametrageBlo;
 import fr.deboissieu.calculassmat.commons.exceptions.ValidationExceptionsEnum;
+import fr.deboissieu.calculassmat.configuration.LogCall;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmploye;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEmployeDto;
 import fr.deboissieu.calculassmat.model.parametrage.ParametrageEnfantDto;
@@ -28,22 +29,28 @@ public class ParametrageController {
 
 	// Employes
 	// --------
-
+	@LogCall
 	@RequestMapping(method = { RequestMethod.GET }, path = "/employes")
 	public Collection<ParametrageEmployeDto> getAllEmployes() {
 		return ParametrageEmployeDto.fromList(parametrageBlo.getAllEmployes());
+
 	}
 
+	@LogCall
 	@RequestMapping(method = { RequestMethod.DELETE }, path = "/employes/{id}")
 	public void deleteParamEmploye(@PathVariable String id) {
 		parametrageBlo.deleteParamEmploye(id);
 	}
 
+	@LogCall
 	@RequestMapping(method = { RequestMethod.PUT }, path = "/employes/{id}")
-	public void updateParamEmploye(@PathVariable String id, @RequestBody ParametrageEmployeDto updateEmployeRequest) {
+	public ParametrageEmployeDto updateParamEmploye(@PathVariable String id,
+			@RequestBody ParametrageEmployeDto updateEmployeRequest) {
 		parametrageBlo.updateParamEmploye(updateEmployeRequest);
+		return ParametrageEmployeDto.from(parametrageBlo.findEmployeParId(updateEmployeRequest.getId()));
 	}
 
+	@LogCall
 	@RequestMapping(method = { RequestMethod.GET }, path = "/employes/{id}")
 	public ParametrageEmploye getOneEmploye(@PathVariable String id) {
 		if (id != null) {
@@ -54,17 +61,20 @@ public class ParametrageController {
 
 	// Enfants
 	// --------
+	@LogCall
 	@RequestMapping(method = { RequestMethod.GET }, path = "/enfants")
 	public Collection<ParametrageEnfantDto> getAllEnfants() {
 		return parametrageBlo.getParametrageEnfantConsolide();
 	}
 
+	@LogCall
 	@RequestMapping(method = { RequestMethod.DELETE }, path = "/enfants/{id}")
 	public void deleteParamEnfants(@PathVariable String id) {
 		// TODO
 		System.out.println("Delete : " + id);
 	}
 
+	@LogCall
 	@RequestMapping(method = { RequestMethod.PUT }, path = "/enfants/{id}")
 	public void updateParamEnfants(@PathVariable String id) {
 		// TODO
